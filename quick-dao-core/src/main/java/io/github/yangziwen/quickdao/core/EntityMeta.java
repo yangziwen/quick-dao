@@ -4,16 +4,20 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 import org.apache.commons.lang3.StringUtils;
+
+import io.github.yangziwen.quickdao.core.util.StringWrapper;
 
 public class EntityMeta<E> {
 
@@ -27,6 +31,8 @@ public class EntityMeta<E> {
 
     protected final Map<String, String> fieldColumnMapping;
 
+    private final Set<String> columnNameSet;
+
     protected final E[] emptyArray;
 
     @SuppressWarnings("unchecked")
@@ -35,6 +41,7 @@ public class EntityMeta<E> {
         this.table = getTable(clazz);
         this.fields = getAnnotatedFields(clazz);
         this.fieldColumnMapping = createFieldColumnMapping(fields);
+        this.columnNameSet = new HashSet<>(fieldColumnMapping.values());
         this.idField = this.fields.stream()
                 .filter(field -> field.isAnnotationPresent(Id.class))
                 .findFirst()
@@ -74,7 +81,11 @@ public class EntityMeta<E> {
     }
 
     public String getColumnNameByFieldName(String fieldName) {
-        return fieldColumnMapping.get(fieldName);
+        String columnName = fieldColumnMapping.get(fieldName);
+        if (StringUtils.isBlank(columnName) && columnNameSet.contains(fieldName)) {
+            return fieldName;
+        }
+        return columnName;
     }
 
     public E[] emptyArray() {
@@ -96,10 +107,10 @@ public class EntityMeta<E> {
         return fieldColumnMapping.get(getIdFieldName());
     }
 
-    public List<String> getSelectStmts() {
+    public List<String> getSelectStmts(StringWrapper columnWrapper) {
         List<String> list = new ArrayList<String>();
         for (Entry<String, String> entry : fieldColumnMapping.entrySet()) {
-            list.add(entry.getValue() + " AS " + entry.getKey());
+            list.add(columnWrapper.wrap(entry.getValue()) + " AS " + entry.getKey());
         }
         return list;
     }

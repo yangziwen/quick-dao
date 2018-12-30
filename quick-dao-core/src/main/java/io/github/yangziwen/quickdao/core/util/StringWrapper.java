@@ -1,8 +1,9 @@
-package io.github.yangziwen.quickdao.core;
+package io.github.yangziwen.quickdao.core.util;
 
+import io.github.yangziwen.quickdao.core.RepoKeys;
 import lombok.Getter;
 
-public class PlaceholderWrapper {
+public class StringWrapper {
 
     @Getter
     private String prefix;
@@ -10,7 +11,7 @@ public class PlaceholderWrapper {
     @Getter
     private String suffix;
 
-    public PlaceholderWrapper(String prefix, String suffix) {
+    public StringWrapper(String prefix, String suffix) {
         this.prefix = prefix;
         this.suffix = suffix;
     }

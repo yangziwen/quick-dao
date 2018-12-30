@@ -2,6 +2,7 @@ package io.github.yangziwen.quickdao.core;
 
 import org.apache.commons.lang3.StringUtils;
 
+import io.github.yangziwen.quickdao.core.util.StringWrapper;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -132,13 +133,12 @@ public class Criterion {
         return prefix + name + RepoKeys.__ + operator.name();
     }
 
-    public <T> String buildCondition(EntityMeta<T> entityMeta, PlaceholderWrapper wrapper) {
+    public <T> String buildCondition(EntityMeta<T> entityMeta, StringWrapper columnWrapper, StringWrapper placeholderWrapper) {
         String columnName = entityMeta.getColumnNameByFieldName(name);
-        if (StringUtils.isBlank(columnName)) {
-            columnName = name;
-        }
-        String placeholder = wrapper.wrap(generatePlaceholderKey());
-        return operator.buildCondition(columnName, placeholder);
+        String stmt = StringUtils.isNotBlank(columnName)
+                ? columnWrapper.wrap(columnName) : name;
+        String placeholder = placeholderWrapper.wrap(generatePlaceholderKey());
+        return operator.buildCondition(stmt, placeholder);
     }
 
 }

@@ -9,44 +9,50 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import io.github.yangziwen.quickdao.core.util.ReflectionUtil;
+import io.github.yangziwen.quickdao.core.util.StringWrapper;
 
 public class SqlGenerator {
 
-    private PlaceholderWrapper wrapper;
+    private StringWrapper columnWrapper;
 
-    public SqlGenerator(PlaceholderWrapper wrapper) {
-        this.wrapper = wrapper;
+    private StringWrapper placeholderWrapper;
+
+    public SqlGenerator(StringWrapper columnWrapper, StringWrapper placeholderWrapper) {
+        this.columnWrapper = columnWrapper;
+        this.placeholderWrapper = placeholderWrapper;
     }
 
     public <T> String generateUpdateSql(EntityMeta<T> entityMeta) {
 
-        StringBuilder buff = new StringBuilder(" UPDATE ").append(entityMeta.getTable());
+        StringBuilder buff = new StringBuilder(" UPDATE ")
+                .append(columnWrapper.wrap(entityMeta.getTable()));
 
         List<Field> fields = entityMeta.getFieldsWithoutIdField();
 
-        buff.append(entityMeta.getColumnNameByField(fields.get(0)))
-            .append(" = ")
-            .append(wrapper.wrap(fields.get(0).getName()));
-
         buff.append(" SET ");
+
+        buff.append(columnWrapper.wrap(entityMeta.getColumnNameByField(fields.get(0))))
+            .append(" = ")
+            .append(placeholderWrapper.wrap(fields.get(0).getName()));
 
         for (int i = 1; i < fields.size(); i++) {
             buff.append(", ")
-                .append(entityMeta.getColumnNameByField(fields.get(i)))
+                .append(columnWrapper.wrap(entityMeta.getColumnNameByField(fields.get(i))))
                 .append(" = ")
-                .append(wrapper.wrap(fields.get(i).getName()));
+                .append(placeholderWrapper.wrap(fields.get(i).getName()));
         }
 
-        buff.append(" WHERE ").append(entityMeta.getIdColumnName())
+        buff.append(" WHERE ").append(columnWrapper.wrap(entityMeta.getIdColumnName()))
             .append(" = ")
-            .append(wrapper.wrap(entityMeta.getIdFieldName()));
+            .append(placeholderWrapper.wrap(entityMeta.getIdFieldName()));
 
         return buff.toString();
     }
 
-    public <T> String generateUpdateSelectiveSql(T entity, EntityMeta<T> entityMeta) {
+    public <T> String generateUpdateSelectiveSql(EntityMeta<T> entityMeta, T entity) {
 
-        StringBuilder buff = new StringBuilder(" UPDATE ").append(entityMeta.getTable());
+        StringBuilder buff = new StringBuilder(" UPDATE ")
+                .append(columnWrapper.wrap(entityMeta.getTable()));
 
         buff.append(" SET ");
 
@@ -59,37 +65,37 @@ public class SqlGenerator {
             if (i++ > 0) {
                 buff.append(", ");
             }
-            buff.append(entityMeta.getColumnNameByField(field))
+            buff.append(columnWrapper.wrap(entityMeta.getColumnNameByField(field)))
                 .append(" = ")
-                .append(wrapper.wrap(field.getName()));
+                .append(placeholderWrapper.wrap(field.getName()));
         }
 
-        buff.append(" WHERE ").append(entityMeta.getIdColumnName())
+        buff.append(" WHERE ").append(columnWrapper.wrap(entityMeta.getIdColumnName()))
             .append(" = ")
-            .append(wrapper.wrap(entityMeta.getIdFieldName()));
+            .append(placeholderWrapper.wrap(entityMeta.getIdFieldName()));
 
         return buff.toString();
     }
 
-
     public <T> String generateInsertSql(EntityMeta<T> entityMeta) {
 
-        StringBuilder buff = new StringBuilder(" INSERT INTO ").append(entityMeta.getTable());
+        StringBuilder buff = new StringBuilder(" INSERT INTO ")
+                .append(columnWrapper.wrap(entityMeta.getTable()));
 
         List<Field> fields = entityMeta.getFieldsWithoutIdField();
 
         List<String> columnNames = entityMeta.getColumnNamesByFields(fields);
 
-        buff.append(" ( ").append(columnNames.get(0));
+        buff.append(" ( ").append(columnWrapper.wrap(columnNames.get(0)));
 
         for (int i = 1; i < fields.size(); i++) {
-            buff.append(", ").append(columnNames.get(i));
+            buff.append(", ").append(columnWrapper.wrap(columnNames.get(i)));
         }
 
-        buff.append(" ) VALUES ( ").append(wrapper.wrap(fields.get(0).getName()));
+        buff.append(" ) VALUES ( ").append(placeholderWrapper.wrap(fields.get(0).getName()));
 
         for (int i = 1; i < fields.size(); i++) {
-            buff.append(", ").append(wrapper.wrap(fields.get(i).getName()));
+            buff.append(", ").append(placeholderWrapper.wrap(fields.get(i).getName()));
         }
 
         buff.append(" ) ");
@@ -104,20 +110,21 @@ public class SqlGenerator {
 
         List<String> columnNames = entityMeta.getColumnNamesByFields(fields);
 
-        StringBuilder buff = new StringBuilder().append(" INSERT INTO ").append(entityMeta.getTable());
+        StringBuilder buff = new StringBuilder().append(" INSERT INTO ")
+                .append(columnWrapper.wrap(entityMeta.getTable()));
 
-        buff.append(" ( ").append(columnNames.get(0));
+        buff.append(" ( ").append(columnWrapper.wrap(columnNames.get(0)));
 
         for (int i = 1; i < fields.size(); i++) {
-            buff.append(", ").append(columnNames.get(i));
+            buff.append(", ").append(columnWrapper.wrap(columnNames.get(i)));
         }
 
         buff.append(" ) VALUES ");
 
         for (int i = 0; i < batchSize; i++) {
-            buff.append("( ").append(wrapper.wrap(i, fields.get(0).getName()));
+            buff.append("( ").append(placeholderWrapper.wrap(i, fields.get(0).getName()));
             for (int j = 1; j < columnNames.size(); j++) {
-                buff.append(", ").append(wrapper.wrap(i, fields.get(j).getName()));
+                buff.append(", ").append(placeholderWrapper.wrap(i, fields.get(j).getName()));
             }
             buff.append(" ) ");
             if (i < batchSize - 1) {
@@ -128,13 +135,16 @@ public class SqlGenerator {
         return buff.toString();
     }
 
-    public <T> String generateDeleteByIdSql(EntityMeta<T> entityMeta) {
-        return  " DELETE FROM " + entityMeta.getTable() +
-                " WHERE " + entityMeta.getIdColumnName() + " = " + wrapper.wrap(entityMeta.getIdFieldName());
+    public <T> String generateDeleteByPrimaryKeySql(EntityMeta<T> entityMeta) {
+        return  " DELETE FROM " + columnWrapper.wrap(entityMeta.getTable()) +
+                " WHERE " + columnWrapper.wrap(entityMeta.getIdColumnName()) +
+                " = " + placeholderWrapper.wrap(entityMeta.getIdFieldName());
     }
 
     public <T> String generateDeleteByCriteriaSql(EntityMeta<T> entityMeta, Criteria criteria) {
-        return null;
+        StringBuilder buff = new StringBuilder(" DELETE FROM " + columnWrapper.wrap(entityMeta.getTable()));
+        appendWhere(buff, entityMeta, criteria);
+        return buff.toString();
     }
 
     public <T> String generateListByQuerySql(EntityMeta<T> entityMeta, Query query) {
@@ -143,7 +153,7 @@ public class SqlGenerator {
         appendFrom(buff, entityMeta);
         appendWhere(buff, entityMeta, query.getCriteria());
         appendGroupBy(buff, entityMeta, query);
-        appendHaving(buff, entityMeta, query.getCriteria());
+        appendHaving(buff, entityMeta, query.getHavingCriteria());
         appendOrderBy(buff, entityMeta, query);
         appendLimit(buff, entityMeta, query);
         return buff.toString();
@@ -156,6 +166,8 @@ public class SqlGenerator {
             buff.append(" FROM ( SELECT 1 ");
             appendFrom(buff, entityMeta);
             appendWhere(buff, entityMeta, query.getCriteria());
+            appendGroupBy(buff, entityMeta, query);
+            appendHaving(buff, entityMeta, query.getHavingCriteria());
             buff.append(" ) result ");
         } else {
             appendFrom(buff, entityMeta);
@@ -166,15 +178,15 @@ public class SqlGenerator {
 
     private <T> void appendSelect(StringBuilder buff, EntityMeta<T> entityMeta, Query query) {
         buff.append(" SELECT ");
-        if (CollectionUtils.isNotEmpty(query.getFieldList())) {
-            buff.append(query.getFieldList().get(0));
-            for (int i = 1; i < query.getFieldList().size(); i++) {
-                buff.append(", ").append(query.getFieldList().get(i));
+        if (CollectionUtils.isNotEmpty(query.getSelectStmtList())) {
+            buff.append(query.getSelectStmtList().get(0));
+            for (int i = 1; i < query.getSelectStmtList().size(); i++) {
+                buff.append(", ").append(query.getSelectStmtList().get(i));
             }
             return;
         }
         int i = 0;
-        for (String stmt : entityMeta.getSelectStmts()) {
+        for (String stmt : entityMeta.getSelectStmts(columnWrapper)) {
             if (i++ > 0) {
                 buff.append(", ");
             }
@@ -183,10 +195,13 @@ public class SqlGenerator {
     }
 
     private <T> void appendFrom(StringBuilder buff, EntityMeta<T> entityMeta) {
-        buff.append(" FROM ").append(entityMeta.getTable());
+        buff.append(" FROM ").append(columnWrapper.wrap(entityMeta.getTable()));
     }
 
     private <T> void appendWhere(StringBuilder buff, EntityMeta<T> entityMeta, Criteria criteria) {
+        if (criteria.isEmpty()) {
+            return;
+        }
         buff.append(" WHERE ");
         appendConditions(buff, entityMeta, criteria);
     }
@@ -201,7 +216,7 @@ public class SqlGenerator {
             if (criterion.getValue() instanceof Object[]) {
                 criterion.setValue(Arrays.asList((Object[]) criterion.getValue()));
             }
-            buff.append(criterion.buildCondition(entityMeta, wrapper));
+            buff.append(criterion.buildCondition(entityMeta, columnWrapper, placeholderWrapper));
         }
         buff.append(") ");
         for (Entry<String, Criteria> entry : criteria.getNestedCriteriaMap().entrySet()) {
@@ -218,19 +233,21 @@ public class SqlGenerator {
         }
         buff.append(" GROUP BY ");
         int i = 0;
-        for (String fieldName : query.getGroupByList()) {
-            String columnName = entityMeta.getColumnNameByFieldName(fieldName);
-            if (StringUtils.isBlank(columnName)) {
-                columnName = fieldName;
-            }
+        for (String groupBy : query.getGroupByList()) {
+            String columnName = entityMeta.getColumnNameByFieldName(groupBy);
+            String stmt = StringUtils.isNotBlank(columnName)
+                    ? columnWrapper.wrap(columnName) : groupBy;
             if (i++ > 0) {
                 buff.append(", ");
             }
-            buff.append(columnName);
+            buff.append(stmt);
         }
     }
 
     private <T> void appendHaving(StringBuilder buff, EntityMeta<T> entityMeta, Criteria criteria) {
+        if (criteria.isEmpty()) {
+            return;
+        }
         buff.append(" HAVING ");
         appendConditions(buff, entityMeta, criteria);
     }
@@ -243,13 +260,12 @@ public class SqlGenerator {
         int i = 0;
         for (Order order : query.getOrderList()) {
             String columnName = entityMeta.getColumnNameByFieldName(order.getName());
-            if (StringUtils.isBlank(columnName)) {
-                columnName = order.getName();
-            }
+            String stmt = StringUtils.isNotBlank(columnName)
+                    ? columnWrapper.wrap(columnName) : order.getName();
             if (i++ > 0) {
                 buff.append(",");
             }
-            buff.append(columnName).append(" ").append(order.getDirection().name().toLowerCase());
+            buff.append(stmt).append(" ").append(order.getDirection().name().toLowerCase());
         }
     }
 

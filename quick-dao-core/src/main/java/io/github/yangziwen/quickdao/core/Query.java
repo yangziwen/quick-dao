@@ -11,10 +11,10 @@ import java.util.Arrays;
 public class Query {
 
     @Getter
-    private List<String> fieldList = new ArrayList<>();
+    private List<String> selectStmtList = new ArrayList<>();
 
     @Getter
-    private Criteria criteria;
+    private Criteria criteria = new Criteria();;
 
     @Getter
     private List<String> groupByList = new ArrayList<>();
@@ -31,12 +31,25 @@ public class Query {
     @Getter
     private List<Order> orderList = new ArrayList<>();
 
-    public Query(Criteria criteria) {
-        this.criteria = criteria;
-    }
+    public Query() { }
 
     public Query select(String...fields) {
-        fieldList.addAll(Arrays.asList(fields));
+        selectStmtList.addAll(Arrays.asList(fields));
+        return this;
+    }
+
+    public Query where(Criteria criteria) {
+        this.criteria  = criteria;
+        return this;
+    }
+
+    public Query groupBy(String stmt) {
+        groupByList.add(stmt);
+        return this;
+    }
+
+    public Query having(Criteria criteria) {
+        this.havingCriteria = criteria;
         return this;
     }
 
