@@ -27,4 +27,7 @@
             </plugin>
         </plugins>
     </build>
+    <modules>
+    	<module>quick-dao-core</module>
+    </modules>
 </project>
