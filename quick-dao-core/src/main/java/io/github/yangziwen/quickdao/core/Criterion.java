@@ -1,6 +1,9 @@
 package io.github.yangziwen.quickdao.core;
 
+import org.apache.commons.lang3.StringUtils;
+
 import lombok.Getter;
+import lombok.Setter;
 
 public class Criterion {
 
@@ -10,7 +13,8 @@ public class Criterion {
     private String name;
 
     @Getter
-    public Object value;
+    @Setter
+    private Object value;
 
     @Getter
     private Operator operator = Operator.eq;
@@ -123,8 +127,18 @@ public class Criterion {
         return this.criteria;
     }
 
-    public String generateKey(String name, Operator operator) {
-        return name + RepoKeys.__ + operator.name();
+    public String generatePlaceholderKey() {
+        String prefix = StringUtils.isNotBlank(criteria.getKey()) ? criteria.getKey() + RepoKeys.__ : "";
+        return prefix + name + RepoKeys.__ + operator.name();
+    }
+
+    public <T> String buildCondition(EntityMeta<T> entityMeta, PlaceholderWrapper wrapper) {
+        String columnName = entityMeta.getColumnNameByFieldName(name);
+        if (StringUtils.isBlank(columnName)) {
+            columnName = name;
+        }
+        String placeholder = wrapper.wrap(generatePlaceholderKey());
+        return operator.buildCondition(columnName, placeholder);
     }
 
 }

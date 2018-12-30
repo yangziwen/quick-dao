@@ -1,7 +1,9 @@
 package io.github.yangziwen.quickdao.core;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -185,7 +187,29 @@ public class SqlGenerator {
     }
 
     private <T> void appendWhere(StringBuilder buff, EntityMeta<T> entityMeta, Criteria criteria) {
-        // TODO
+        buff.append(" WHERE ");
+        appendConditions(buff, entityMeta, criteria);
+    }
+
+    private <T> void appendConditions(StringBuilder buff, EntityMeta<T> entityMeta, Criteria criteria) {
+        buff.append(" ( ");
+        int i = 0;
+        for (Criterion criterion : criteria.getCriterionList()) {
+            if (i++ > 0) {
+                buff.append(" AND ");
+            }
+            if (criterion.getValue() instanceof Object[]) {
+                criterion.setValue(Arrays.asList((Object[]) criterion.getValue()));
+            }
+            buff.append(criterion.buildCondition(entityMeta, wrapper));
+        }
+        buff.append(") ");
+        for (Entry<String, Criteria> entry : criteria.getNestedCriteriaMap().entrySet()) {
+            if (entry.getKey().endsWith(RepoKeys.OR)) {
+                buff.append(" OR ");
+                appendConditions(buff, entityMeta, entry.getValue());
+            }
+        }
     }
 
     private <T> void appendGroupBy(StringBuilder buff, EntityMeta<T> entityMeta, Query query) {
@@ -207,7 +231,8 @@ public class SqlGenerator {
     }
 
     private <T> void appendHaving(StringBuilder buff, EntityMeta<T> entityMeta, Criteria criteria) {
-        // TODO
+        buff.append(" HAVING ");
+        appendConditions(buff, entityMeta, criteria);
     }
 
     private <T> void appendOrderBy(StringBuilder buff, EntityMeta<T> entityMeta, Query query) {

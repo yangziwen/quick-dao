@@ -33,21 +33,27 @@ public class Criteria {
     };
 
     @Getter
+    private String key = "";
+
+    @Getter
     private List<Criterion> criterionList = new LinkedList<>();
 
+    @Getter
     private Criteria parentCriteria = null;
 
+    @Getter
     private Map<String, Criteria> nestedCriteriaMap = new LinkedHashMap<>();
 
     private AtomicInteger sequence = new AtomicInteger();
 
     public Criteria() {
-        this(null);
+        this(null, "");
     }
 
-    public Criteria(Criteria parentCriteria) {
+    public Criteria(Criteria parentCriteria, String key) {
         super();
         this.parentCriteria = parentCriteria;
+        this.key = key;
     }
 
     public Criterion and(String name) {
@@ -73,7 +79,7 @@ public class Criteria {
     private Criteria ensureNestedCriteria(String criteriaKey) {
         Criteria criteria = nestedCriteriaMap.get(criteriaKey);
         if (criteria == null) {
-            criteria = new Criteria(this);
+            criteria = new Criteria(this, criteriaKey);
             nestedCriteriaMap.put(criteriaKey, criteria);
         }
         return criteria;
