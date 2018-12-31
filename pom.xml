@@ -12,6 +12,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <quick.dao.version>0.0.1-SNAPSHOT</quick.dao.version>
         <javax.persistence.version>1.0.2</javax.persistence.version>
+        <mybatis.version>3.4.6</mybatis.version>
         <sql2o.version>1.5.4</sql2o.version>
         <commons.lang3.version>3.3.2</commons.lang3.version>
         <commons.collections4.version>4.0</commons.collections4.version>
@@ -24,6 +25,11 @@
                 <groupId>io.github.yangziwen</groupId>
                 <artifactId>quick-dao-core</artifactId>
                 <version>${quick.dao.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mybatis</groupId>
+                <artifactId>mybatis</artifactId>
+                <version>${mybatis.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.yangziwen</groupId>
@@ -83,5 +89,6 @@
         <module>quick-dao-core</module>
         <module>quick-dao-sql2o</module>
         <module>quick-dao-example</module>
+        <module>quick-dao-mybatis</module>
     </modules>
 </project>

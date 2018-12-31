@@ -11,7 +11,9 @@ import org.apache.commons.collections4.CollectionUtils;
 import io.github.yangziwen.quickdao.core.Order.Direction;
 import lombok.Getter;
 
-public class Query {
+public class Query extends LinkedHashMap<String, Object> {
+
+    private static final long serialVersionUID = 1L;
 
     @Getter
     private List<String> selectStmtList = new ArrayList<>();
@@ -76,13 +78,16 @@ public class Query {
         return this;
     }
 
+    public Map<String, Object> asMap() {
+        return this;
+    }
+
     public Map<String, Object> toParamMap() {
-        Map<String, Object> paramMap = new LinkedHashMap<>();
-        criteria.fillParamMap(paramMap);
+        criteria.fillParamMap(this);
         if (CollectionUtils.isNotEmpty(groupByList)) {
-            havingCriteria.fillParamMap(paramMap);
+            havingCriteria.fillParamMap(this);
         }
-        return paramMap;
+        return this;
     }
 
 }
