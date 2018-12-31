@@ -8,8 +8,11 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import lombok.Getter;
+import lombok.Setter;
 
 public class Criteria {
 
@@ -33,6 +36,7 @@ public class Criteria {
     };
 
     @Getter
+    @Setter
     private String key = "";
 
     @Getter
@@ -65,7 +69,8 @@ public class Criteria {
     }
 
     public Criteria or() {
-        return ensureNestedCriteria(sequence.getAndIncrement() + RepoKeys.OR);
+        String prefix = StringUtils.isNotBlank(key) ? key + RepoKeys.__ : "";
+        return ensureNestedCriteria(prefix + sequence.getAndIncrement() + RepoKeys.OR);
     }
 
     public Criteria end() {
@@ -87,6 +92,23 @@ public class Criteria {
 
     public static Criteria emptyCriteria() {
         return EMPTY_CRITERIA;
+    }
+
+    public Map<String, Object> toParamMap() {
+        Map<String, Object> paramMap = new LinkedHashMap<>();
+        fillParamMap(paramMap);
+        return paramMap;
+    }
+
+    protected void fillParamMap(Map<String, Object> paramMap) {
+        for (Criterion criterion : criterionList) {
+            paramMap.put(criterion.generatePlaceholderKey(), criterion.getValue());
+        }
+        if (MapUtils.isNotEmpty(nestedCriteriaMap)) {
+            for (Criteria criteria : nestedCriteriaMap.values()) {
+                criteria.fillParamMap(paramMap);
+            }
+        }
     }
 
 }

@@ -13,11 +13,14 @@ import io.github.yangziwen.quickdao.core.util.StringWrapper;
 
 public class SqlGenerator {
 
+    private StringWrapper tableWrapper;
+
     private StringWrapper columnWrapper;
 
     private StringWrapper placeholderWrapper;
 
-    public SqlGenerator(StringWrapper columnWrapper, StringWrapper placeholderWrapper) {
+    public SqlGenerator(StringWrapper tableWrapper, StringWrapper columnWrapper, StringWrapper placeholderWrapper) {
+        this.tableWrapper = tableWrapper;
         this.columnWrapper = columnWrapper;
         this.placeholderWrapper = placeholderWrapper;
     }
@@ -25,7 +28,7 @@ public class SqlGenerator {
     public <T> String generateUpdateSql(EntityMeta<T> entityMeta) {
 
         StringBuilder buff = new StringBuilder(" UPDATE ")
-                .append(columnWrapper.wrap(entityMeta.getTable()));
+                .append(tableWrapper.wrap(entityMeta.getTable()));
 
         List<Field> fields = entityMeta.getFieldsWithoutIdField();
 
@@ -52,7 +55,7 @@ public class SqlGenerator {
     public <T> String generateUpdateSelectiveSql(EntityMeta<T> entityMeta, T entity) {
 
         StringBuilder buff = new StringBuilder(" UPDATE ")
-                .append(columnWrapper.wrap(entityMeta.getTable()));
+                .append(tableWrapper.wrap(entityMeta.getTable()));
 
         buff.append(" SET ");
 
@@ -80,7 +83,7 @@ public class SqlGenerator {
     public <T> String generateInsertSql(EntityMeta<T> entityMeta) {
 
         StringBuilder buff = new StringBuilder(" INSERT INTO ")
-                .append(columnWrapper.wrap(entityMeta.getTable()));
+                .append(tableWrapper.wrap(entityMeta.getTable()));
 
         List<Field> fields = entityMeta.getFieldsWithoutIdField();
 
@@ -111,7 +114,7 @@ public class SqlGenerator {
         List<String> columnNames = entityMeta.getColumnNamesByFields(fields);
 
         StringBuilder buff = new StringBuilder().append(" INSERT INTO ")
-                .append(columnWrapper.wrap(entityMeta.getTable()));
+                .append(tableWrapper.wrap(entityMeta.getTable()));
 
         buff.append(" ( ").append(columnWrapper.wrap(columnNames.get(0)));
 
@@ -136,13 +139,13 @@ public class SqlGenerator {
     }
 
     public <T> String generateDeleteByPrimaryKeySql(EntityMeta<T> entityMeta) {
-        return  " DELETE FROM " + columnWrapper.wrap(entityMeta.getTable()) +
+        return  " DELETE FROM " + tableWrapper.wrap(entityMeta.getTable()) +
                 " WHERE " + columnWrapper.wrap(entityMeta.getIdColumnName()) +
                 " = " + placeholderWrapper.wrap(entityMeta.getIdFieldName());
     }
 
     public <T> String generateDeleteByCriteriaSql(EntityMeta<T> entityMeta, Criteria criteria) {
-        StringBuilder buff = new StringBuilder(" DELETE FROM " + columnWrapper.wrap(entityMeta.getTable()));
+        StringBuilder buff = new StringBuilder(" DELETE FROM " + tableWrapper.wrap(entityMeta.getTable()));
         appendWhere(buff, entityMeta, criteria);
         return buff.toString();
     }
@@ -195,7 +198,7 @@ public class SqlGenerator {
     }
 
     private <T> void appendFrom(StringBuilder buff, EntityMeta<T> entityMeta) {
-        buff.append(" FROM ").append(columnWrapper.wrap(entityMeta.getTable()));
+        buff.append(" FROM ").append(tableWrapper.wrap(entityMeta.getTable()));
     }
 
     private <T> void appendWhere(StringBuilder buff, EntityMeta<T> entityMeta, Criteria criteria) {

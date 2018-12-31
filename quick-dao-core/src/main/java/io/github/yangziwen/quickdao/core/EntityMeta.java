@@ -18,15 +18,20 @@ import javax.persistence.Table;
 import org.apache.commons.lang3.StringUtils;
 
 import io.github.yangziwen.quickdao.core.util.StringWrapper;
+import lombok.Getter;
 
 public class EntityMeta<E> {
 
-    protected Class<E> clazz;
+    @Getter
+    protected Class<E> classType;
 
+    @Getter
     protected final String table;
 
+    @Getter
     protected final List<Field> fields;
 
+    @Getter
     protected final Field idField;
 
     protected final Map<String, String> fieldColumnMapping;
@@ -36,25 +41,17 @@ public class EntityMeta<E> {
     protected final E[] emptyArray;
 
     @SuppressWarnings("unchecked")
-    public EntityMeta(Class<E> clazz) {
-        this.clazz = clazz;
-        this.table = getTable(clazz);
-        this.fields = getAnnotatedFields(clazz);
+    public EntityMeta(Class<E> classType) {
+        this.classType = classType;
+        this.table = getTable(classType);
+        this.fields = getAnnotatedFields(classType);
         this.fieldColumnMapping = createFieldColumnMapping(fields);
         this.columnNameSet = new HashSet<>(fieldColumnMapping.values());
         this.idField = this.fields.stream()
                 .filter(field -> field.isAnnotationPresent(Id.class))
                 .findFirst()
                 .orElse(null);
-        this.emptyArray = (E[]) Array.newInstance(clazz, 0);
-    }
-
-    public String getTable() {
-        return table;
-    }
-
-    public List<Field> getFields() {
-        return Collections.unmodifiableList(fields);
+        this.emptyArray = (E[]) Array.newInstance(classType, 0);
     }
 
     public List<Field> getFieldsWithoutIdField() {
@@ -90,10 +87,6 @@ public class EntityMeta<E> {
 
     public E[] emptyArray() {
         return emptyArray;
-    }
-
-    public Field getIdField() {
-        return idField;
     }
 
     public String getIdFieldName() {

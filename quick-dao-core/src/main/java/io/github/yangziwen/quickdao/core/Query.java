@@ -1,12 +1,15 @@
 package io.github.yangziwen.quickdao.core;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.collections4.CollectionUtils;
 
 import io.github.yangziwen.quickdao.core.Order.Direction;
 import lombok.Getter;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Query {
 
@@ -20,7 +23,7 @@ public class Query {
     private List<String> groupByList = new ArrayList<>();
 
     @Getter
-    private Criteria havingCriteria = new Criteria();
+    private Criteria havingCriteria = new Criteria(null, 0 + RepoKeys.HAVING);
 
     @Getter
     private int offset = 0;
@@ -49,6 +52,7 @@ public class Query {
     }
 
     public Query having(Criteria criteria) {
+        criteria.setKey(0 + RepoKeys.HAVING);
         this.havingCriteria = criteria;
         return this;
     }
@@ -70,6 +74,15 @@ public class Query {
     public Query limit(int limit) {
         this.limit = limit;
         return this;
+    }
+
+    public Map<String, Object> toParamMap() {
+        Map<String, Object> paramMap = new LinkedHashMap<>();
+        criteria.fillParamMap(paramMap);
+        if (CollectionUtils.isNotEmpty(groupByList)) {
+            havingCriteria.fillParamMap(paramMap);
+        }
+        return paramMap;
     }
 
 }
