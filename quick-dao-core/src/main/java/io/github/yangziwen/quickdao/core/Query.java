@@ -14,7 +14,7 @@ public class Query {
     private List<String> selectStmtList = new ArrayList<>();
 
     @Getter
-    private Criteria criteria = new Criteria();;
+    private Criteria criteria = new Criteria();
 
     @Getter
     private List<String> groupByList = new ArrayList<>();
