@@ -2,6 +2,8 @@ package io.github.yangziwen.quickdao.mybatis;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+
 import io.github.yangziwen.quickdao.core.EntityMeta;
 import io.github.yangziwen.quickdao.core.Query;
 import io.github.yangziwen.quickdao.core.SqlGenerator;
@@ -46,8 +48,8 @@ public class AbstractSqlProvider<E> {
         return generator.generateInsertSql(entityMeta);
     }
 
-    public String batchInsert(List<E> entities, int batchSize) {
-        return generator.generateBatchInsertSql(entityMeta, batchSize);
+    public String batchInsert(@Param("list") List<E> entities) {
+        return generator.generateBatchInsertSql(entityMeta, entities.size());
     }
 
     public String update(E entity) {
