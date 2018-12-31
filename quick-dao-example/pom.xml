@@ -23,6 +23,10 @@
             <artifactId>quick-dao-sql2o</artifactId>
         </dependency>
         <dependency>
+            <groupId>io.github.yangziwen</groupId>
+            <artifactId>quick-dao-mybatis</artifactId>
+        </dependency>
+        <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>${mysql.version}</version>
