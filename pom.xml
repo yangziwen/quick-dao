@@ -77,5 +77,6 @@
     <modules>
         <module>quick-dao-core</module>
         <module>quick-dao-sql2o</module>
+        <module>quick-dao-example</module>
     </modules>
 </project>

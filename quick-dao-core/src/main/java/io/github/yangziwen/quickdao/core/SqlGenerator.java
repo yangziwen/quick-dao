@@ -1,9 +1,14 @@
 package io.github.yangziwen.quickdao.core;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -282,6 +287,31 @@ public class SqlGenerator {
             offset = 0;
         }
         buff.append(" LIMIT ").append(limit).append(" OFFSET ").append(offset);
+    }
+
+    public String flattenCollectionValues(String sql, Map<String, Object> paramMap) {
+        List<String> keysToDelete = new ArrayList<String>();
+        Set<Entry<String, Object>> entrySet = new HashSet<>(paramMap.entrySet());
+        for (Entry<String, Object> entry : entrySet) {
+            if (!(entry.getValue() instanceof Collection)) {
+                continue;
+            }
+            Collection<?> coll = (Collection<?>) entry.getValue();
+            StringBuilder placeholders = new StringBuilder();
+            int idx = 0;
+            for (Object obj : coll) {
+                String key = entry.getKey() + RepoKeys.__ + idx;
+                placeholders.append(idx > 0 ? ", " : "").append(placeholderWrapper.wrap(key));
+                paramMap.put(key, obj);
+                idx ++;
+            }
+            sql = sql.replace(placeholderWrapper.wrap(entry.getKey()), placeholders.toString());
+            keysToDelete.add(entry.getKey());
+        }
+        for (String key : keysToDelete) {
+            paramMap.remove(key);
+        }
+        return sql;
     }
 
 }

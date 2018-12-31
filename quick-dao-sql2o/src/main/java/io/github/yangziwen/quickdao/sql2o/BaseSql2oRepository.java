@@ -37,10 +37,11 @@ public abstract class BaseSql2oRepository<E> implements BaseRepository<E> {
     @Override
     public List<E> list(Query query) {
         String sql = sqlGenerator.generateListByQuerySql(entityMeta, query);
-        Map<String, Object> queryParam = query.toParamMap();
+        Map<String, Object> paramMap = query.toParamMap();
+        sqlGenerator.flattenCollectionValues(sql, paramMap);
         try (Connection conn = sql2o.open()) {
             org.sql2o.Query sql2oQuery = conn.createQuery(sql);
-            for (Entry<String, Object> entry : queryParam.entrySet()) {
+            for (Entry<String, Object> entry : paramMap.entrySet()) {
                 sql2oQuery.addParameter(entry.getKey(), entry.getValue());
             }
             return sql2oQuery.executeAndFetch(entityMeta.getClassType());
@@ -50,10 +51,11 @@ public abstract class BaseSql2oRepository<E> implements BaseRepository<E> {
     @Override
     public Integer count(Query query) {
         String sql = sqlGenerator.generateCountByQuerySql(entityMeta, query);
-        Map<String, Object> queryParam = query.toParamMap();
+        Map<String, Object> paramMap = query.toParamMap();
+        sqlGenerator.flattenCollectionValues(sql, paramMap);
         try (Connection conn = sql2o.open()) {
             org.sql2o.Query sql2oQuery = conn.createQuery(sql);
-            for (Entry<String, Object> entry : queryParam.entrySet()) {
+            for (Entry<String, Object> entry : paramMap.entrySet()) {
                 sql2oQuery.addParameter(entry.getKey(), entry.getValue());
             }
             return sql2oQuery.executeScalar(Integer.class);
@@ -149,6 +151,7 @@ public abstract class BaseSql2oRepository<E> implements BaseRepository<E> {
     public void delete(Criteria criteria) {
         String sql = sqlGenerator.generateDeleteByCriteriaSql(entityMeta, criteria);
         Map<String, Object> paramMap = criteria.toParamMap();
+        sql = sqlGenerator.flattenCollectionValues(sql, paramMap);
         try (Connection conn = sql2o.open()) {
             org.sql2o.Query sql2oQuery = conn.createQuery(sql);
             for (Entry<String, Object> entry : paramMap.entrySet()) {
