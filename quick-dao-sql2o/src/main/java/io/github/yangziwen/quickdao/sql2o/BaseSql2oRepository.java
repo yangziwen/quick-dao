@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.sql.DataSource;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.sql2o.Connection;
@@ -19,6 +17,7 @@ import io.github.yangziwen.quickdao.core.Query;
 import io.github.yangziwen.quickdao.core.RepoKeys;
 import io.github.yangziwen.quickdao.core.SqlGenerator;
 import io.github.yangziwen.quickdao.core.util.ReflectionUtil;
+import io.github.yangziwen.quickdao.core.util.StringWrapper;
 
 public abstract class BaseSql2oRepository<E> implements BaseRepository<E> {
 
@@ -29,8 +28,12 @@ public abstract class BaseSql2oRepository<E> implements BaseRepository<E> {
 
     protected final Sql2o sql2o;
 
-    protected BaseSql2oRepository(DataSource dataSource, SqlGenerator sqlGenerator) {
-        this.sql2o = new Sql2o(dataSource);
+    protected BaseSql2oRepository(Sql2o sql2o) {
+        this(sql2o, new SqlGenerator(new StringWrapper(":", "")));
+    }
+
+    protected BaseSql2oRepository(Sql2o sql2o, SqlGenerator sqlGenerator) {
+        this.sql2o = sql2o;
         this.sqlGenerator = sqlGenerator;
     }
 

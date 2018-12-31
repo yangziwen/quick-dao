@@ -25,6 +25,13 @@ public interface BaseRepository<E> {
 
     Integer count(Query query);
 
+    default Page<E> paginate(Query query, int pageNo, int pageSize) {
+        query.offset((pageNo - 1) * pageSize).limit(pageSize);
+        List<E> list = list(query);
+        Integer totalCount = count(query);
+        return new Page<E>(pageNo, pageSize, list, totalCount);
+    }
+
     void insert(E entity);
 
     default void batchInsert(List<E> entities) {

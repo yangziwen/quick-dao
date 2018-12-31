@@ -307,6 +307,9 @@ public class SqlGenerator {
         if (offset < 0) {
             offset = 0;
         }
+        if (offset == 0 && limit == Integer.MAX_VALUE) {
+            return;
+        }
         buff.append(" LIMIT ").append(limit).append(" OFFSET ").append(offset);
     }
 
