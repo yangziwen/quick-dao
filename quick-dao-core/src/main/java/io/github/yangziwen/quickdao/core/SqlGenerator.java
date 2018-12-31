@@ -159,6 +159,23 @@ public class SqlGenerator {
         return buff.toString();
     }
 
+    public <T> String generateGetByPrimaryKeySql(EntityMeta<T> entityMeta) {
+        StringBuilder buff = new StringBuilder(" SELECT ");
+        int i = 0;
+        for (String stmt : entityMeta.getSelectStmts(columnWrapper)) {
+            if (i++ > 0) {
+                buff.append(", ");
+            }
+            buff.append(stmt);
+        }
+        appendFrom(buff, entityMeta);
+        buff.append(" WHERE ")
+            .append(columnWrapper.wrap(entityMeta.getIdColumnName()))
+            .append(" = ")
+            .append(placeholderWrapper.wrap(entityMeta.getIdFieldName()));
+        return buff.toString();
+    }
+
     public <T> String generateListByQuerySql(EntityMeta<T> entityMeta, Query query) {
         StringBuilder buff = new StringBuilder();
         appendSelect(buff, entityMeta, query);

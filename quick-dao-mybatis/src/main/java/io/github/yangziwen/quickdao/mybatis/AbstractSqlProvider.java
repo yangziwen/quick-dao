@@ -7,13 +7,21 @@ import io.github.yangziwen.quickdao.core.Query;
 import io.github.yangziwen.quickdao.core.SqlGenerator;
 import io.github.yangziwen.quickdao.core.util.ReflectionUtil;
 import io.github.yangziwen.quickdao.core.util.StringWrapper;
+import lombok.Getter;
+import lombok.Setter;
 
-public abstract class AbstractSqlProvider<E> {
+public class AbstractSqlProvider<E> {
 
     private EntityMeta<E> entityMeta = EntityMeta
             .newInstance(ReflectionUtil.<E> getSuperClassGenericType(this.getClass(), 0));
 
+    @Getter
+    @Setter
     private SqlGenerator generator = new SqlGenerator(new StringWrapper("#{", "}"));
+
+    public String getById(Object id) {
+        return generator.generateGetByPrimaryKeySql(entityMeta);
+    }
 
     public String list(Query query) {
         query.toParamMap();
