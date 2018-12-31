@@ -1,26 +1,41 @@
 <?xml version="1.0"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+<project
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+    xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>io.github.yangziwen</groupId>
-    <artifactId>quick-dao</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-  </parent>
-  <groupId>io.github.yangziwen</groupId>
-  <artifactId>quick-dao-example</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <name>quick-dao-example</name>
-  <url>http://maven.apache.org</url>
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
-  <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.github.yangziwen</groupId>
+        <artifactId>quick-dao</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+    <artifactId>quick-dao-example</artifactId>
+    <name>quick-dao-example</name>
+    <url>http://maven.apache.org</url>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <mysql.version>5.1.22</mysql.version>
+        <tomcat.jdbc.version>9.0.12</tomcat.jdbc.version>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>io.github.yangziwen</groupId>
+            <artifactId>quick-dao-sql2o</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${mysql.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-jdbc</artifactId>
+            <version>${tomcat.jdbc.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 </project>

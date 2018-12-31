@@ -5,6 +5,8 @@ import lombok.Getter;
 
 public class StringWrapper {
 
+    private static final StringWrapper EMPTY_WRAPPER = new StringWrapper("", "");
+
     @Getter
     private String prefix;
 
@@ -22,6 +24,10 @@ public class StringWrapper {
 
     public String wrap(int index, Object value) {
         return prefix + value + RepoKeys.__ + index + suffix;
+    }
+
+    public static StringWrapper emptyWrapper() {
+        return EMPTY_WRAPPER;
     }
 
 }

@@ -6,6 +6,8 @@ import org.apache.commons.collections4.CollectionUtils;
 
 public interface BaseRepository<E> {
 
+    E getById(Object id);
+
     default E first(Query query) {
         List<E> list = list(query.limit(1));
         return CollectionUtils.isNotEmpty(list) ? list.get(0) : null;

@@ -26,6 +26,11 @@
                 <version>${quick.dao.version}</version>
             </dependency>
             <dependency>
+                <groupId>io.github.yangziwen</groupId>
+                <artifactId>quick-dao-sql2o</artifactId>
+                <version>${quick.dao.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>javax.persistence</groupId>
                 <artifactId>persistence-api</artifactId>
                 <version>${javax.persistence.version}</version>

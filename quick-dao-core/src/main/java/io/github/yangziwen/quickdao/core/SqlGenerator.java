@@ -24,6 +24,10 @@ public class SqlGenerator {
 
     private StringWrapper placeholderWrapper;
 
+    public SqlGenerator(StringWrapper placeholderWrapper) {
+        this(StringWrapper.emptyWrapper(), StringWrapper.emptyWrapper(), placeholderWrapper);
+    }
+
     public SqlGenerator(StringWrapper tableWrapper, StringWrapper columnWrapper, StringWrapper placeholderWrapper) {
         this.tableWrapper = tableWrapper;
         this.columnWrapper = columnWrapper;
@@ -293,7 +297,11 @@ public class SqlGenerator {
         List<String> keysToDelete = new ArrayList<String>();
         Set<Entry<String, Object>> entrySet = new HashSet<>(paramMap.entrySet());
         for (Entry<String, Object> entry : entrySet) {
-            if (!(entry.getValue() instanceof Collection)) {
+            Object value = entry.getValue();
+            if (value instanceof Object[]) {
+                value = Arrays.asList((Object[]) value);
+            }
+            if (!(value instanceof Collection)) {
                 continue;
             }
             Collection<?> coll = (Collection<?>) entry.getValue();

@@ -35,10 +35,15 @@ public abstract class BaseSql2oRepository<E> implements BaseRepository<E> {
     }
 
     @Override
+    public E getById(Object id) {
+        return first(new Query().where(new Criteria().and(entityMeta.getIdFieldName()).eq(id)));
+    }
+
+    @Override
     public List<E> list(Query query) {
         String sql = sqlGenerator.generateListByQuerySql(entityMeta, query);
         Map<String, Object> paramMap = query.toParamMap();
-        sqlGenerator.flattenCollectionValues(sql, paramMap);
+        sql = sqlGenerator.flattenCollectionValues(sql, paramMap);
         try (Connection conn = sql2o.open()) {
             org.sql2o.Query sql2oQuery = conn.createQuery(sql);
             for (Entry<String, Object> entry : paramMap.entrySet()) {
@@ -52,7 +57,7 @@ public abstract class BaseSql2oRepository<E> implements BaseRepository<E> {
     public Integer count(Query query) {
         String sql = sqlGenerator.generateCountByQuerySql(entityMeta, query);
         Map<String, Object> paramMap = query.toParamMap();
-        sqlGenerator.flattenCollectionValues(sql, paramMap);
+        sql = sqlGenerator.flattenCollectionValues(sql, paramMap);
         try (Connection conn = sql2o.open()) {
             org.sql2o.Query sql2oQuery = conn.createQuery(sql);
             for (Entry<String, Object> entry : paramMap.entrySet()) {
@@ -88,7 +93,7 @@ public abstract class BaseSql2oRepository<E> implements BaseRepository<E> {
             if (size != subList.size() || StringUtils.isBlank(sql)) {
                 sql = sqlGenerator.generateBatchInsertSql(entityMeta, subList.size());
             }
-            doBatchInsert(entities, sql);
+            doBatchInsert(subList, sql);
         }
     }
 
