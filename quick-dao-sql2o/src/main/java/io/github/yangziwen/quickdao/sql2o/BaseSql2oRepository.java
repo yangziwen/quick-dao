@@ -91,7 +91,7 @@ public abstract class BaseSql2oRepository<E> implements BaseRepository<E> {
         }
         int size = 0;
         String sql = "";
-        for (int i = 0; i < entities.size(); i+= batchSize) {
+        for (int i = 0; i < entities.size(); i += batchSize) {
             List<E> subList = entities.subList(i, Math.min(i + batchSize, entities.size()));
             if (size != subList.size() || StringUtils.isBlank(sql)) {
                 sql = sqlGenerator.generateBatchInsertSql(entityMeta, subList.size());

@@ -3,6 +3,8 @@ package io.github.yangziwen.quickdao.mybatis;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.executor.keygen.Jdbc3KeyGenerator;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.ResultMap;
 import org.apache.ibatis.mapping.ResultMapping;
@@ -41,6 +43,18 @@ public class MappedStatementAssistant {
         configuration.addMappedStatement(mappedStatement);
     }
 
+    private void newInsertMappedStatement(String id, SqlSource sqlSource, String keyProperty) {
+        List<ResultMap> resultMaps = new ArrayList<>();
+        resultMaps.add(new ResultMap.Builder(configuration, "defaultResultMap", int.class, new ArrayList<ResultMapping>(0)).build());
+        MappedStatement.Builder builder = new MappedStatement.Builder(configuration, id, sqlSource, SqlCommandType.INSERT)
+                .resultMaps(resultMaps);
+        if (StringUtils.isNotBlank(keyProperty)) {
+            builder.keyGenerator(Jdbc3KeyGenerator.INSTANCE).keyProperty(keyProperty);
+        }
+        MappedStatement mappedStatement = builder.build();
+        configuration.addMappedStatement(mappedStatement);
+    }
+
     private void newUpdateMappedStatement(String id, SqlSource sqlSource, SqlCommandType sqlCommandType) {
         List<ResultMap> resultMaps = new ArrayList<>();
         resultMaps.add(new ResultMap.Builder(configuration, "defaultResultMap", int.class, new ArrayList<ResultMapping>(0)).build());
@@ -60,13 +74,13 @@ public class MappedStatementAssistant {
         return id;
     }
 
-    public String getDynamicInsertStmt(String sql, Class<?> parameterType) {
+    public String getDynamicInsertStmt(String sql, Class<?> parameterType, String keyProperty) {
         String id = newMappedStatementId(sql + parameterType, SqlCommandType.INSERT);
         if (hasMappedStatement(id)) {
             return id;
         }
         SqlSource sqlSource = languageDriver.createSqlSource(configuration, sql, parameterType);
-        newUpdateMappedStatement(id, sqlSource, SqlCommandType.INSERT);
+        newInsertMappedStatement(id, sqlSource, keyProperty);
         return id;
     }
 

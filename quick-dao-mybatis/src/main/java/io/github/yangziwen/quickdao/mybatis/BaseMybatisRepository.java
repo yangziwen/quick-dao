@@ -1,6 +1,9 @@
 package io.github.yangziwen.quickdao.mybatis;
 
+import java.lang.reflect.Field;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -10,6 +13,7 @@ import io.github.yangziwen.quickdao.core.BaseRepository;
 import io.github.yangziwen.quickdao.core.Criteria;
 import io.github.yangziwen.quickdao.core.EntityMeta;
 import io.github.yangziwen.quickdao.core.Query;
+import io.github.yangziwen.quickdao.core.RepoKeys;
 import io.github.yangziwen.quickdao.core.SqlGenerator;
 import io.github.yangziwen.quickdao.core.util.ReflectionUtil;
 import io.github.yangziwen.quickdao.core.util.StringWrapper;
@@ -57,7 +61,7 @@ public abstract class BaseMybatisRepository<E> implements BaseRepository<E> {
     @Override
     public void insert(E entity) {
         String sql = sqlGenerator.generateInsertSql(entityMeta);
-        String stmt = assistant.getDynamicInsertStmt(sql, entity.getClass());
+        String stmt = assistant.getDynamicInsertStmt(sql, entity.getClass(), entityMeta.getIdColumnName());
         sqlSession.insert(stmt, entity);
     }
 
@@ -73,9 +77,22 @@ public abstract class BaseMybatisRepository<E> implements BaseRepository<E> {
             if (size != subList.size() || StringUtils.isBlank(sql)) {
                 sql = sqlGenerator.generateBatchInsertSql(entityMeta, subList.size());
             }
-            String stmt = assistant.getDynamicInsertStmt(sql, entities.getClass());
-            sqlSession.insert(stmt, subList);
+            String stmt = assistant.getDynamicInsertStmt(sql, entities.getClass(), null);
+            doBatchInsert(entities, stmt);
         }
+    }
+
+    private void doBatchInsert(List<E> entities, String stmt) {
+        Map<String, Object> paramMap = new LinkedHashMap<>();
+        List<Field> fields = entityMeta.getFieldsWithoutIdField();
+        for (int i = 0; i < entities.size(); i++) {
+            E entity = entities.get(i);
+            for (Field field : fields) {
+                Object value = ReflectionUtil.getFieldValue(entity, field);
+                paramMap.put(field.getName() + RepoKeys.__ + i, value);
+            }
+        }
+        sqlSession.insert(stmt, paramMap);
     }
 
     @Override

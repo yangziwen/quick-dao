@@ -48,6 +48,7 @@ public class AbstractSqlProvider<E> {
         return generator.generateInsertSql(entityMeta);
     }
 
+    @Deprecated
     public String batchInsert(@Param("list") List<E> entities) {
         return generator.generateBatchInsertSql(entityMeta, entities.size());
     }

@@ -29,10 +29,6 @@ public interface UserMybatisMapper {
     @Options(useGeneratedKeys = true, keyProperty = "id")
     void insert(User user);
 
-    @InsertProvider(type = SqlProvider.class, method="batchInsert")
-    @Options(useGeneratedKeys = true, keyProperty = "id")
-    void batchInsert(List<User> users);
-
     @UpdateProvider(type = SqlProvider.class, method="update")
     void update(User user);
 
