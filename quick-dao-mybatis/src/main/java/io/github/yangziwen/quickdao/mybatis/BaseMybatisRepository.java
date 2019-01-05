@@ -78,7 +78,7 @@ public abstract class BaseMybatisRepository<E> implements BaseRepository<E> {
                 sql = sqlGenerator.generateBatchInsertSql(entityMeta, subList.size());
             }
             String stmt = assistant.getDynamicInsertStmt(sql, entities.getClass(), null);
-            doBatchInsert(entities, stmt);
+            doBatchInsert(subList, stmt);
         }
     }
 

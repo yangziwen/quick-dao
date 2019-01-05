@@ -26,6 +26,7 @@ public abstract class BaseRepositoryTest {
     protected static DataSource createDataSource() {
         return new EmbeddedDatabaseBuilder()
                 .setType(EmbeddedDatabaseType.H2)
+                .setName("testdb;MODE=MySQL")
                 .addScript("classpath:schema.sql")
                 .build();
     }

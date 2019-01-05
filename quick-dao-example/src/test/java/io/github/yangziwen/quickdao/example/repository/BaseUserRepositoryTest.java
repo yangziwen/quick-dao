@@ -5,8 +5,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import javax.sql.DataSource;
-
 import org.dbunit.dataset.ITable;
 import org.junit.Assert;
 import org.junit.Before;
@@ -33,7 +31,7 @@ public abstract class BaseUserRepositoryTest extends BaseRepositoryTest {
 
     @Test
     public void testGetById() {
-        User user = createRepository(dataSource).getById(1L);
+        User user = createRepository().getById(1L);
         Assert.assertNotNull(user);
         Assert.assertSame(1L, user.getId());
     }
@@ -42,27 +40,27 @@ public abstract class BaseUserRepositoryTest extends BaseRepositoryTest {
     public void testFirst() throws Exception {
         ITable table = loadTable(tableName, DataSourceUtils.getConnection(dataSource));
         Long expectedId = getLongValue(table, 1, "id");
-        User user = createRepository(dataSource).first(new Query().orderBy("id", Direction.DESC));
+        User user = createRepository().first(new Query().orderBy("id", Direction.DESC));
         Assert.assertEquals(expectedId, user.getId());
     }
 
     @Test
     public void testList() throws Exception {
         ITable table = loadTable(tableName, DataSourceUtils.getConnection(dataSource));
-        List<User> userList = createRepository(dataSource).list();
+        List<User> userList = createRepository().list();
         Assert.assertEquals(table.getRowCount(), userList.size());
     }
 
     @Test
     public void testCount() throws Exception {
         ITable table = loadTable(tableName, DataSourceUtils.getConnection(dataSource));
-        Integer count = createRepository(dataSource).count();
+        Integer count = createRepository().count();
         Assert.assertEquals(table.getRowCount(), count.intValue());
     }
 
     @Test
     public void testPaginate() {
-        Page<User> userPage = createRepository(dataSource).paginate(new Query(), 2, 1);
+        Page<User> userPage = createRepository().paginate(new Query(), 2, 1);
         Assert.assertEquals(1, userPage.getList().size());
         Assert.assertEquals(2, userPage.getTotalCount().intValue());
     }
@@ -76,7 +74,7 @@ public abstract class BaseUserRepositoryTest extends BaseRepositoryTest {
                 .createTime(new Date())
                 .updateTime(new Date())
                 .build();
-        BaseRepository<User> repository = createRepository(dataSource);
+        BaseRepository<User> repository = createRepository();
         repository.insert(user);
         Assert.assertEquals(table.getRowCount() + 1, repository.count().intValue());
         Assert.assertNotNull(user.getId());
@@ -104,7 +102,7 @@ public abstract class BaseUserRepositoryTest extends BaseRepositoryTest {
                 .updateTime(new Date())
                 .build();
         List<User> userList = Arrays.asList(user3, user4, user5);
-        BaseRepository<User> repository = createRepository(dataSource);
+        BaseRepository<User> repository = createRepository();
         repository.batchInsert(userList, 2);
         Assert.assertEquals(table.getRowCount() + userList.size(), repository.count().intValue());
     }
@@ -121,7 +119,7 @@ public abstract class BaseUserRepositoryTest extends BaseRepositoryTest {
                 .createTime(new Date())
                 .updateTime(new Date())
                 .build();
-        BaseRepository<User> repository = createRepository(dataSource);
+        BaseRepository<User> repository = createRepository();
         repository.update(user);
         Assert.assertEquals(username, repository.getById(id).getUsername());
     }
@@ -134,7 +132,7 @@ public abstract class BaseUserRepositoryTest extends BaseRepositoryTest {
                 .id(id)
                 .username(username)
                 .build();
-        BaseRepository<User> repository = createRepository(dataSource);
+        BaseRepository<User> repository = createRepository();
         repository.updateSelective(user);
         Assert.assertEquals(username, repository.getById(id).getUsername());
     }
@@ -143,7 +141,7 @@ public abstract class BaseUserRepositoryTest extends BaseRepositoryTest {
     public void testDeleteById() throws Exception {
         ITable table = loadTable(tableName, DataSourceUtils.getConnection(dataSource));
         Long id = 1L;
-        BaseRepository<User> repository = createRepository(dataSource);
+        BaseRepository<User> repository = createRepository();
         repository.deleteById(id);
         List<User> userList = repository.list();
         Assert.assertEquals(table.getRowCount() - 1, userList.size());
@@ -155,13 +153,13 @@ public abstract class BaseUserRepositoryTest extends BaseRepositoryTest {
         ITable table = loadTable(tableName, DataSourceUtils.getConnection(dataSource));
         String username = "user1";
         Criteria criteria = new Criteria().and("username").eq(username);
-        BaseRepository<User> repository = createRepository(dataSource);
+        BaseRepository<User> repository = createRepository();
         repository.delete(criteria);
         List<User> userList = repository.list();
         Assert.assertEquals(table.getRowCount() - 1, userList.size());
         Assert.assertNotEquals(username, userList.get(0).getUsername());
     }
 
-    protected abstract BaseRepository<User> createRepository(DataSource dataSource);
+    protected abstract BaseRepository<User> createRepository();
 
 }
