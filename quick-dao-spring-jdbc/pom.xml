@@ -9,36 +9,20 @@
         <artifactId>quick-dao</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
-    <artifactId>quick-dao-example</artifactId>
-    <name>quick-dao-example</name>
+    <artifactId>quick-dao-spring-jdbc</artifactId>
+    <name>quick-dao-spring-jdbc</name>
     <url>http://maven.apache.org</url>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <mysql.version>5.1.22</mysql.version>
-        <tomcat.jdbc.version>9.0.12</tomcat.jdbc.version>
     </properties>
     <dependencies>
         <dependency>
             <groupId>io.github.yangziwen</groupId>
-            <artifactId>quick-dao-sql2o</artifactId>
+            <artifactId>quick-dao-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.github.yangziwen</groupId>
-            <artifactId>quick-dao-mybatis</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.github.yangziwen</groupId>
-            <artifactId>quick-dao-spring-jdbc</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>${mysql.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.tomcat</groupId>
-            <artifactId>tomcat-jdbc</artifactId>
-            <version>${tomcat.jdbc.version}</version>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

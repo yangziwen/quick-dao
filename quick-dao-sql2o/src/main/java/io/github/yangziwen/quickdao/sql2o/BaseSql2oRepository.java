@@ -80,7 +80,7 @@ public abstract class BaseSql2oRepository<E> implements BaseRepository<E> {
                 sql2oQuery.addParameter(field.getName(), value);
             }
             Object id = sql2oQuery.executeUpdate().getKey();
-            fillIdValue(entity, id);
+            entityMeta.fillIdValue(entity, id);
         }
     }
 
@@ -166,22 +166,6 @@ public abstract class BaseSql2oRepository<E> implements BaseRepository<E> {
                 sql2oQuery.addParameter(entry.getKey(), entry.getValue());
             }
             sql2oQuery.executeUpdate();
-        }
-    }
-
-    private void fillIdValue(E entity, Object id) {
-        Field idField = entityMeta.getIdField();
-        if (idField == null) {
-            return;
-        }
-        if (idField.getType() == String.class) {
-            ReflectionUtil.setFieldValue(entity, idField, id.toString());
-        }
-        else if (idField.getType() == Integer.class) {
-            ReflectionUtil.setFieldValue(entity, idField, Integer.valueOf(id.toString()));
-        }
-        else if (idField.getType() == Long.class) {
-            ReflectionUtil.setFieldValue(entity, idField, Long.valueOf(id.toString()));
         }
     }
 

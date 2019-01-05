@@ -1,6 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.yangziwen</groupId>
     <artifactId>quick-dao</artifactId>
@@ -14,6 +13,7 @@
         <javax.persistence.version>1.0.2</javax.persistence.version>
         <mybatis.version>3.4.6</mybatis.version>
         <sql2o.version>1.5.4</sql2o.version>
+        <spring.jdbc.version>4.3.19.RELEASE</spring.jdbc.version>
         <commons.lang3.version>3.3.2</commons.lang3.version>
         <commons.collections4.version>4.0</commons.collections4.version>
         <lombok.version>1.18.2</lombok.version>
@@ -27,11 +27,6 @@
                 <version>${quick.dao.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.mybatis</groupId>
-                <artifactId>mybatis</artifactId>
-                <version>${mybatis.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>io.github.yangziwen</groupId>
                 <artifactId>quick-dao-mybatis</artifactId>
                 <version>${quick.dao.version}</version>
@@ -39,6 +34,11 @@
             <dependency>
                 <groupId>io.github.yangziwen</groupId>
                 <artifactId>quick-dao-sql2o</artifactId>
+                <version>${quick.dao.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.yangziwen</groupId>
+                <artifactId>quick-dao-spring-jdbc</artifactId>
                 <version>${quick.dao.version}</version>
             </dependency>
             <dependency>
@@ -50,6 +50,16 @@
                 <groupId>org.sql2o</groupId>
                 <artifactId>sql2o</artifactId>
                 <version>${sql2o.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mybatis</groupId>
+                <artifactId>mybatis</artifactId>
+                <version>${mybatis.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-jdbc</artifactId>
+                <version>${spring.jdbc.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -95,5 +105,6 @@
         <module>quick-dao-sql2o</module>
         <module>quick-dao-example</module>
         <module>quick-dao-mybatis</module>
-    </modules>
+    <module>quick-dao-spring-jdbc</module>
+  </modules>
 </project>

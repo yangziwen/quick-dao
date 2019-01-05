@@ -17,6 +17,7 @@ import javax.persistence.Table;
 
 import org.apache.commons.lang3.StringUtils;
 
+import io.github.yangziwen.quickdao.core.util.ReflectionUtil;
 import io.github.yangziwen.quickdao.core.util.StringWrapper;
 import lombok.Getter;
 
@@ -151,6 +152,22 @@ public class EntityMeta<E> {
 
     public static <T> EntityMeta<T> newInstance(Class<T> clazz) {
         return new EntityMeta<T>(clazz);
+    }
+
+    public void fillIdValue(E entity, Object id) {
+        Field idField = getIdField();
+        if (idField == null) {
+            return;
+        }
+        if (idField.getType() == String.class) {
+            ReflectionUtil.setFieldValue(entity, idField, id.toString());
+        }
+        else if (idField.getType() == Integer.class) {
+            ReflectionUtil.setFieldValue(entity, idField, Integer.valueOf(id.toString()));
+        }
+        else if (idField.getType() == Long.class) {
+            ReflectionUtil.setFieldValue(entity, idField, Long.valueOf(id.toString()));
+        }
     }
 
 }
