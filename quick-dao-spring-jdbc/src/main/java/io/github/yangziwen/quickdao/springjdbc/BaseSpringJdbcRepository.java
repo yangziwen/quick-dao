@@ -119,13 +119,14 @@ public abstract class BaseSpringJdbcRepository<E> implements BaseRepository<E> {
     }
 
     protected RowMapper<E> createRowMapper(Class<E> entityClass) {
-        return new BeanPropertyRowMapper<E>() {
+        BeanPropertyRowMapper<E> rowMapper = new BeanPropertyRowMapper<E>() {
             @Override
             protected void initBeanWrapper(BeanWrapper bw) {
                 super.initBeanWrapper(bw);
-                setMappedClass(entityClass);
             }
         };
+        rowMapper.setMappedClass(entityClass);
+        return rowMapper;
     }
 
 }
