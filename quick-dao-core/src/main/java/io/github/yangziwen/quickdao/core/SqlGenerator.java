@@ -15,13 +15,17 @@ import org.apache.commons.lang3.StringUtils;
 
 import io.github.yangziwen.quickdao.core.util.ReflectionUtil;
 import io.github.yangziwen.quickdao.core.util.StringWrapper;
+import lombok.Getter;
 
 public class SqlGenerator {
 
+    @Getter
     private StringWrapper tableWrapper;
 
+    @Getter
     private StringWrapper columnWrapper;
 
+    @Getter
     private StringWrapper placeholderWrapper;
 
     public SqlGenerator(StringWrapper placeholderWrapper) {
@@ -310,8 +314,8 @@ public class SqlGenerator {
         if (offset == 0 && limit == Integer.MAX_VALUE) {
             return;
         }
-        buff.append(" LIMIT ").append(placeholderWrapper.wrap(0 + RepoKeys.LIMIT))
-            .append(" OFFSET ").append(placeholderWrapper.wrap(0 + RepoKeys.OFFSET));
+        buff.append(" LIMIT ").append(placeholderWrapper.wrap(0 + RepoKeys.OFFSET))
+            .append(", ").append(placeholderWrapper.wrap(0 + RepoKeys.LIMIT));
     }
 
     public String flattenCollectionValues(String sql, Map<String, Object> paramMap) {

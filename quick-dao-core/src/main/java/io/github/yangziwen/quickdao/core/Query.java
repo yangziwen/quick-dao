@@ -87,8 +87,10 @@ public class Query extends LinkedHashMap<String, Object> {
         if (CollectionUtils.isNotEmpty(groupByList)) {
             havingCriteria.fillParamMap(this);
         }
-        put(0 + RepoKeys.OFFSET, offset);
-        put(0 + RepoKeys.LIMIT, limit);
+        if (offset != 0 || limit != Integer.MAX_VALUE) {
+            put(0 + RepoKeys.OFFSET, offset);
+            put(0 + RepoKeys.LIMIT, limit);
+        }
         return this;
     }
 

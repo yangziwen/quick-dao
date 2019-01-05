@@ -35,6 +35,10 @@ public abstract class BaseRepositoryTest {
         ScriptUtils.executeSqlScript(connection, resource);
     }
 
+    protected void deleteTable(String tableName, Connection connection) throws Exception {
+        connection.prepareStatement("delete from " + tableName).execute();
+    }
+
     protected void truncateTable(String tableName, Connection connection) throws Exception {
         connection.prepareStatement("truncate table " + tableName).execute();
     }

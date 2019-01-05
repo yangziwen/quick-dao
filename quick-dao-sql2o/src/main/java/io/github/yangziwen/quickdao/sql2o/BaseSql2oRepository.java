@@ -47,6 +47,7 @@ public abstract class BaseSql2oRepository<E> implements BaseRepository<E> {
         String sql = sqlGenerator.generateListByQuerySql(entityMeta, query);
         Map<String, Object> paramMap = query.toParamMap();
         sql = sqlGenerator.flattenCollectionValues(sql, paramMap);
+        sql = replaceLimitPlaceholder(sql, paramMap);
         try (Connection conn = sql2o.open()) {
             org.sql2o.Query sql2oQuery = conn.createQuery(sql);
             for (Entry<String, Object> entry : paramMap.entrySet()) {
@@ -60,7 +61,10 @@ public abstract class BaseSql2oRepository<E> implements BaseRepository<E> {
     public Integer count(Query query) {
         String sql = sqlGenerator.generateCountByQuerySql(entityMeta, query);
         Map<String, Object> paramMap = query.toParamMap();
+        paramMap.remove(getOffsetKey());
+        paramMap.remove(getLimitKey());
         sql = sqlGenerator.flattenCollectionValues(sql, paramMap);
+        sql = replaceLimitPlaceholder(sql, paramMap);
         try (Connection conn = sql2o.open()) {
             org.sql2o.Query sql2oQuery = conn.createQuery(sql);
             for (Entry<String, Object> entry : paramMap.entrySet()) {
@@ -167,6 +171,28 @@ public abstract class BaseSql2oRepository<E> implements BaseRepository<E> {
             }
             sql2oQuery.executeUpdate();
         }
+    }
+
+    private String replaceLimitPlaceholder(String sql, Map<String, Object> paramMap) {
+        String offsetKey = getOffsetKey();
+        String offsetPlaceholder = sqlGenerator.getPlaceholderWrapper().wrap(offsetKey);
+        String limitKey = getLimitKey();
+        String limitPlaceholder = sqlGenerator.getPlaceholderWrapper().wrap(limitKey);
+        if (sql.indexOf(offsetPlaceholder) > 0) {
+            sql = sql.replace(offsetPlaceholder, String.valueOf(paramMap.remove(offsetKey)));
+        }
+        if (sql.indexOf(limitPlaceholder) > 0) {
+            sql = sql.replace(limitPlaceholder, String.valueOf(paramMap.remove(limitKey)));
+        }
+        return sql;
+    }
+
+    private String getOffsetKey() {
+        return 0 + RepoKeys.OFFSET;
+    }
+
+    private String getLimitKey() {
+        return 0 + RepoKeys.LIMIT;
     }
 
 }
