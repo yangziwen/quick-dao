@@ -47,7 +47,6 @@ public abstract class BaseSql2oRepository<E> implements BaseRepository<E> {
         String sql = sqlGenerator.generateListByQuerySql(entityMeta, query);
         Map<String, Object> paramMap = query.toParamMap();
         sql = sqlGenerator.flattenCollectionValues(sql, paramMap);
-        sql = replaceLimitPlaceholder(sql, paramMap);
         try (Connection conn = sql2o.open()) {
             org.sql2o.Query sql2oQuery = conn.createQuery(sql);
             for (Entry<String, Object> entry : paramMap.entrySet()) {
@@ -67,7 +66,6 @@ public abstract class BaseSql2oRepository<E> implements BaseRepository<E> {
         paramMap.remove(RepoKeys.OFFSET);
         paramMap.remove(RepoKeys.LIMIT);
         sql = sqlGenerator.flattenCollectionValues(sql, paramMap);
-        sql = replaceLimitPlaceholder(sql, paramMap);
         try (Connection conn = sql2o.open()) {
             org.sql2o.Query sql2oQuery = conn.createQuery(sql);
             for (Entry<String, Object> entry : paramMap.entrySet()) {
@@ -174,18 +172,6 @@ public abstract class BaseSql2oRepository<E> implements BaseRepository<E> {
             }
             sql2oQuery.executeUpdate();
         }
-    }
-
-    private String replaceLimitPlaceholder(String sql, Map<String, Object> paramMap) {
-        String offsetPlaceholder = sqlGenerator.getPlaceholderWrapper().wrap(RepoKeys.OFFSET);
-        String limitPlaceholder = sqlGenerator.getPlaceholderWrapper().wrap(RepoKeys.LIMIT);
-        if (sql.indexOf(offsetPlaceholder) > 0) {
-            sql = sql.replace(offsetPlaceholder, String.valueOf(paramMap.remove(RepoKeys.OFFSET)));
-        }
-        if (sql.indexOf(limitPlaceholder) > 0) {
-            sql = sql.replace(limitPlaceholder, String.valueOf(paramMap.remove(RepoKeys.LIMIT)));
-        }
-        return sql;
     }
 
 }
