@@ -46,16 +46,20 @@ public abstract class BaseMybatisRepository<E> implements BaseRepository<E> {
 
     @Override
     public List<E> list(Query query) {
+        Map<String, Object> paramMap = query.toParamMap();
         String sql = sqlGenerator.generateListByQuerySql(entityMeta, query);
+        sql = sqlGenerator.flattenCollectionValues(sql, paramMap);
         String stmt = assistant.getDynamicSelectStmt(sql, query.getClass(), entityMeta.getClassType());
-        return sqlSession.selectList(stmt, query.toParamMap());
+        return sqlSession.selectList(stmt, paramMap);
     }
 
     @Override
     public Integer count(Query query) {
+        Map<String, Object> paramMap = query.toParamMap();
         String sql = sqlGenerator.generateCountByQuerySql(entityMeta, query);
+        sql = sqlGenerator.flattenCollectionValues(sql, paramMap);
         String stmt = assistant.getDynamicSelectStmt(sql, query.getClass(), Integer.class);
-        return sqlSession.selectOne(stmt, query.toParamMap());
+        return sqlSession.selectOne(stmt, paramMap);
     }
 
     @Override
@@ -118,9 +122,11 @@ public abstract class BaseMybatisRepository<E> implements BaseRepository<E> {
 
     @Override
     public void delete(Criteria criteria) {
+        Map<String, Object> paramMap = criteria.toParamMap();
         String sql = sqlGenerator.generateDeleteByCriteriaSql(entityMeta, criteria);
+        sql = sqlGenerator.flattenCollectionValues(sql, paramMap);
         String stmt = assistant.getDynamicDeleteStmt(sql, criteria.getClass());
-        sqlSession.delete(stmt, criteria.toParamMap());
+        sqlSession.delete(stmt, paramMap);
     }
 
 }

@@ -54,7 +54,7 @@ public class Query extends LinkedHashMap<String, Object> {
     }
 
     public Query having(Criteria criteria) {
-        criteria.setKey(0 + RepoKeys.HAVING);
+        criteria.setKey(RepoKeys.HAVING);
         this.havingCriteria = criteria;
         return this;
     }
@@ -88,8 +88,8 @@ public class Query extends LinkedHashMap<String, Object> {
             havingCriteria.fillParamMap(this);
         }
         if (offset != 0 || limit != Integer.MAX_VALUE) {
-            put(0 + RepoKeys.OFFSET, offset);
-            put(0 + RepoKeys.LIMIT, limit);
+            put(RepoKeys.OFFSET, offset);
+            put(RepoKeys.LIMIT, limit);
         }
         return this;
     }

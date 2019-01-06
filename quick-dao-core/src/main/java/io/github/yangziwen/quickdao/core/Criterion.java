@@ -116,15 +116,13 @@ public class Criterion {
         return this.criteria;
     }
 
-    public Criteria isNull(Object value) {
+    public Criteria isNull() {
         this.operator = Operator.is_null;
-        this.value = value;
         return this.criteria;
     }
 
-    public Criteria isNotNull(Object value) {
+    public Criteria isNotNull() {
         this.operator = Operator.is_not_null;
-        this.value = value;
         return this.criteria;
     }
 

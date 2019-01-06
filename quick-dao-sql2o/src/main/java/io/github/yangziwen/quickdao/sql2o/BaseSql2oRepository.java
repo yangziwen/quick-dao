@@ -51,6 +51,9 @@ public abstract class BaseSql2oRepository<E> implements BaseRepository<E> {
         try (Connection conn = sql2o.open()) {
             org.sql2o.Query sql2oQuery = conn.createQuery(sql);
             for (Entry<String, Object> entry : paramMap.entrySet()) {
+                if (entry.getValue() == null) {
+                    continue;
+                }
                 sql2oQuery.addParameter(entry.getKey(), entry.getValue());
             }
             return sql2oQuery.executeAndFetch(entityMeta.getClassType());
@@ -61,8 +64,8 @@ public abstract class BaseSql2oRepository<E> implements BaseRepository<E> {
     public Integer count(Query query) {
         String sql = sqlGenerator.generateCountByQuerySql(entityMeta, query);
         Map<String, Object> paramMap = query.toParamMap();
-        paramMap.remove(getOffsetKey());
-        paramMap.remove(getLimitKey());
+        paramMap.remove(RepoKeys.OFFSET);
+        paramMap.remove(RepoKeys.LIMIT);
         sql = sqlGenerator.flattenCollectionValues(sql, paramMap);
         sql = replaceLimitPlaceholder(sql, paramMap);
         try (Connection conn = sql2o.open()) {
@@ -174,25 +177,15 @@ public abstract class BaseSql2oRepository<E> implements BaseRepository<E> {
     }
 
     private String replaceLimitPlaceholder(String sql, Map<String, Object> paramMap) {
-        String offsetKey = getOffsetKey();
-        String offsetPlaceholder = sqlGenerator.getPlaceholderWrapper().wrap(offsetKey);
-        String limitKey = getLimitKey();
-        String limitPlaceholder = sqlGenerator.getPlaceholderWrapper().wrap(limitKey);
+        String offsetPlaceholder = sqlGenerator.getPlaceholderWrapper().wrap(RepoKeys.OFFSET);
+        String limitPlaceholder = sqlGenerator.getPlaceholderWrapper().wrap(RepoKeys.LIMIT);
         if (sql.indexOf(offsetPlaceholder) > 0) {
-            sql = sql.replace(offsetPlaceholder, String.valueOf(paramMap.remove(offsetKey)));
+            sql = sql.replace(offsetPlaceholder, String.valueOf(paramMap.remove(RepoKeys.OFFSET)));
         }
         if (sql.indexOf(limitPlaceholder) > 0) {
-            sql = sql.replace(limitPlaceholder, String.valueOf(paramMap.remove(limitKey)));
+            sql = sql.replace(limitPlaceholder, String.valueOf(paramMap.remove(RepoKeys.LIMIT)));
         }
         return sql;
-    }
-
-    private String getOffsetKey() {
-        return 0 + RepoKeys.OFFSET;
-    }
-
-    private String getLimitKey() {
-        return 0 + RepoKeys.LIMIT;
     }
 
 }

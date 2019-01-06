@@ -52,6 +52,94 @@ public abstract class BaseUserRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
+    public void testListWithQuery() {
+        Criteria criteria = new Criteria()
+                .and("id").in(Arrays.asList(2L, 3L))
+                .and("username").endWith("2")
+                .and("email").isNotNull()
+                .and("createTime").lt(new Date());
+        Query query = new Query().where(criteria);
+        List<User> userList = createRepository().list(query);
+        Assert.assertEquals(1, userList.size());
+    }
+
+    @Test
+    public void testListWithOrQuery() {
+        Criteria criteria = new Criteria()
+                .and("id").in(Arrays.asList(2L, 3L))
+                .and("username").endWith("2")
+                .and("email").isNotNull()
+                .and("createTime").lt(new Date())
+                .or()
+                    .and("id").eq(1L)
+                    .and("username").endWith("1")
+                .end();
+        Query query = new Query().where(criteria).orderBy("id", Direction.DESC).limit(2);
+        List<User> userList = createRepository().list(query);
+        Assert.assertEquals(2, userList.size());
+    }
+
+    @Test
+    public void testListContain() throws Exception {
+        ITable table = loadTable(tableName, DataSourceUtils.getConnection(dataSource));
+        Query query = new Query().where(new Criteria().and("email").contain("@"));
+        List<User> userList = createRepository().list(query);
+        Assert.assertEquals(table.getRowCount(), userList.size());
+    }
+
+    @Test
+    public void testListNotContain() {
+        Query query = new Query().where(new Criteria().and("email").notContain("@"));
+        List<User> userList = createRepository().list(query);
+        Assert.assertEquals(0, userList.size());
+    }
+
+    @Test
+    public void testListIsNull() {
+        Query query = new Query().where(new Criteria().and("username").isNull());
+        List<User> userList = createRepository().list(query);
+        Assert.assertEquals(0, userList.size());
+    }
+
+    @Test
+    public void testListIsNotNull() throws Exception {
+        ITable table = loadTable(tableName, DataSourceUtils.getConnection(dataSource));
+        Query query = new Query().where(new Criteria().and("username").isNotNull());
+        List<User> userList = createRepository().list(query);
+        Assert.assertEquals(table.getRowCount(), userList.size());
+    }
+
+    @Test
+    public void testListWithGroup() throws Exception {
+        Criteria criteria = new Criteria()
+                .and("id").in(Arrays.asList(2L, 3L))
+                .and("username").endWith("2")
+                .and("email").isNotNull()
+                .and("createTime").lt(new Date())
+                .or()
+                    .and("id").eq(1L)
+                    .and("username").endWith("1")
+                .end();
+        Criteria havingCriteria = new Criteria()
+                .and("createTime").lt(new Date());
+        Query query = new Query()
+                .select("create_time as createTime")
+                .where(criteria)
+                .groupBy("createTime")
+                .having(havingCriteria)
+                .limit(2);
+        List<User> userList = createRepository().list(query);
+        Assert.assertEquals(1, userList.size());
+    }
+
+    @Test
+    public void testListWithLimit() {
+        Query query = new Query().where(new Criteria().and("id").ge(1)).offset(1).limit(100);
+        List<User> userList = createRepository().list(query);
+        Assert.assertEquals(1, userList.size());
+    }
+
+    @Test
     public void testCount() throws Exception {
         ITable table = loadTable(tableName, DataSourceUtils.getConnection(dataSource));
         Integer count = createRepository().count();

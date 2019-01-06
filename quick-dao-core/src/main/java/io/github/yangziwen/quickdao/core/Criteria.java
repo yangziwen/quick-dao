@@ -70,7 +70,7 @@ public class Criteria {
 
     public Criteria or() {
         String prefix = StringUtils.isNotBlank(key) ? key + RepoKeys.__ : "";
-        return ensureNestedCriteria(prefix + sequence.getAndIncrement() + RepoKeys.OR);
+        return ensureNestedCriteria(prefix + getSequenceKey() + RepoKeys.OR);
     }
 
     public Criteria end() {
@@ -109,6 +109,19 @@ public class Criteria {
                 criteria.fillParamMap(paramMap);
             }
         }
+    }
+
+    public String getSequenceKey() {
+        int seq = sequence.getAndIncrement();
+        StringBuilder buff = new StringBuilder();
+        int begin = "a".charAt(0);
+        int end = "z".charAt(0);
+        int length = end + 1 - begin;
+        buff.append((char) (seq % length + begin));
+        while ((seq = seq / length) > 0) {
+            buff.append((char) (seq % length + begin));
+        }
+        return buff.toString();
     }
 
 }

@@ -314,8 +314,8 @@ public class SqlGenerator {
         if (offset == 0 && limit == Integer.MAX_VALUE) {
             return;
         }
-        buff.append(" LIMIT ").append(placeholderWrapper.wrap(0 + RepoKeys.OFFSET))
-            .append(", ").append(placeholderWrapper.wrap(0 + RepoKeys.LIMIT));
+        buff.append(" LIMIT ").append(placeholderWrapper.wrap(RepoKeys.OFFSET))
+            .append(", ").append(placeholderWrapper.wrap(RepoKeys.LIMIT));
     }
 
     public String flattenCollectionValues(String sql, Map<String, Object> paramMap) {
