@@ -5,14 +5,13 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.yangziwen</groupId>
     <artifactId>quick-dao</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.3</version>
     <packaging>pom</packaging>
     <name>quick-dao</name>
     <url>http://maven.apache.org</url>
     <description>a data access tool for rapid development</description>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <quick.dao.version>0.0.2</quick.dao.version>
         <javax.persistence.version>1.0.2</javax.persistence.version>
         <mybatis.version>3.4.6</mybatis.version>
         <sql2o.version>1.5.4</sql2o.version>
@@ -157,22 +156,22 @@
             <dependency>
                 <groupId>io.github.yangziwen</groupId>
                 <artifactId>quick-dao-core</artifactId>
-                <version>${quick.dao.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.yangziwen</groupId>
                 <artifactId>quick-dao-mybatis</artifactId>
-                <version>${quick.dao.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.yangziwen</groupId>
                 <artifactId>quick-dao-sql2o</artifactId>
-                <version>${quick.dao.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.yangziwen</groupId>
                 <artifactId>quick-dao-spring-jdbc</artifactId>
-                <version>${quick.dao.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>javax.persistence</groupId>
