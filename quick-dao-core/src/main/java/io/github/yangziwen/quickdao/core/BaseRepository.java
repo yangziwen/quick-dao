@@ -13,11 +13,19 @@ public interface BaseRepository<E> {
         return CollectionUtils.isNotEmpty(list) ? list.get(0) : null;
     }
 
+    default E first(Criteria criteria) {
+        return first(new Query().where(criteria));
+    }
+
     default List<E> list() {
         return list(new Query());
     }
 
     List<E> list(Query query);
+
+    default List<E> list(Criteria criteria) {
+        return list(new Query().where(criteria));
+    }
 
     default Integer count() {
         return count(new Query());
@@ -25,11 +33,19 @@ public interface BaseRepository<E> {
 
     Integer count(Query query);
 
+    default Integer count(Criteria criteria) {
+        return count(new Query().where(criteria));
+    }
+
     default Page<E> paginate(Query query, int pageNo, int pageSize) {
         query.offset((pageNo - 1) * pageSize).limit(pageSize);
         List<E> list = list(query);
         Integer totalCount = count(query);
         return new Page<E>(pageNo, pageSize, list, totalCount);
+    }
+
+    default Page<E> paginate(Criteria criteria, int pageNo, int pageSize) {
+        return paginate(new Query().where(criteria), pageNo, pageSize);
     }
 
     void insert(E entity);

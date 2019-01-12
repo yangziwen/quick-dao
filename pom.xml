@@ -5,13 +5,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.yangziwen</groupId>
     <artifactId>quick-dao</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
     <packaging>pom</packaging>
     <name>quick-dao</name>
     <url>http://maven.apache.org</url>
+    <description>a data access tool for rapid development</description>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <quick.dao.version>0.0.1-SNAPSHOT</quick.dao.version>
+        <quick.dao.version>0.0.2</quick.dao.version>
         <javax.persistence.version>1.0.2</javax.persistence.version>
         <mybatis.version>3.4.6</mybatis.version>
         <sql2o.version>1.5.4</sql2o.version>
@@ -144,6 +145,13 @@
         <connection>https://github.com/yangziwen/quick-dao</connection>
         <developerConnection>https://github.com/yangziwen/quick-dao</developerConnection>
     </scm>
+    <developers>
+        <developer>
+            <name>yangziwen</name>
+            <email>438226625@qq.com</email>
+            <url>https://yangziwen.github.io</url>
+        </developer>
+    </developers>
     <dependencyManagement>
         <dependencies>
             <dependency>
