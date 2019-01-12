@@ -78,7 +78,7 @@ public class Criteria {
     }
 
     public boolean isEmpty() {
-        return CollectionUtils.isEmpty(criterionList);
+        return CollectionUtils.isEmpty(criterionList) && MapUtils.isEmpty(nestedCriteriaMap);
     }
 
     private Criteria ensureNestedCriteria(String criteriaKey) {

@@ -240,21 +240,25 @@ public class SqlGenerator {
     }
 
     private <T> void appendConditions(StringBuilder buff, EntityMeta<T> entityMeta, Criteria criteria) {
-        buff.append(" ( ");
         int i = 0;
-        for (Criterion criterion : criteria.getCriterionList()) {
-            if (i++ > 0) {
-                buff.append(" AND ");
+        if (CollectionUtils.isNotEmpty(criteria.getCriterionList())) {
+            buff.append(" ( ");
+            for (Criterion criterion : criteria.getCriterionList()) {
+                if (i++ > 0) {
+                    buff.append(" AND ");
+                }
+                if (criterion.getValue() instanceof Object[]) {
+                    criterion.setValue(Arrays.asList((Object[]) criterion.getValue()));
+                }
+                buff.append(criterion.buildCondition(entityMeta, columnWrapper, placeholderWrapper));
             }
-            if (criterion.getValue() instanceof Object[]) {
-                criterion.setValue(Arrays.asList((Object[]) criterion.getValue()));
-            }
-            buff.append(criterion.buildCondition(entityMeta, columnWrapper, placeholderWrapper));
+            buff.append(") ");
         }
-        buff.append(") ");
         for (Entry<String, Criteria> entry : criteria.getNestedCriteriaMap().entrySet()) {
             if (entry.getKey().endsWith(RepoKeys.OR)) {
-                buff.append(" OR ");
+                if (i++ > 0) {
+                    buff.append(" OR ");
+                }
                 appendConditions(buff, entityMeta, entry.getValue());
             }
         }
