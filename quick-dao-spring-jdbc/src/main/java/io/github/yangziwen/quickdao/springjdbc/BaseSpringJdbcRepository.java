@@ -45,6 +45,7 @@ public abstract class BaseSpringJdbcRepository<E> implements BaseRepository<E> {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
         this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(entityMeta.getTable())
+                .usingColumns(entityMeta.getColumnNamesWithoutIdColumn().toArray(new String[] {}))
                 .usingGeneratedKeyColumns(entityMeta.getIdColumnName());
         this.rowMapper = createRowMapper(entityMeta.getClassType());
     }

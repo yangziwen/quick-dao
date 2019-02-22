@@ -74,6 +74,14 @@ public class EntityMeta<E> {
         return columnNames;
     }
 
+    public List<String> getColumnNames() {
+        return new ArrayList<>(fieldColumnMapping.values());
+    }
+
+    public List<String> getColumnNamesWithoutIdColumn() {
+        return getColumnNamesByFields(getFieldsWithoutIdField());
+    }
+
     public String getColumnNameByField(Field field) {
         return getColumnNameByFieldName(field.getName());
     }
