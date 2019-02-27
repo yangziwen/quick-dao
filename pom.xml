@@ -299,6 +299,9 @@
                 <version>4.3.0</version>
                 <configuration>
                     <repoToken>uCEZUxxOfee9MNwzhkhVeLU6gQVq8dBMK</repoToken>
+                    <jacocoReports>
+                        <jacocoReport>quick-dao-example/target/site/jacoco-diff/jacoco.xml</jacocoReport>
+                    </jacocoReports>
                 </configuration>
             </plugin>
         </plugins>
