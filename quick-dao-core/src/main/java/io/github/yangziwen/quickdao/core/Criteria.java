@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -122,6 +123,31 @@ public class Criteria {
             buff.append((char) (seq % length + begin));
         }
         return buff.toString();
+    }
+
+    public static Criteria fromParamMap(Map<String, Object> paramMap) {
+        Criteria criteria = new Criteria();
+        String orSep = RepoKeys.OR + RepoKeys.__;
+        for (Entry<String, Object> entry : paramMap.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            Criteria currentCriteria = criteria;
+            if (key.contains(orSep)) {
+                int fromIndex = 0;
+                int pos = -1;
+                while ((pos = key.indexOf(orSep, fromIndex)) >= 0) {
+                    String criteriaKey = key.substring(0, pos + RepoKeys.OR.length());
+                    currentCriteria = currentCriteria.ensureNestedCriteria(criteriaKey);
+                    fromIndex = pos + orSep.length();
+                }
+                key = key.substring(fromIndex);
+            }
+            String[] arr = key.split(RepoKeys.__);
+            String name = arr[0];
+            Operator operator = arr.length >= 2 ? Operator.valueOf(arr[1]) : Operator.eq;
+            new Criterion(name, currentCriteria).op(operator, value);
+        }
+        return criteria;
     }
 
 }

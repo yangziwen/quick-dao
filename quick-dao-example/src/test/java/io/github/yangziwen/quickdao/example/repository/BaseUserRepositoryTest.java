@@ -64,6 +64,18 @@ public abstract class BaseUserRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
+    public void testListWithQueryFromQueryMap() {
+        Criteria criteria = new Criteria()
+                .and("id").in(Arrays.asList(2L, 3L))
+                .and("username").endWith("2")
+                .and("email").isNotNull()
+                .and("createTime").lt(new Date());
+        criteria = Criteria.fromParamMap(criteria.toParamMap());
+        List<User> userList = createRepository().list(criteria);
+        Assert.assertEquals(1, userList.size());
+    }
+
+    @Test
     public void testListWithOrQuery() {
         Criteria criteria = new Criteria()
                 .and("id").in(Arrays.asList(2L, 3L))
@@ -74,6 +86,23 @@ public abstract class BaseUserRepositoryTest extends BaseRepositoryTest {
                     .and("id").eq(1L)
                     .and("username").endWith("1")
                 .end();
+        Query query = new Query().where(criteria).orderBy("id", Direction.DESC).limit(2);
+        List<User> userList = createRepository().list(query);
+        Assert.assertEquals(2, userList.size());
+    }
+
+    @Test
+    public void testListWithOrQueryFromQueryMap() {
+        Criteria criteria = new Criteria()
+                .and("id").in(Arrays.asList(2L, 3L))
+                .and("username").endWith("2")
+                .and("email").isNotNull()
+                .and("createTime").lt(new Date())
+                .or()
+                    .and("id").eq(1L)
+                    .and("username").endWith("1")
+                .end();
+        criteria = Criteria.fromParamMap(criteria.toParamMap());
         Query query = new Query().where(criteria).orderBy("id", Direction.DESC).limit(2);
         List<User> userList = createRepository().list(query);
         Assert.assertEquals(2, userList.size());

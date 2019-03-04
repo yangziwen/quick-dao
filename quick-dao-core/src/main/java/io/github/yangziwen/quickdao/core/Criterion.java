@@ -32,98 +32,74 @@ public class Criterion {
         }
     }
 
-    public Criteria eq(Object value) {
-        this.operator = Operator.eq;
+    Criteria op(Operator operator, Object value) {
+        this.operator = operator;
         this.value = value;
         return this.criteria;
+    }
+
+    public Criteria eq(Object value) {
+        return op(Operator.eq, value);
     }
 
     public Criteria ne(Object value) {
-        this.operator = Operator.ne;
-        this.value = value;
-        return this.criteria;
+        return op(Operator.ne, value);
     }
 
     public Criteria gt(Object value) {
-        this.operator = Operator.gt;
-        this.value = value;
-        return this.criteria;
+        return op(Operator.gt, value);
     }
 
     public Criteria ge(Object value) {
-        this.operator = Operator.ge;
-        this.value = value;
-        return this.criteria;
+        return op(Operator.ge, value);
     }
 
     public Criteria lt(Object value) {
-        this.operator = Operator.lt;
-        this.value = value;
-        return this.criteria;
+        return op(Operator.lt, value);
     }
 
     public Criteria le(Object value) {
-        this.operator = Operator.le;
-        this.value = value;
-        return this.criteria;
+        return op(Operator.le, value);
     }
 
     public Criteria contain(Object value) {
-        this.operator = Operator.contain;
-        this.value = value;
-        return this.criteria;
+        return op(Operator.contain, value);
     }
 
     public Criteria notContain(Object value) {
-        this.operator = Operator.not_contain;
-        this.value = value;
-        return this.criteria;
+        return op(Operator.not_contain, value);
     }
 
     public Criteria startWith(Object value) {
-        this.operator = Operator.start_with;
-        this.value = value;
-        return this.criteria;
+        return op(Operator.start_with, value);
     }
 
     public Criteria notStartWith(Object value) {
-        this.operator = Operator.not_start_with;
-        this.value = value;
-        return this.criteria;
+        return op(Operator.not_start_with, value);
     }
 
     public Criteria endWith(Object value) {
-        this.operator = Operator.end_with;
-        this.value = value;
-        return this.criteria;
+        return op(Operator.end_with, value);
     }
 
     public Criteria notEndWith(Object value) {
-        this.operator = Operator.not_end_with;
-        this.value = value;
-        return this.criteria;
+        return op(Operator.not_end_with, value);
     }
 
     public Criteria in(Object value) {
-        this.operator = Operator.in;
-        this.value = value;
-        return this.criteria;
+        return op(Operator.in, value);
     }
 
     public Criteria notIn(Object value) {
-        this.operator = Operator.not_in;
-        this.value = value;
-        return this.criteria;
+        return op(Operator.not_in, value);
     }
 
     public Criteria isNull() {
-        this.operator = Operator.is_null;
-        return this.criteria;
+        return op(Operator.is_null, null);
     }
 
     public Criteria isNotNull() {
-        this.operator = Operator.is_not_null;
-        return this.criteria;
+        return op(Operator.is_not_null, value);
     }
 
     public String generatePlaceholderKey() {
