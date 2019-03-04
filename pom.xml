@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.yangziwen</groupId>
     <artifactId>quick-dao</artifactId>
-    <version>0.0.4.1</version>
+    <version>0.0.4.2</version>
     <packaging>pom</packaging>
     <name>quick-dao</name>
     <url>http://maven.apache.org</url>
@@ -242,29 +242,6 @@
                     <optimize>true</optimize>
                 </configuration>
             </plugin>
-            <!-- <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.2</version>
-                <executions>
-                    <execution>
-                        <id>pre-test</id>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>post-test</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin> -->
             <plugin>
                 <groupId>io.github.yangziwen</groupId>
                 <artifactId>diff-jacoco-maven-plugin</artifactId>

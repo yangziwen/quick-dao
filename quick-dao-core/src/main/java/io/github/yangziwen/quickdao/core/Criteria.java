@@ -127,6 +127,9 @@ public class Criteria {
 
     public static Criteria fromParamMap(Map<String, Object> paramMap) {
         Criteria criteria = new Criteria();
+        if (MapUtils.isEmpty(paramMap)) {
+            return criteria;
+        }
         String orSep = RepoKeys.OR + RepoKeys.__;
         for (Entry<String, Object> entry : paramMap.entrySet()) {
             String key = entry.getKey();
