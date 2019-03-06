@@ -52,6 +52,13 @@ public abstract class BaseUserRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
+    public void testListByIds() throws Exception {
+        List<Long> ids = Arrays.asList(1L, 2L);
+        List<User> userList = createRepository().listByIds(ids);
+        Assert.assertEquals(2, userList.size());
+    }
+
+    @Test
     public void testListWithQuery() {
         Criteria criteria = new Criteria()
                 .and("id").in(Arrays.asList(2L, 3L))
@@ -275,6 +282,14 @@ public abstract class BaseUserRepositoryTest extends BaseRepositoryTest {
         List<User> userList = repository.list();
         Assert.assertEquals(table.getRowCount() - 1, userList.size());
         Assert.assertNotEquals(username, userList.get(0).getUsername());
+    }
+
+    @Test
+    public void testDeleteByIds() throws Exception {
+        ITable table = loadTable(tableName, DataSourceUtils.getConnection(dataSource));
+        BaseRepository<User> repository = createRepository();
+        repository.deleteByIds(Arrays.asList(1L, 2L));
+        Assert.assertEquals(table.getRowCount() - 2, repository.list().size());
     }
 
     protected abstract BaseRepository<User> createRepository();

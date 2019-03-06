@@ -1,6 +1,8 @@
 package io.github.yangziwen.quickdao.sql2o;
 
 import java.lang.reflect.Field;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -57,6 +59,14 @@ public abstract class BaseSql2oRepository<E> implements BaseRepository<E> {
             }
             return sql2oQuery.executeAndFetch(entityMeta.getClassType());
         }
+    }
+
+    @Override
+    public List<E> listByIds(Collection<?> ids) {
+        if (CollectionUtils.isEmpty(ids)) {
+            return Collections.emptyList();
+        }
+        return list(new Criteria().and(entityMeta.getIdFieldName()).in(ids));
     }
 
     @Override
@@ -172,6 +182,14 @@ public abstract class BaseSql2oRepository<E> implements BaseRepository<E> {
             }
             sql2oQuery.executeUpdate();
         }
+    }
+
+    @Override
+    public void deleteByIds(Collection<?> ids) {
+        if (CollectionUtils.isEmpty(ids)) {
+            return;
+        }
+        delete(new Criteria().and(entityMeta.getIdFieldName()).in(ids));
     }
 
 }

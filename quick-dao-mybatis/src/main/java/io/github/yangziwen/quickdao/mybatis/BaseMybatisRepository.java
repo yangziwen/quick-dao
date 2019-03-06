@@ -1,6 +1,8 @@
 package io.github.yangziwen.quickdao.mybatis;
 
 import java.lang.reflect.Field;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +53,14 @@ public abstract class BaseMybatisRepository<E> implements BaseRepository<E> {
         sql = sqlGenerator.flattenCollectionValues(sql, paramMap);
         String stmt = assistant.getDynamicSelectStmt(sql, query.getClass(), entityMeta.getClassType());
         return sqlSession.selectList(stmt, paramMap);
+    }
+
+    @Override
+    public List<E> listByIds(Collection<?> ids) {
+        if (CollectionUtils.isEmpty(ids)) {
+            return Collections.emptyList();
+        }
+        return list(new Criteria().and(entityMeta.getIdFieldName()).in(ids));
     }
 
     @Override
@@ -127,6 +137,14 @@ public abstract class BaseMybatisRepository<E> implements BaseRepository<E> {
         sql = sqlGenerator.flattenCollectionValues(sql, paramMap);
         String stmt = assistant.getDynamicDeleteStmt(sql, criteria.getClass());
         sqlSession.delete(stmt, paramMap);
+    }
+
+    @Override
+    public void deleteByIds(Collection<?> ids) {
+        if (CollectionUtils.isEmpty(ids)) {
+            return;
+        }
+        delete(new Criteria().and(entityMeta.getIdFieldName()).in(ids));
     }
 
 }

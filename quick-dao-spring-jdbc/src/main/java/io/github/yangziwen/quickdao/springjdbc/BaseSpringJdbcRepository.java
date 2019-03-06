@@ -1,5 +1,7 @@
 package io.github.yangziwen.quickdao.springjdbc;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -62,6 +64,14 @@ public abstract class BaseSpringJdbcRepository<E> implements BaseRepository<E> {
     }
 
     @Override
+    public List<E> listByIds(Collection<?> ids) {
+        if (CollectionUtils.isEmpty(ids)) {
+            return Collections.emptyList();
+        }
+        return list(new Criteria().and(entityMeta.getIdFieldName()).in(ids));
+    }
+
+    @Override
     public Integer count(Query query) {
         String sql = sqlGenerator.generateCountByQuerySql(entityMeta, query);
         return jdbcTemplate.queryForObject(sql, query.toParamMap(), Integer.class);
@@ -107,6 +117,14 @@ public abstract class BaseSpringJdbcRepository<E> implements BaseRepository<E> {
     public void delete(Criteria criteria) {
         String sql = sqlGenerator.generateDeleteByCriteriaSql(entityMeta, criteria);
         jdbcTemplate.update(sql, new Query().where(criteria).toParamMap());
+    }
+
+    @Override
+    public void deleteByIds(Collection<?> ids) {
+        if (CollectionUtils.isEmpty(ids)) {
+            return;
+        }
+        delete(new Criteria().and(entityMeta.getIdFieldName()).in(ids));
     }
 
     private SqlParameterSource createSqlParameterSource(E entity) {

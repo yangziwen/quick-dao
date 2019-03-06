@@ -1,5 +1,6 @@
 package io.github.yangziwen.quickdao.core;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -22,6 +23,8 @@ public interface BaseRepository<E> {
     }
 
     List<E> list(Query query);
+
+    List<E> listByIds(Collection<?> ids);
 
     default List<E> list(Criteria criteria) {
         return list(new Query().where(criteria));
@@ -63,6 +66,8 @@ public interface BaseRepository<E> {
     void deleteById(Object id);
 
     void delete(Criteria criteria);
+
+    void deleteByIds(Collection<?> ids);
 
     default void deleteAll() {
         delete(Criteria.emptyCriteria());
