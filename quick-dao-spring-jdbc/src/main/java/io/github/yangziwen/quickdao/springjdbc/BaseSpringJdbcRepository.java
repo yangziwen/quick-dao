@@ -6,12 +6,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.RowMapperResultSetExtractor;
-import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -47,7 +48,10 @@ public abstract class BaseSpringJdbcRepository<E> implements BaseRepository<E> {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
         this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(entityMeta.getTable())
-                .usingColumns(entityMeta.getColumnNamesWithoutIdColumn().toArray(new String[] {}))
+                .usingColumns(entityMeta.getColumnNamesWithoutIdColumn().stream()
+                        .map(sqlGenerator.getColumnWrapper()::wrap)
+                        .collect(Collectors.toList())
+                        .toArray(ArrayUtils.EMPTY_STRING_ARRAY))
                 .usingGeneratedKeyColumns(entityMeta.getIdColumnName());
         this.rowMapper = createRowMapper(entityMeta.getClassType());
     }
@@ -128,7 +132,7 @@ public abstract class BaseSpringJdbcRepository<E> implements BaseRepository<E> {
     }
 
     private SqlParameterSource createSqlParameterSource(E entity) {
-        return new BeanPropertySqlParameterSource(entity);
+        return new BeanPropertySqlParameterSource(entity, sqlGenerator.getColumnWrapper());
     }
 
     protected List<SqlParameterSource> createBatchSqlParameterSource(List<E> entities) {

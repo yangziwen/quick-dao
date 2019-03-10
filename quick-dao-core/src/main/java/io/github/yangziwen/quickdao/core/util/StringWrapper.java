@@ -1,5 +1,7 @@
 package io.github.yangziwen.quickdao.core.util;
 
+import org.apache.commons.lang3.StringUtils;
+
 import io.github.yangziwen.quickdao.core.RepoKeys;
 import lombok.Getter;
 
@@ -24,6 +26,12 @@ public class StringWrapper {
 
     public String wrap(int index, Object value) {
         return prefix + value + RepoKeys.__ + index + suffix;
+    }
+
+    public String unwrap(String value) {
+        value = StringUtils.stripStart(value, prefix);
+        value = StringUtils.stripEnd(value, suffix);
+        return value;
     }
 
     public static StringWrapper emptyWrapper() {
