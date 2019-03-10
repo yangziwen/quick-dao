@@ -109,10 +109,10 @@ public class EntityMeta<E> {
         return fieldColumnMapping.get(getIdFieldName());
     }
 
-    public List<String> getSelectStmts(StringWrapper columnWrapper) {
+    public List<String> getSelectStmts(StringWrapper columnWrapper, StringWrapper aliasWrapper) {
         List<String> list = new ArrayList<String>();
         for (Entry<String, String> entry : fieldColumnMapping.entrySet()) {
-            list.add(columnWrapper.wrap(entry.getValue()) + " AS " + entry.getKey());
+            list.add(columnWrapper.wrap(entry.getValue()) + " AS " + aliasWrapper.wrap(entry.getKey()));
         }
         return list;
     }

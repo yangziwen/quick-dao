@@ -26,15 +26,19 @@ public class SqlGenerator {
     private StringWrapper columnWrapper;
 
     @Getter
+    private StringWrapper aliasWrapper;
+
+    @Getter
     private StringWrapper placeholderWrapper;
 
     public SqlGenerator(StringWrapper placeholderWrapper) {
-        this(StringWrapper.emptyWrapper(), StringWrapper.emptyWrapper(), placeholderWrapper);
+        this(StringWrapper.emptyWrapper(), StringWrapper.emptyWrapper(), StringWrapper.emptyWrapper(), placeholderWrapper);
     }
 
-    public SqlGenerator(StringWrapper tableWrapper, StringWrapper columnWrapper, StringWrapper placeholderWrapper) {
+    public SqlGenerator(StringWrapper tableWrapper, StringWrapper columnWrapper, StringWrapper aliasWrapper, StringWrapper placeholderWrapper) {
         this.tableWrapper = tableWrapper;
         this.columnWrapper = columnWrapper;
+        this.aliasWrapper = aliasWrapper;
         this.placeholderWrapper = placeholderWrapper;
     }
 
@@ -166,7 +170,7 @@ public class SqlGenerator {
     public <T> String generateGetByPrimaryKeySql(EntityMeta<T> entityMeta) {
         StringBuilder buff = new StringBuilder(" SELECT ");
         int i = 0;
-        for (String stmt : entityMeta.getSelectStmts(columnWrapper)) {
+        for (String stmt : entityMeta.getSelectStmts(columnWrapper, aliasWrapper)) {
             if (i++ > 0) {
                 buff.append(", ");
             }
@@ -219,7 +223,7 @@ public class SqlGenerator {
             return;
         }
         int i = 0;
-        for (String stmt : entityMeta.getSelectStmts(columnWrapper)) {
+        for (String stmt : entityMeta.getSelectStmts(columnWrapper, aliasWrapper)) {
             if (i++ > 0) {
                 buff.append(", ");
             }
