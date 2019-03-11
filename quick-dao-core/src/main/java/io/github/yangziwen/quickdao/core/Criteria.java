@@ -61,6 +61,10 @@ public class Criteria {
         this.key = key;
     }
 
+    public InnerCriteria ifValid(boolean valid) {
+        return new InnerCriteria(valid);
+    }
+
     public Criterion and(String name) {
         return new Criterion(name, this);
     }
@@ -151,6 +155,20 @@ public class Criteria {
             new Criterion(name, currentCriteria).op(operator, value);
         }
         return criteria;
+    }
+
+    public class InnerCriteria {
+
+        boolean valid;
+
+        public InnerCriteria(boolean valid) {
+            this.valid = valid;
+        }
+
+        public Criterion then(String name) {
+            return new Criterion(name, Criteria.this, valid);
+        }
+
     }
 
 }

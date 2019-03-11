@@ -24,10 +24,10 @@ public class Criterion {
         this(name, criteria, true);
     }
 
-    Criterion(String name, Criteria criteria, boolean isValid) {
+    Criterion(String name, Criteria criteria, boolean valid) {
         this.name = name;
         this.criteria = criteria;
-        if (isValid) {
+        if (valid) {
             criteria.getCriterionList().add(this);
         }
     }
