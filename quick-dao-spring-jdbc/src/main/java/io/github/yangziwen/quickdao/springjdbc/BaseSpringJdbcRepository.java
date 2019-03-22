@@ -123,6 +123,12 @@ public abstract class BaseSpringJdbcRepository<E> implements BaseRepository<E> {
     }
 
     @Override
+    public void delete(Query query) {
+        String sql = sqlGenerator.generateDeleteByQuerySql(entityMeta, query);
+        jdbcTemplate.update(sql, query.toParamMap());
+    }
+
+    @Override
     public void deleteByIds(Collection<?> ids) {
         if (CollectionUtils.isEmpty(ids)) {
             return;

@@ -167,6 +167,14 @@ public class SqlGenerator {
         return buff.toString();
     }
 
+    public <T> String generateDeleteByQuerySql(EntityMeta<T> entityMeta, Query query) {
+        StringBuilder buff = new StringBuilder(" DELETE FROM " + tableWrapper.wrap(entityMeta.getTable()));
+        appendWhere(buff, entityMeta, query.getCriteria());
+        appendOrderBy(buff, entityMeta, query);
+        appendLimit(buff, entityMeta, query);
+        return buff.toString();
+    }
+
     public <T> String generateGetByPrimaryKeySql(EntityMeta<T> entityMeta) {
         StringBuilder buff = new StringBuilder(" SELECT ");
         int i = 0;
@@ -322,8 +330,12 @@ public class SqlGenerator {
         if (offset == 0 && limit == Integer.MAX_VALUE) {
             return;
         }
-        buff.append(" LIMIT ").append(placeholderWrapper.wrap(RepoKeys.OFFSET))
-            .append(", ").append(placeholderWrapper.wrap(RepoKeys.LIMIT));
+        buff.append(" LIMIT ");
+        if (offset > 0) {
+            buff.append(placeholderWrapper.wrap(RepoKeys.OFFSET))
+                .append(", ");
+        }
+        buff.append(placeholderWrapper.wrap(RepoKeys.LIMIT));
     }
 
     public String flattenCollectionValues(String sql, Map<String, Object> paramMap) {

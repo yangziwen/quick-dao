@@ -140,6 +140,15 @@ public abstract class BaseMybatisRepository<E> implements BaseRepository<E> {
     }
 
     @Override
+    public void delete(Query query) {
+        Map<String, Object> paramMap = query.toParamMap();
+        String sql = sqlGenerator.generateDeleteByQuerySql(entityMeta, query);
+        sql = sqlGenerator.flattenCollectionValues(sql, paramMap);
+        String stmt = assistant.getDynamicDeleteStmt(sql, query.getClass());
+        sqlSession.delete(stmt, paramMap);
+    }
+
+    @Override
     public void deleteByIds(Collection<?> ids) {
         if (CollectionUtils.isEmpty(ids)) {
             return;

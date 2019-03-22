@@ -185,6 +185,20 @@ public abstract class BaseSql2oRepository<E> implements BaseRepository<E> {
     }
 
     @Override
+    public void delete(Query query) {
+        String sql = sqlGenerator.generateDeleteByQuerySql(entityMeta, query);
+        Map<String, Object> paramMap = query.toParamMap();
+        sql = sqlGenerator.flattenCollectionValues(sql, paramMap);
+        try (Connection conn = sql2o.open()) {
+            org.sql2o.Query sql2oQuery = conn.createQuery(sql);
+            for (Entry<String, Object> entry : paramMap.entrySet()) {
+                sql2oQuery.addParameter(entry.getKey(), entry.getValue());
+            }
+            sql2oQuery.executeUpdate();
+        }
+    }
+
+    @Override
     public void deleteByIds(Collection<?> ids) {
         if (CollectionUtils.isEmpty(ids)) {
             return;

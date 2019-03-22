@@ -67,6 +67,8 @@ public interface BaseRepository<E> {
 
     void delete(Criteria criteria);
 
+    void delete(Query query);
+
     void deleteByIds(Collection<?> ids);
 
     default void deleteAll() {

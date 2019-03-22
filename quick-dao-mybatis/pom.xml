@@ -7,7 +7,7 @@
     <parent>
         <groupId>io.github.yangziwen</groupId>
         <artifactId>quick-dao</artifactId>
-        <version>0.0.4.6</version>
+        <version>0.0.4.7</version>
     </parent>
     <artifactId>quick-dao-mybatis</artifactId>
     <name>quick-dao-mybatis</name>
