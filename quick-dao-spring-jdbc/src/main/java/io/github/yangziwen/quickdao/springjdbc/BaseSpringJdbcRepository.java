@@ -110,6 +110,14 @@ public abstract class BaseSpringJdbcRepository<E> implements BaseRepository<E> {
         jdbcTemplate.update(sql, createSqlParameterSource(entity));
     }
 
+    public void updateSelective(E entity, Criteria criteria) {
+        String sql = sqlGenerator.generateUpdateSelectiveByCriteriaSql(entityMeta, entity, criteria);
+        SqlParameterSource source = new CompositeSqlParameterSource(
+                createSqlParameterSource(entity),
+                createSqlParameterSource(criteria));
+        jdbcTemplate.update(sql, source);
+    }
+
     @Override
     public void deleteById(Object id) {
         String sql = sqlGenerator.generateDeleteByPrimaryKeySql(entityMeta);
@@ -134,6 +142,10 @@ public abstract class BaseSpringJdbcRepository<E> implements BaseRepository<E> {
             return;
         }
         delete(new Criteria().and(entityMeta.getIdFieldName()).in(ids));
+    }
+
+    private SqlParameterSource createSqlParameterSource(Criteria criteria) {
+        return new MapSqlParameterSource(criteria.toParamMap());
     }
 
     private SqlParameterSource createSqlParameterSource(E entity) {

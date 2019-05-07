@@ -97,6 +97,36 @@ public class SqlGenerator {
         return buff.toString();
     }
 
+    public <T> String generateUpdateSelectiveByCriteriaSql(EntityMeta<T> entityMeta, T entity, Criteria criteria) {
+
+        StringBuilder buff = new StringBuilder(" UPDATE ")
+                .append(tableWrapper.wrap(entityMeta.getTable()));
+
+        buff.append(" SET ");
+
+        int i = 0;
+
+        for (Field field : entityMeta.getFieldsWithoutIdField()) {
+            if (ReflectionUtil.getFieldValue(entity, field) == null) {
+                continue;
+            }
+            if (i++ > 0) {
+                buff.append(", ");
+            }
+            buff.append(columnWrapper.wrap(entityMeta.getColumnNameByField(field)))
+                .append(" = ")
+                .append(placeholderWrapper.wrap(field.getName()));
+        }
+
+        if (criteria.isEmpty()) {
+            criteria.and(entityMeta.getIdFieldName()).isNull();
+        }
+
+        appendWhere(buff, entityMeta, criteria);
+
+        return buff.toString();
+    }
+
     public <T> String generateInsertSql(EntityMeta<T> entityMeta) {
 
         StringBuilder buff = new StringBuilder(" INSERT INTO ")
