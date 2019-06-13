@@ -11,7 +11,6 @@ import org.springframework.beans.BeanWrapper;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.RowMapperResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -63,7 +62,7 @@ public abstract class BaseSpringJdbcRepository<E> implements BaseRepository<E> {
     @Override
     public List<E> list(Query query) {
         String sql = sqlGenerator.generateListByQuerySql(entityMeta, query);
-        return jdbcTemplate.query(sql, query.toParamMap(), new RowMapperResultSetExtractor<E>(rowMapper));
+        return jdbcTemplate.query(sql, query.toParamMap(), rowMapper);
     }
 
     @Override
