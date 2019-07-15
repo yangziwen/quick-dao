@@ -16,20 +16,13 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 
-import io.github.yangziwen.quickdao.core.BaseRepository;
+import io.github.yangziwen.quickdao.core.BaseCommonRepository;
 import io.github.yangziwen.quickdao.core.Criteria;
-import io.github.yangziwen.quickdao.core.EntityMeta;
 import io.github.yangziwen.quickdao.core.Query;
 import io.github.yangziwen.quickdao.core.SqlGenerator;
-import io.github.yangziwen.quickdao.core.util.ReflectionUtil;
 import io.github.yangziwen.quickdao.core.util.StringWrapper;
 
-public abstract class BaseSpringJdbcRepository<E> implements BaseRepository<E> {
-
-    protected EntityMeta<E> entityMeta = EntityMeta
-            .newInstance(ReflectionUtil.<E> getSuperClassGenericType(this.getClass(), 0));
-
-    protected final SqlGenerator sqlGenerator;
+public abstract class BaseSpringJdbcRepository<E> extends BaseCommonRepository<E> {
 
     protected final NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -42,7 +35,7 @@ public abstract class BaseSpringJdbcRepository<E> implements BaseRepository<E> {
     }
 
     protected BaseSpringJdbcRepository(JdbcTemplate jdbcTemplate, SqlGenerator sqlGenerator) {
-        this.sqlGenerator = sqlGenerator;
+        super(sqlGenerator);
         this.jdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
         this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(entityMeta.getTable())

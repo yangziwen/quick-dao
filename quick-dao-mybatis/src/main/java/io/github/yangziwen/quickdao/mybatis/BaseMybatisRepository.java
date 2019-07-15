@@ -11,23 +11,17 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.SqlSession;
 
-import io.github.yangziwen.quickdao.core.BaseRepository;
+import io.github.yangziwen.quickdao.core.BaseCommonRepository;
 import io.github.yangziwen.quickdao.core.Criteria;
-import io.github.yangziwen.quickdao.core.EntityMeta;
 import io.github.yangziwen.quickdao.core.Query;
 import io.github.yangziwen.quickdao.core.RepoKeys;
 import io.github.yangziwen.quickdao.core.SqlGenerator;
 import io.github.yangziwen.quickdao.core.util.ReflectionUtil;
 import io.github.yangziwen.quickdao.core.util.StringWrapper;
 
-public abstract class BaseMybatisRepository<E> implements BaseRepository<E> {
-
-    protected EntityMeta<E> entityMeta = EntityMeta
-            .newInstance(ReflectionUtil.<E> getSuperClassGenericType(this.getClass(), 0));
+public abstract class BaseMybatisRepository<E> extends BaseCommonRepository<E> {
 
     protected final SqlSession sqlSession;
-
-    protected final SqlGenerator sqlGenerator;
 
     private final MappedStatementAssistant assistant;
 
@@ -36,8 +30,8 @@ public abstract class BaseMybatisRepository<E> implements BaseRepository<E> {
     }
 
     protected BaseMybatisRepository(SqlSession sqlSession, SqlGenerator sqlGenerator) {
+        super(sqlGenerator);
         this.sqlSession = sqlSession;
-        this.sqlGenerator = sqlGenerator;
         this.assistant = new MappedStatementAssistant(sqlSession.getConfiguration());
     }
 

@@ -12,21 +12,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.sql2o.Connection;
 import org.sql2o.Sql2o;
 
-import io.github.yangziwen.quickdao.core.BaseRepository;
+import io.github.yangziwen.quickdao.core.BaseCommonRepository;
 import io.github.yangziwen.quickdao.core.Criteria;
-import io.github.yangziwen.quickdao.core.EntityMeta;
 import io.github.yangziwen.quickdao.core.Query;
 import io.github.yangziwen.quickdao.core.RepoKeys;
 import io.github.yangziwen.quickdao.core.SqlGenerator;
 import io.github.yangziwen.quickdao.core.util.ReflectionUtil;
 import io.github.yangziwen.quickdao.core.util.StringWrapper;
 
-public abstract class BaseSql2oRepository<E> implements BaseRepository<E> {
-
-    protected EntityMeta<E> entityMeta = EntityMeta
-            .newInstance(ReflectionUtil.<E> getSuperClassGenericType(this.getClass(), 0));
-
-    protected final SqlGenerator sqlGenerator;
+public abstract class BaseSql2oRepository<E> extends BaseCommonRepository<E> {
 
     protected final Sql2o sql2o;
 
@@ -35,8 +29,8 @@ public abstract class BaseSql2oRepository<E> implements BaseRepository<E> {
     }
 
     protected BaseSql2oRepository(Sql2o sql2o, SqlGenerator sqlGenerator) {
+        super(sqlGenerator);
         this.sql2o = sql2o;
-        this.sqlGenerator = sqlGenerator;
     }
 
     @Override
