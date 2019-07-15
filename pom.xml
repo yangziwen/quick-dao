@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.yangziwen</groupId>
     <artifactId>quick-dao</artifactId>
-    <version>0.0.4.8</version>
+    <version>0.0.5-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>quick-dao</name>
     <url>http://maven.apache.org</url>
@@ -207,6 +207,11 @@
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
                 <version>${lombok.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cglib</groupId>
+                <artifactId>cglib</artifactId>
+                <version>3.1</version>
             </dependency>
             <dependency>
                 <groupId>junit</groupId>

@@ -86,7 +86,7 @@ public class Criteria {
         return CollectionUtils.isEmpty(criterionList) && MapUtils.isEmpty(nestedCriteriaMap);
     }
 
-    private Criteria ensureNestedCriteria(String criteriaKey) {
+    protected Criteria ensureNestedCriteria(String criteriaKey) {
         Criteria criteria = nestedCriteriaMap.get(criteriaKey);
         if (criteria == null) {
             criteria = new Criteria(this, criteriaKey);
