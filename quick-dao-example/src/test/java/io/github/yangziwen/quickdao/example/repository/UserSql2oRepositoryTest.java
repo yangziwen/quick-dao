@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.sql2o.Sql2o;
 
 import io.github.yangziwen.quickdao.example.entity.User;
+import io.github.yangziwen.quickdao.example.repository.base.BaseUserRepositoryTest;
 
 public class UserSql2oRepositoryTest extends BaseUserRepositoryTest {
 

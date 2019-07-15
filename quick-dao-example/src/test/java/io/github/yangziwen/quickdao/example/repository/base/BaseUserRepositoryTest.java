@@ -1,4 +1,4 @@
-package io.github.yangziwen.quickdao.example.repository;
+package io.github.yangziwen.quickdao.example.repository.base;
 
 import java.sql.Connection;
 import java.util.Arrays;

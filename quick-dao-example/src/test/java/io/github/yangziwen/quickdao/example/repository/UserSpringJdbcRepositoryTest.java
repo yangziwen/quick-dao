@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import io.github.yangziwen.quickdao.core.Criteria;
 import io.github.yangziwen.quickdao.example.entity.User;
+import io.github.yangziwen.quickdao.example.repository.base.BaseUserRepositoryTest;
 
 public class UserSpringJdbcRepositoryTest extends BaseUserRepositoryTest {
 
