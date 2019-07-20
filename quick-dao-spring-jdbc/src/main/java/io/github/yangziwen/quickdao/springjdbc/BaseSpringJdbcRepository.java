@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
-import org.springframework.beans.BeanWrapper;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -151,12 +150,7 @@ public abstract class BaseSpringJdbcRepository<E> extends BaseCommonRepository<E
     }
 
     protected RowMapper<E> createRowMapper(Class<E> entityClass) {
-        BeanPropertyRowMapper<E> rowMapper = new BeanPropertyRowMapper<E>() {
-            @Override
-            protected void initBeanWrapper(BeanWrapper bw) {
-                super.initBeanWrapper(bw);
-            }
-        };
+        BeanPropertyRowMapper<E> rowMapper = new BeanPropertyRowMapper<>();
         rowMapper.setMappedClass(entityClass);
         return rowMapper;
     }
