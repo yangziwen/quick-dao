@@ -150,9 +150,7 @@ public abstract class BaseSpringJdbcRepository<E> extends BaseCommonRepository<E
     }
 
     protected RowMapper<E> createRowMapper(Class<E> entityClass) {
-        BeanPropertyRowMapper<E> rowMapper = new BeanPropertyRowMapper<>();
-        rowMapper.setMappedClass(entityClass);
-        return rowMapper;
+        return new BeanPropertyRowMapper<>(entityClass);
     }
 
 }
