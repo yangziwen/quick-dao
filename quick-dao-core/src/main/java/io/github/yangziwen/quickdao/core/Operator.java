@@ -1,5 +1,7 @@
 package io.github.yangziwen.quickdao.core;
 
+import io.github.yangziwen.quickdao.core.util.DatabaseTypeUtil;
+import io.github.yangziwen.quickdao.core.util.DatabaseTypeUtil.DatabaseType;
 import io.github.yangziwen.quickdao.core.util.VarArgsSQLFunction;
 
 public enum Operator {
@@ -123,7 +125,17 @@ public enum Operator {
     public abstract String buildCondition(String stmt, String placeholder);
 
     private static VarArgsSQLFunction chooseConcatFunc() {
-        return MYSQL_CONCAT_FUNC;
+        DatabaseType type = DatabaseTypeUtil.getDatabaseType();
+        switch (type) {
+            case SQLITE:
+                return SQLITE_CONCAT_FUNC;
+            case MYSQL:
+                return MYSQL_CONCAT_FUNC;
+            case UNKNOWN:
+                return MYSQL_CONCAT_FUNC;
+            default:
+                return MYSQL_CONCAT_FUNC;
+        }
     }
 
 }
