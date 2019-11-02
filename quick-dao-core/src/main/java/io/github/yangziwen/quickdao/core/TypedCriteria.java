@@ -11,38 +11,24 @@ import org.apache.commons.lang3.StringUtils;
 
 import io.github.yangziwen.quickdao.core.util.InvokedMethodExtractor;
 import lombok.Getter;
-import net.sf.cglib.proxy.Enhancer;
 
 public class TypedCriteria<E> extends Criteria {
 
     @Getter
     private InvokedMethodExtractor<E> extractor;
 
-    @Getter
-    private E proxyInstance;
-
     private Class<E> classType;
 
     public TypedCriteria(Class<E> classType) {
         super();
         this.classType = classType;
-        this.extractor = new InvokedMethodExtractor<E>(this::getProxyInstance);
-        this.proxyInstance = createProxyInstance(extractor);
+        this.extractor = new InvokedMethodExtractor<>(classType);
     }
 
     public TypedCriteria(Class<E> classType, Criteria parentCriteria, String key) {
         super(parentCriteria, key);
         this.classType = classType;
-        this.extractor = new InvokedMethodExtractor<E>(this::getProxyInstance);
-        this.proxyInstance = createProxyInstance(extractor);
-    }
-
-    @SuppressWarnings("unchecked")
-    private E createProxyInstance(InvokedMethodExtractor<E> extractor) {
-        Enhancer enhancer = new Enhancer();
-        enhancer.setSuperclass(classType);
-        enhancer.setCallback(extractor);
-        return (E) enhancer.create();
+        this.extractor = new InvokedMethodExtractor<>(classType);
     }
 
     public InnerCriteria ifValid(Supplier<Boolean> supplier) {
@@ -55,12 +41,12 @@ public class TypedCriteria<E> extends Criteria {
     }
 
     public TypedCriterion<E> and(Function<E, ?> getter) {
-        String name = extractFieldNameFromGetter(getter);
+        String name = extractor.extractFieldNameFromGetter(getter);
         return new TypedCriterion<E>(name, this);
     }
 
     public TypedCriterion<E> or(Function<E, ?> getter) {
-        String name = extractFieldNameFromGetter(getter);
+        String name = extractor.extractFieldNameFromGetter(getter);
         return new TypedCriterion<E>(name, or());
     }
 
@@ -90,18 +76,6 @@ public class TypedCriteria<E> extends Criteria {
             getNestedCriteriaMap().put(criteriaKey, criteria);
         }
         return criteria;
-    }
-
-    private String extractFieldNameFromGetter(Function<E, ?> getter) {
-        if (getter == null) {
-            throw new IllegalArgumentException("getter method cannot be null!");
-        }
-        String getterName = this.extractor.invokeMethod(getter).getLatestInvokedMethodName();
-        if (!StringUtils.startsWith(getterName, "get")) {
-            throw new IllegalArgumentException(getter + " is not a valid getter method for instance of type " + classType.getName());
-        }
-        String fieldName = StringUtils.replaceOnce(getterName, "get", "");
-        return fieldName.substring(0, 1).toLowerCase() + fieldName.substring(1);
     }
 
     public static <T> TypedCriteria<T> fromParamMap(Class<T> classType, Map<String, Object> paramMap) {
@@ -141,7 +115,7 @@ public class TypedCriteria<E> extends Criteria {
         }
 
         public TypedCriterion<E> then(Function<E, ?> getter) {
-            String name = extractFieldNameFromGetter(getter);
+            String name = extractor.extractFieldNameFromGetter(getter);
             return new TypedCriterion<E>(name, TypedCriteria.this, valid);
         }
 
