@@ -10,14 +10,12 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import io.github.yangziwen.quickdao.core.util.InvokedMethodExtractor;
-import lombok.Getter;
 
 public class TypedCriteria<E> extends Criteria {
 
-    @Getter
-    private InvokedMethodExtractor<E> extractor;
+    private final InvokedMethodExtractor<E> extractor;
 
-    private Class<E> classType;
+    private final Class<E> classType;
 
     public TypedCriteria(Class<E> classType) {
         super();

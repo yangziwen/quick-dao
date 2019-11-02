@@ -18,4 +18,8 @@ public abstract class BaseCommonRepository<E> implements BaseRepository<E> {
         return new TypedCriteria<E>(entityMeta.getClassType());
     }
 
+    public TypedQuery<E> newTypeQuery() {
+        return new TypedQuery<>(entityMeta.getClassType());
+    }
+
 }

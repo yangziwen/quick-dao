@@ -5,7 +5,6 @@ import java.util.function.Function;
 
 import org.apache.commons.lang3.StringUtils;
 
-import lombok.Getter;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
@@ -16,7 +15,6 @@ public class InvokedMethodExtractor<T>  implements MethodInterceptor {
 
     private final Class<T> classType;
 
-    @Getter
     private Method latestInvokedMethod;
 
     @SuppressWarnings("unchecked")
