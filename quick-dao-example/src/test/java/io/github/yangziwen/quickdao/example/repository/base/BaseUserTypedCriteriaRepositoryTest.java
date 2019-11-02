@@ -12,11 +12,11 @@ import org.junit.Test;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 
 import io.github.yangziwen.quickdao.core.BaseRepository;
-import io.github.yangziwen.quickdao.core.Criteria;
 import io.github.yangziwen.quickdao.core.Order.Direction;
 import io.github.yangziwen.quickdao.core.Page;
 import io.github.yangziwen.quickdao.core.Query;
 import io.github.yangziwen.quickdao.core.TypedCriteria;
+import io.github.yangziwen.quickdao.core.TypedQuery;
 import io.github.yangziwen.quickdao.example.entity.User;
 
 public abstract class BaseUserTypedCriteriaRepositoryTest extends BaseRepositoryTest {
@@ -37,7 +37,8 @@ public abstract class BaseUserTypedCriteriaRepositoryTest extends BaseRepository
                 .and(User::getUsername).endWith("2")
                 .and(User::getEmail).isNotNull()
                 .and(User::getCreateTime).lt(new Date());
-        Query query = new Query().where(criteria);
+        TypedQuery<User> query = new TypedQuery<>(User.class)
+                .where(criteria);
         List<User> userList = createRepository().list(query);
         Assert.assertEquals(1, userList.size());
     }
@@ -65,7 +66,10 @@ public abstract class BaseUserTypedCriteriaRepositoryTest extends BaseRepository
                     .and(User::getId).eq(1L)
                     .and(User::getUsername).endWith("1")
                 .end();
-        Query query = new Query().where(criteria).orderBy("id", Direction.DESC).limit(2);
+        TypedQuery<User> query = new TypedQuery<>(User.class)
+                .where(criteria)
+                .orderBy(User::getId, Direction.DESC)
+                .limit(2);
         List<User> userList = createRepository().list(query);
         Assert.assertEquals(2, userList.size());
     }
@@ -82,7 +86,10 @@ public abstract class BaseUserTypedCriteriaRepositoryTest extends BaseRepository
                     .and(User::getUsername).endWith("1")
                 .end();
         criteria = TypedCriteria.fromParamMap(User.class, criteria.toParamMap());
-        Query query = new Query().where(criteria).orderBy("id", Direction.DESC).limit(2);
+        TypedQuery<User> query = new TypedQuery<>(User.class)
+                .where(criteria)
+                .orderBy(User::getId, Direction.DESC)
+                .limit(2);
         List<User> userList = createRepository().list(query);
         Assert.assertEquals(2, userList.size());
     }
@@ -90,7 +97,7 @@ public abstract class BaseUserTypedCriteriaRepositoryTest extends BaseRepository
     @Test
     public void testListContain() throws Exception {
         ITable table = loadTable(tableName, DataSourceUtils.getConnection(dataSource));
-        Query query = new Query().where(new TypedCriteria<>(User.class)
+        Query query = new TypedQuery<>(User.class).where(new TypedCriteria<>(User.class)
                 .and(User::getEmail).contain("@"));
         List<User> userList = createRepository().list(query);
         Assert.assertEquals(table.getRowCount(), userList.size());
@@ -98,7 +105,7 @@ public abstract class BaseUserTypedCriteriaRepositoryTest extends BaseRepository
 
     @Test
     public void testListNotContain() {
-        Query query = new Query().where(new TypedCriteria<>(User.class)
+        Query query = new TypedQuery<>(User.class).where(new TypedCriteria<>(User.class)
                 .and(User::getEmail).notContain("@"));
         List<User> userList = createRepository().list(query);
         Assert.assertEquals(0, userList.size());
@@ -106,7 +113,7 @@ public abstract class BaseUserTypedCriteriaRepositoryTest extends BaseRepository
 
     @Test
     public void testListIsNull() {
-        Query query = new Query().where(new TypedCriteria<>(User.class)
+        Query query = new TypedQuery<>(User.class).where(new TypedCriteria<>(User.class)
                 .and(User::getUsername).isNull());
         List<User> userList = createRepository().list(query);
         Assert.assertEquals(0, userList.size());
@@ -115,7 +122,7 @@ public abstract class BaseUserTypedCriteriaRepositoryTest extends BaseRepository
     @Test
     public void testListIsNotNull() throws Exception {
         ITable table = loadTable(tableName, DataSourceUtils.getConnection(dataSource));
-        Query query = new Query().where(new TypedCriteria<>(User.class)
+        Query query = new TypedQuery<>(User.class).where(new TypedCriteria<>(User.class)
                 .and(User::getUsername).isNotNull());
         List<User> userList = createRepository().list(query);
         Assert.assertEquals(table.getRowCount(), userList.size());
@@ -132,12 +139,12 @@ public abstract class BaseUserTypedCriteriaRepositoryTest extends BaseRepository
                     .and(User::getId).eq(1L)
                     .and(User::getUsername).endWith("1")
                 .end();
-        Criteria havingCriteria = new TypedCriteria<User>(User.class)
+        TypedCriteria<User> havingCriteria = new TypedCriteria<User>(User.class)
                 .and(User::getCreateTime).lt(new Date());
-        Query query = new Query()
+        TypedQuery<User> query = new TypedQuery<>(User.class)
                 .select("create_time as createTime")
                 .where(criteria)
-                .groupBy("createTime")
+                .groupBy(User::getCreateTime)
                 .having(havingCriteria)
                 .limit(2);
         List<User> userList = createRepository().list(query);
@@ -146,7 +153,7 @@ public abstract class BaseUserTypedCriteriaRepositoryTest extends BaseRepository
 
     @Test
     public void testListWithLimit() {
-        Query query = new Query().where(new TypedCriteria<>(User.class)
+        Query query = new TypedQuery<>(User.class).where(new TypedCriteria<>(User.class)
                 .and(User::getId).ge(1))
                 .offset(1).limit(100);
         List<User> userList = createRepository().list(query);
