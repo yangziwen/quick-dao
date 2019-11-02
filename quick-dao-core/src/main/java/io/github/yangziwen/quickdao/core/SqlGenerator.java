@@ -254,9 +254,18 @@ public class SqlGenerator {
     private <T> void appendSelect(StringBuilder buff, EntityMeta<T> entityMeta, Query query) {
         buff.append(" SELECT ");
         if (CollectionUtils.isNotEmpty(query.getSelectStmtList())) {
-            buff.append(query.getSelectStmtList().get(0));
-            for (int i = 1; i < query.getSelectStmtList().size(); i++) {
-                buff.append(", ").append(query.getSelectStmtList().get(i));
+            List<String> selectStmtList = new ArrayList<>(query.getSelectStmtList().size());
+            for (String stmt : query.getSelectStmtList()) {
+                String columnName = entityMeta.getColumnNameByFieldName(stmt);
+                if (StringUtils.isEmpty(columnName)) {
+                    selectStmtList.add(stmt);
+                } else {
+                    selectStmtList.add(columnWrapper.wrap(columnName) + " AS " + aliasWrapper.wrap(stmt));
+                }
+            }
+            buff.append(selectStmtList.get(0));
+            for (int i = 1; i < selectStmtList.size(); i++) {
+                buff.append(", ").append(selectStmtList.get(i));
             }
             return;
         }

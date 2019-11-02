@@ -142,7 +142,7 @@ public abstract class BaseUserTypedCriteriaRepositoryTest extends BaseRepository
         TypedCriteria<User> havingCriteria = new TypedCriteria<User>(User.class)
                 .and(User::getCreateTime).lt(new Date());
         TypedQuery<User> query = new TypedQuery<>(User.class)
-                .select("create_time as createTime")
+                .select(User::getCreateTime)
                 .where(criteria)
                 .groupBy(User::getCreateTime)
                 .having(havingCriteria)

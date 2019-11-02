@@ -18,7 +18,6 @@ public class TypedQuery<E> extends Query {
     @Getter
     private TypedCriteria<E> havingCriteria;
 
-
     public TypedQuery(Class<E> classType) {
         this.extractor = new InvokedMethodExtractor<>(classType);
         this.criteria = new TypedCriteria<>(classType);

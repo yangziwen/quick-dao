@@ -9,7 +9,7 @@ import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 
-public class InvokedMethodExtractor<T>  implements MethodInterceptor {
+public class InvokedMethodExtractor<T> implements MethodInterceptor {
 
     private final T proxyInstance;
 
