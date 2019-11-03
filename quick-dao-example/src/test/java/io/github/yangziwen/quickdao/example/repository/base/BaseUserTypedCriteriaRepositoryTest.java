@@ -175,6 +175,20 @@ public abstract class BaseUserTypedCriteriaRepositoryTest extends BaseRepository
     }
 
     @Test
+    public void testUpdateSelectiveWithCriteria() {
+        Long id = 1L;
+        String username = "user1_modified";
+        User user = User.builder()
+                .username(username)
+                .build();
+        TypedCriteria<User> criteria = new TypedCriteria<>(User.class)
+                .and(User::getId).in(Arrays.asList(id));
+        BaseRepository<User> repository = createRepository();
+        createRepository().updateSelective(user, criteria);
+        Assert.assertEquals(username, repository.getById(id).getUsername());
+    }
+
+    @Test
     public void testDelete() throws Exception {
         ITable table = loadTable(tableName, DataSourceUtils.getConnection(dataSource));
         String username = "user1";

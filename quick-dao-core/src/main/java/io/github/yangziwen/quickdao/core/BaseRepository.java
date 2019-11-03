@@ -17,6 +17,8 @@ public interface BaseRepository<E> extends BaseReadOnlyRepository<E> {
 
     void updateSelective(E entity);
 
+    void updateSelective(E entity, Criteria criteria);
+
     void deleteById(Object id);
 
     void delete(Criteria criteria);

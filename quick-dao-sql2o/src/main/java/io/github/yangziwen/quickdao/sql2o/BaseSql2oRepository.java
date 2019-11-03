@@ -103,6 +103,30 @@ public abstract class BaseSql2oRepository<E> extends BaseSql2oReadOnlyRepository
     }
 
     @Override
+    public void updateSelective(E entity, Criteria criteria) {
+        Map<String, Object> paramMap = criteria.toParamMap();
+        String sql = sqlGenerator.generateUpdateSelectiveByCriteriaSql(entityMeta, entity, criteria);
+        sql = sqlGenerator.flattenCollectionValues(sql, paramMap);
+        try (Connection conn = sql2o.open()) {
+            org.sql2o.Query sql2oQuery = conn.createQuery(sql);
+            for (Field field : entityMeta.getFields()) {
+                Object value = ReflectionUtil.getFieldValue(entity, field);
+                if (value == null) {
+                    continue;
+                }
+                sql2oQuery.addParameter(field.getName(), value);
+            }
+            for (Entry<String, Object> entry : paramMap.entrySet()) {
+                if (entry.getValue() == null) {
+                    continue;
+                }
+                sql2oQuery.addParameter(entry.getKey(), entry.getValue());
+            }
+            sql2oQuery.executeUpdate();
+        }
+    }
+
+    @Override
     public void deleteById(Object id) {
         String sql = sqlGenerator.generateDeleteByPrimaryKeySql(entityMeta);
         Field idField = entityMeta.getIdField();

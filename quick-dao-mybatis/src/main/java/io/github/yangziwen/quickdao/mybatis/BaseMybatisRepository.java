@@ -2,6 +2,7 @@ package io.github.yangziwen.quickdao.mybatis;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,6 +77,23 @@ public abstract class BaseMybatisRepository<E> extends BaseMybatisReadOnlyReposi
         String sql = sqlGenerator.generateUpdateSelectiveSql(entityMeta, entity);
         String stmt = assistant.getDynamicUpdateStmt(sql, entity.getClass());
         sqlSession.update(stmt, entity);
+    }
+
+    @Override
+    public void updateSelective(E entity, Criteria criteria) {
+        Map<String, Object> paramMap = criteria.toParamMap();
+        String sql = sqlGenerator.generateUpdateSelectiveByCriteriaSql(entityMeta, entity, criteria);
+        sql = sqlGenerator.flattenCollectionValues(sql, paramMap);
+        String stmt = assistant.getDynamicUpdateStmt(sql, entity.getClass());
+        Map<String, Object> compositeParamMap = new HashMap<>(paramMap);
+        for (Field field : entityMeta.getFieldsWithoutIdField()) {
+            Object value = ReflectionUtil.getFieldValue(entity, field);
+            if (value == null) {
+                continue;
+            }
+            compositeParamMap.put(field.getName(), value);
+        }
+        sqlSession.update(stmt, compositeParamMap);
     }
 
     @Override
