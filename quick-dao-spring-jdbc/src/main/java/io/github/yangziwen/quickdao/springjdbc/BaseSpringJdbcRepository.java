@@ -1,74 +1,43 @@
 package io.github.yangziwen.quickdao.springjdbc;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 
-import io.github.yangziwen.quickdao.core.BaseCommonRepository;
+import io.github.yangziwen.quickdao.core.BaseRepository;
 import io.github.yangziwen.quickdao.core.Criteria;
 import io.github.yangziwen.quickdao.core.Query;
 import io.github.yangziwen.quickdao.core.SqlGenerator;
-import io.github.yangziwen.quickdao.core.util.StringWrapper;
 
-public abstract class BaseSpringJdbcRepository<E> extends BaseCommonRepository<E> {
-
-    protected final NamedParameterJdbcTemplate jdbcTemplate;
+public abstract class BaseSpringJdbcRepository<E> extends BaseSpringJdbcReadOnlyRepository<E> implements BaseRepository<E> {
 
     protected final SimpleJdbcInsert jdbcInsert;
 
-    protected final RowMapper<E> rowMapper;
-
     protected BaseSpringJdbcRepository(JdbcTemplate jdbcTemplate) {
-        this(jdbcTemplate, new SqlGenerator(new StringWrapper(":", "")));
+        super(jdbcTemplate);
+        this.jdbcInsert = createJdbcInsert(jdbcTemplate);
     }
 
     protected BaseSpringJdbcRepository(JdbcTemplate jdbcTemplate, SqlGenerator sqlGenerator) {
-        super(sqlGenerator);
-        this.jdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
-        this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+        super(jdbcTemplate, sqlGenerator);
+        this.jdbcInsert = createJdbcInsert(jdbcTemplate);
+    }
+
+    private SimpleJdbcInsert createJdbcInsert(JdbcTemplate jdbcTemplate) {
+        return new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(entityMeta.getTable())
                 .usingColumns(entityMeta.getColumnNamesWithoutIdColumn().stream()
                         .map(sqlGenerator.getColumnWrapper()::wrap)
                         .collect(Collectors.toList())
                         .toArray(ArrayUtils.EMPTY_STRING_ARRAY))
                 .usingGeneratedKeyColumns(entityMeta.getIdColumnName());
-        this.rowMapper = createRowMapper(entityMeta.getClassType());
-    }
-
-    @Override
-    public E getById(Object id) {
-        return first(new Query().where(new Criteria().and(entityMeta.getIdFieldName()).eq(id)));
-    }
-
-    @Override
-    public List<E> list(Query query) {
-        String sql = sqlGenerator.generateListByQuerySql(entityMeta, query);
-        return jdbcTemplate.query(sql, query.toParamMap(), rowMapper);
-    }
-
-    @Override
-    public List<E> listByIds(Collection<?> ids) {
-        if (CollectionUtils.isEmpty(ids)) {
-            return Collections.emptyList();
-        }
-        return list(new Criteria().and(entityMeta.getIdFieldName()).in(ids));
-    }
-
-    @Override
-    public Integer count(Query query) {
-        String sql = sqlGenerator.generateCountByQuerySql(entityMeta, query);
-        return jdbcTemplate.queryForObject(sql, query.toParamMap(), Integer.class);
     }
 
     @Override
@@ -147,10 +116,6 @@ public abstract class BaseSpringJdbcRepository<E> extends BaseCommonRepository<E
         return entities.stream()
                 .map(this::createSqlParameterSource)
                 .collect(Collectors.toList());
-    }
-
-    protected RowMapper<E> createRowMapper(Class<E> entityClass) {
-        return new BeanPropertyRowMapper<>(entityClass);
     }
 
 }

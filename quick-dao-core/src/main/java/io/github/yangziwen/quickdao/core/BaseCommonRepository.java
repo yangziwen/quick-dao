@@ -2,7 +2,7 @@ package io.github.yangziwen.quickdao.core;
 
 import io.github.yangziwen.quickdao.core.util.ReflectionUtil;
 
-public abstract class BaseCommonRepository<E> implements BaseRepository<E> {
+public abstract class BaseCommonRepository<E> implements BaseReadOnlyRepository<E> {
 
     protected EntityMeta<E> entityMeta;
 
