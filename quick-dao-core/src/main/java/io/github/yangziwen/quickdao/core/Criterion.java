@@ -99,7 +99,7 @@ public class Criterion {
     }
 
     public Criteria isNotNull() {
-        return op(Operator.is_not_null, value);
+        return op(Operator.is_not_null, null);
     }
 
     public String generatePlaceholderKey() {

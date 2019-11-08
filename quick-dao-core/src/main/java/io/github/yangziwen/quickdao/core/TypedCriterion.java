@@ -97,7 +97,7 @@ public class TypedCriterion<E> extends Criterion {
 
     @Override
     public TypedCriteria<E> isNotNull() {
-        return op(Operator.is_not_null, getValue());
+        return op(Operator.is_not_null, null);
     }
 
 }
