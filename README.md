@@ -35,6 +35,8 @@ quick-dao通过对Spring JDBC, MyBatis, sql2o等orm框架进行简单封装，�
 ```
 
 * 定义数据的实体类
+    - 数据库的表名、字段名默认由实体类的类名、字段名按驼峰法转下划线法获得，也可基于JPA注解显式指定
+
 ```java
 @Data
 @Table(name = "user")
