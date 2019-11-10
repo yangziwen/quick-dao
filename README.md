@@ -34,6 +34,28 @@ quick-dao通过对Spring JDBC, MyBatis, sql2o等orm框架进行简单封装，�
 </dependency>
 ```
 
+* 定义数据的实体类
+```java
+@Data
+@Table(name = "user")
+public class User {
+
+    @Id
+    @Column
+    private Long id;
+
+    @Column
+    private String username;
+
+    @Column
+    private String email;
+
+    @Column
+    private Integer age;
+
+}
+```
+
 * 数据访问类继承BaseRepository接口的实现类(以Spring JDBC为例)
 
 ```java
