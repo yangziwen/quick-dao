@@ -18,6 +18,7 @@
         <spring.jdbc.version>4.3.19.RELEASE</spring.jdbc.version>
         <commons.lang3.version>3.3.2</commons.lang3.version>
         <commons.collections4.version>4.0</commons.collections4.version>
+        <cglib.version>3.1</cglib.version>
         <lombok.version>1.18.2</lombok.version>
         <junit.version>4.12</junit.version>
         <h2.version>1.4.197</h2.version>
@@ -211,7 +212,7 @@
             <dependency>
                 <groupId>cglib</groupId>
                 <artifactId>cglib</artifactId>
-                <version>3.1</version>
+                <version>${cglib.version}</version>
             </dependency>
             <dependency>
                 <groupId>junit</groupId>
