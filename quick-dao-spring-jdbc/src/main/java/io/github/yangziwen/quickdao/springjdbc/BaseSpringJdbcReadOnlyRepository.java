@@ -18,6 +18,8 @@ import io.github.yangziwen.quickdao.core.util.StringWrapper;
 
 public abstract class BaseSpringJdbcReadOnlyRepository<E> extends BaseCommonRepository<E> {
 
+    private static final int DEFAULT_SQL_CACHE_LIMIT = 32;
+
     protected final NamedParameterJdbcTemplate jdbcTemplate;
 
     protected final RowMapper<E> rowMapper;
@@ -28,7 +30,7 @@ public abstract class BaseSpringJdbcReadOnlyRepository<E> extends BaseCommonRepo
 
     protected BaseSpringJdbcReadOnlyRepository(JdbcTemplate jdbcTemplate, SqlGenerator sqlGenerator) {
         super(sqlGenerator);
-        this.jdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
+        this.jdbcTemplate = createNamedParameterJdbcTemplate(jdbcTemplate);
         this.rowMapper = createRowMapper(entityMeta.getClassType());
     }
 
@@ -59,6 +61,16 @@ public abstract class BaseSpringJdbcReadOnlyRepository<E> extends BaseCommonRepo
 
     protected RowMapper<E> createRowMapper(Class<E> entityClass) {
         return new BeanPropertyRowMapper<>(entityClass);
+    }
+
+    protected NamedParameterJdbcTemplate createNamedParameterJdbcTemplate(JdbcTemplate jdbcTemplate) {
+        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(jdbcTemplate);
+        template.setCacheLimit(getSqlCacheLimit());
+        return template;
+    }
+
+    protected int getSqlCacheLimit() {
+        return DEFAULT_SQL_CACHE_LIMIT;
     }
 
 }
