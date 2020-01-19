@@ -28,7 +28,7 @@ public class Criterion {
     }
 
     Criterion(String name, Criteria criteria, boolean valid) {
-        this.name = name;
+        this.name = StringUtils.replacePattern(name, "\\s+", "");
         this.criteria = criteria;
         if (valid) {
             criteria.getCriterionList().add(this);
@@ -42,7 +42,7 @@ public class Criterion {
     }
 
     public Criterion jsonField(String jsonField) {
-        this.jsonField = jsonField;
+        this.jsonField = StringUtils.replacePattern(jsonField, "\\s+", "");
         return this;
     }
 

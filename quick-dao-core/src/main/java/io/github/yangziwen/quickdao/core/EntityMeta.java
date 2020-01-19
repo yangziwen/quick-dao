@@ -110,7 +110,7 @@ public class EntityMeta<E> {
     }
 
     public List<String> getSelectStmts(StringWrapper columnWrapper, StringWrapper aliasWrapper) {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         for (Entry<String, String> entry : fieldColumnMapping.entrySet()) {
             list.add(columnWrapper.wrap(entry.getValue()) + " AS " + aliasWrapper.wrap(entry.getKey()));
         }
@@ -126,7 +126,7 @@ public class EntityMeta<E> {
     }
 
     private static List<Field> getAnnotatedFields(Class<?> clazz) {
-        List<Field> list = new ArrayList<Field>();
+        List<Field> list = new ArrayList<>();
         if (clazz.getSuperclass() != Object.class) {
             list.addAll(getAnnotatedFields(clazz.getSuperclass()));
         }
@@ -159,7 +159,7 @@ public class EntityMeta<E> {
     }
 
     public static <T> EntityMeta<T> newInstance(Class<T> clazz) {
-        return new EntityMeta<T>(clazz);
+        return new EntityMeta<>(clazz);
     }
 
     public void fillIdValue(E entity, Object id) {

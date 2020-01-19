@@ -87,12 +87,7 @@ public class Criteria {
     }
 
     protected Criteria ensureNestedCriteria(String criteriaKey) {
-        Criteria criteria = nestedCriteriaMap.get(criteriaKey);
-        if (criteria == null) {
-            criteria = new Criteria(this, criteriaKey);
-            nestedCriteriaMap.put(criteriaKey, criteria);
-        }
-        return criteria;
+        return nestedCriteriaMap.computeIfAbsent(criteriaKey, ck -> new Criteria(this, ck));
     }
 
     public static Criteria emptyCriteria() {
