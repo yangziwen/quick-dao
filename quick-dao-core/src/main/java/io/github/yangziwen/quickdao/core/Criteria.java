@@ -151,8 +151,14 @@ public class Criteria {
             }
             String[] arr = key.split(RepoKeys.__);
             String name = arr[0];
+            String jsonField = "";
             Operator operator = arr.length >= 2 ? Operator.valueOf(arr[1]) : Operator.eq;
-            new Criterion(name, currentCriteria).op(operator, value);
+            if (name.contains(RepoKeys.JSON_FIELD)) {
+                String[] nameArr = StringUtils.splitByWholeSeparator(name, RepoKeys.JSON_FIELD, 2);
+                name = nameArr[0];
+                jsonField = nameArr[1];
+            }
+            new Criterion(name, currentCriteria).jsonField(jsonField).op(operator, value);
         }
         return criteria;
     }

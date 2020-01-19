@@ -21,6 +21,12 @@ public class TypedCriterion<E> extends Criterion {
     }
 
     @Override
+    public TypedCriterion<E> jsonField(String jsonField) {
+        super.jsonField(jsonField);
+        return this;
+    }
+
+    @Override
     public TypedCriteria<E> eq(Object value) {
         return op(Operator.eq, value);
     }

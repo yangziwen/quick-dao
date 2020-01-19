@@ -2,7 +2,7 @@ package io.github.yangziwen.quickdao.core;
 
 public final class RepoKeys {
 
-    private RepoKeys() { };
+    private RepoKeys() { }
 
     public static final String OR = "__or";
 
@@ -21,6 +21,8 @@ public final class RepoKeys {
     public static final String OFFSET = "__offset";
 
     public static final String LIMIT = "__limit";
+
+    public static final String JSON_FIELD = "_JSON_FIELD_";
 
     public static final String __ = "__";
 

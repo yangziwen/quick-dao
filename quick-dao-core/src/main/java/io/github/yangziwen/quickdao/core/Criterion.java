@@ -14,6 +14,9 @@ public class Criterion {
     private String name;
 
     @Getter
+    private String jsonField;
+
+    @Getter
     @Setter
     private Object value;
 
@@ -36,6 +39,11 @@ public class Criterion {
         this.operator = operator;
         this.value = value;
         return this.criteria;
+    }
+
+    public Criterion jsonField(String jsonField) {
+        this.jsonField = jsonField;
+        return this;
     }
 
     public Criteria eq(Object value) {
@@ -104,13 +112,17 @@ public class Criterion {
 
     public String generatePlaceholderKey() {
         String prefix = StringUtils.isNotBlank(criteria.getKey()) ? criteria.getKey() + RepoKeys.__ : "";
-        return prefix + name + RepoKeys.__ + operator.name();
+        String jsonFieldSuffix = StringUtils.isNotEmpty(jsonField) ? (RepoKeys.JSON_FIELD + jsonField) : "";
+        return prefix + name + jsonFieldSuffix + RepoKeys.__ + operator.name();
     }
 
     public <T> String buildCondition(EntityMeta<T> entityMeta, StringWrapper columnWrapper, StringWrapper placeholderWrapper) {
         String columnName = entityMeta.getColumnNameByFieldName(name);
         String stmt = StringUtils.isNotBlank(columnName)
                 ? columnWrapper.wrap(columnName) : name;
+        if (StringUtils.isNotBlank(jsonField)) {
+            stmt += "->'$." + jsonField + "'";
+        }
         String placeholder = placeholderWrapper.wrap(generatePlaceholderKey());
         return operator.buildCondition(stmt, placeholder);
     }
