@@ -31,8 +31,8 @@ public abstract class BaseSql2oRepository<E> extends BaseSql2oReadOnlyRepository
     @Override
     public void insert(E entity) {
         String sql = sqlGenerator.generateInsertSql(entityMeta);
-        try (Connection conn = sql2o.open()) {
-            org.sql2o.Query sql2oQuery = conn.createQuery(sql);
+        try (Connection conn = sql2o.open();
+                org.sql2o.Query sql2oQuery = conn.createQuery(sql)) {
             for (Field field : entityMeta.getFieldsWithoutIdField()) {
                 Object value = ReflectionUtil.getFieldValue(entity, field);
                 sql2oQuery.addParameter(field.getName(), value);
@@ -59,8 +59,8 @@ public abstract class BaseSql2oRepository<E> extends BaseSql2oReadOnlyRepository
     }
 
     private void doBatchInsert(List<E> entities, String sql) {
-        try (Connection conn = sql2o.open()) {
-            org.sql2o.Query sql2oQuery = conn.createQuery(sql);
+        try (Connection conn = sql2o.open();
+                org.sql2o.Query sql2oQuery = conn.createQuery(sql)) {
             List<Field> fields = entityMeta.getFieldsWithoutIdField();
             for (int i = 0; i < entities.size(); i++) {
                 E entity = entities.get(i);
@@ -76,8 +76,8 @@ public abstract class BaseSql2oRepository<E> extends BaseSql2oReadOnlyRepository
     @Override
     public void update(E entity) {
         String sql = sqlGenerator.generateUpdateSql(entityMeta);
-        try (Connection conn = sql2o.open()) {
-            org.sql2o.Query sql2oQuery = conn.createQuery(sql);
+        try (Connection conn = sql2o.open();
+                org.sql2o.Query sql2oQuery = conn.createQuery(sql)) {
             for (Field field : entityMeta.getFields()) {
                 Object value = ReflectionUtil.getFieldValue(entity, field);
                 sql2oQuery.addParameter(field.getName(), value);
@@ -89,8 +89,8 @@ public abstract class BaseSql2oRepository<E> extends BaseSql2oReadOnlyRepository
     @Override
     public void updateSelective(E entity) {
         String sql = sqlGenerator.generateUpdateSelectiveSql(entityMeta, entity);
-        try (Connection conn = sql2o.open()) {
-            org.sql2o.Query sql2oQuery = conn.createQuery(sql);
+        try (Connection conn = sql2o.open();
+                org.sql2o.Query sql2oQuery = conn.createQuery(sql)) {
             for (Field field : entityMeta.getFields()) {
                 Object value = ReflectionUtil.getFieldValue(entity, field);
                 if (value == null) {
@@ -107,8 +107,8 @@ public abstract class BaseSql2oRepository<E> extends BaseSql2oReadOnlyRepository
         Map<String, Object> paramMap = criteria.toParamMap();
         String sql = sqlGenerator.generateUpdateSelectiveByCriteriaSql(entityMeta, entity, criteria);
         sql = sqlGenerator.flattenCollectionValues(sql, paramMap);
-        try (Connection conn = sql2o.open()) {
-            org.sql2o.Query sql2oQuery = conn.createQuery(sql);
+        try (Connection conn = sql2o.open();
+                org.sql2o.Query sql2oQuery = conn.createQuery(sql)) {
             for (Field field : entityMeta.getFields()) {
                 Object value = ReflectionUtil.getFieldValue(entity, field);
                 if (value == null) {
@@ -130,8 +130,9 @@ public abstract class BaseSql2oRepository<E> extends BaseSql2oReadOnlyRepository
     public void deleteById(Object id) {
         String sql = sqlGenerator.generateDeleteByPrimaryKeySql(entityMeta);
         Field idField = entityMeta.getIdField();
-        try (Connection conn = sql2o.open()) {
-            conn.createQuery(sql)
+        try (Connection conn = sql2o.open();
+                org.sql2o.Query sql2oQuery = conn.createQuery(sql)) {
+            sql2oQuery
                 .addParameter(idField.getName(), id)
                 .executeUpdate();
         }
@@ -142,8 +143,8 @@ public abstract class BaseSql2oRepository<E> extends BaseSql2oReadOnlyRepository
         String sql = sqlGenerator.generateDeleteByCriteriaSql(entityMeta, criteria);
         Map<String, Object> paramMap = criteria.toParamMap();
         sql = sqlGenerator.flattenCollectionValues(sql, paramMap);
-        try (Connection conn = sql2o.open()) {
-            org.sql2o.Query sql2oQuery = conn.createQuery(sql);
+        try (Connection conn = sql2o.open();
+                org.sql2o.Query sql2oQuery = conn.createQuery(sql)) {
             for (Entry<String, Object> entry : paramMap.entrySet()) {
                 sql2oQuery.addParameter(entry.getKey(), entry.getValue());
             }
@@ -156,8 +157,8 @@ public abstract class BaseSql2oRepository<E> extends BaseSql2oReadOnlyRepository
         String sql = sqlGenerator.generateDeleteByQuerySql(entityMeta, query);
         Map<String, Object> paramMap = query.toParamMap();
         sql = sqlGenerator.flattenCollectionValues(sql, paramMap);
-        try (Connection conn = sql2o.open()) {
-            org.sql2o.Query sql2oQuery = conn.createQuery(sql);
+        try (Connection conn = sql2o.open();
+                org.sql2o.Query sql2oQuery = conn.createQuery(sql)) {
             for (Entry<String, Object> entry : paramMap.entrySet()) {
                 sql2oQuery.addParameter(entry.getKey(), entry.getValue());
             }
