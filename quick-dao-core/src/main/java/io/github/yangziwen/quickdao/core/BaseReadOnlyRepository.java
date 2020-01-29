@@ -1,5 +1,6 @@
 package io.github.yangziwen.quickdao.core;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -42,9 +43,9 @@ public interface BaseReadOnlyRepository<E> {
 
     default Page<E> paginate(Query query, int pageNo, int pageSize) {
         query.offset((pageNo - 1) * pageSize).limit(pageSize);
-        List<E> list = list(query);
         Integer totalCount = count(query);
-        return new Page<E>(pageNo, pageSize, list, totalCount);
+        List<E> list = totalCount > 0 ? list(query) : new ArrayList<>();
+        return new Page<>(pageNo, pageSize, list, totalCount);
     }
 
     default Page<E> paginate(Criteria criteria, int pageNo, int pageSize) {
