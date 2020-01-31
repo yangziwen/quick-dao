@@ -1,8 +1,6 @@
 package io.github.yangziwen.quickdao.springjdbc;
 
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -12,8 +10,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -57,9 +53,6 @@ public class BeanPropertyRowMapper<T> implements RowMapper<T> {
 
     /** Set of bean properties we provide mapping for */
     private Set<String> mappedProperties;
-
-    private ConcurrentMap<Class<?>, Method> enumValuesMethods = new ConcurrentHashMap<>();
-
 
     /**
      * Create a new {@code BeanPropertyRowMapper} for bean-style configuration.
@@ -307,29 +300,18 @@ public class BeanPropertyRowMapper<T> implements RowMapper<T> {
         if (!IEnum.class.isAssignableFrom(enumClass)) {
             throw new TypeMismatchDataAccessException("IEnum is not assignable from " + enumClass);
         }
-        Method enumObjectsGetter = enumValuesMethods.computeIfAbsent(enumClass, key -> {
-            try {
-                return enumClass.getMethod("values");
-            } catch (NoSuchMethodException | SecurityException e) {
-                logger.error("failed to get values method of enum " + enumClass + ", error is " + e.getMessage());
-                return null;
-            }
-        });
-        if (enumObjectsGetter == null) {
-            return null;
-        }
-
         try {
-            for (IEnum<?, ?> enumObj : (IEnum<?, ?>[])enumObjectsGetter.invoke(null)) {
+            for (Object obj : enumClass.getEnumConstants()) {
+                IEnum<?, ?> enumObj = (IEnum<?, ?>) obj;
                 if (Objects.equals(enumObj.getValue(), value)) {
                     return enumObj;
                 }
             }
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-            logger.error("failed to invoke values method of enum " + enumClass + ", error is " + e.getMessage());
+            return null;
+        } catch (Exception e) {
+            logger.error("failed to get enum obj of " + enumClass + ", error is " + e.getMessage());
             return null;
         }
-        return null;
     }
 
     /**
