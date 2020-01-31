@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 
@@ -70,6 +69,7 @@ public abstract class BaseSpringJdbcRepository<E> extends BaseSpringJdbcReadOnly
         jdbcTemplate.update(sql, createSqlParameterSource(entity));
     }
 
+    @Override
     public void updateSelective(E entity, Criteria criteria) {
         String sql = sqlGenerator.generateUpdateSelectiveByCriteriaSql(entityMeta, entity, criteria);
         SqlParameterSource source = new CompositeSqlParameterSource(
@@ -104,11 +104,11 @@ public abstract class BaseSpringJdbcRepository<E> extends BaseSpringJdbcReadOnly
         delete(new Criteria().and(entityMeta.getIdFieldName()).in(ids));
     }
 
-    private SqlParameterSource createSqlParameterSource(Criteria criteria) {
-        return new MapSqlParameterSource(criteria.toParamMap());
+    protected SqlParameterSource createSqlParameterSource(Criteria criteria) {
+        return createSqlParameterSource(criteria.toParamMap());
     }
 
-    private SqlParameterSource createSqlParameterSource(E entity) {
+    protected SqlParameterSource createSqlParameterSource(E entity) {
         return new BeanPropertySqlParameterSource(entity, sqlGenerator.getColumnWrapper());
     }
 

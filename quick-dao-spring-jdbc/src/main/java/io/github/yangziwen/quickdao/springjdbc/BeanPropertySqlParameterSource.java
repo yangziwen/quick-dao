@@ -4,6 +4,7 @@ import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.NotReadablePropertyException;
 import org.springframework.beans.PropertyAccessor;
@@ -11,6 +12,7 @@ import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.jdbc.core.StatementCreatorUtils;
 import org.springframework.jdbc.core.namedparam.AbstractSqlParameterSource;
 
+import io.github.yangziwen.quickdao.core.IEnum;
 import io.github.yangziwen.quickdao.core.util.StringWrapper;
 
 public class BeanPropertySqlParameterSource extends AbstractSqlParameterSource {
@@ -39,7 +41,9 @@ public class BeanPropertySqlParameterSource extends AbstractSqlParameterSource {
     @Override
     public Object getValue(String paramName) throws IllegalArgumentException {
         try {
-            return this.beanWrapper.getPropertyValue(paramWrapper.unwrap(paramName));
+            Object value = this.beanWrapper.getPropertyValue(paramWrapper.unwrap(paramName));
+            Object enumValue = IEnum.extractEnumValue(value);
+            return ObjectUtils.defaultIfNull(enumValue, value);
         }
         catch (NotReadablePropertyException ex) {
             throw new IllegalArgumentException(ex.getMessage());

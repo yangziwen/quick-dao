@@ -3,12 +3,13 @@ package io.github.yangziwen.quickdao.springjdbc;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
 import io.github.yangziwen.quickdao.core.BaseCommonRepository;
 import io.github.yangziwen.quickdao.core.Criteria;
@@ -42,7 +43,7 @@ public abstract class BaseSpringJdbcReadOnlyRepository<E> extends BaseCommonRepo
     @Override
     public List<E> list(Query query) {
         String sql = sqlGenerator.generateListByQuerySql(entityMeta, query);
-        return jdbcTemplate.query(sql, query.toParamMap(), rowMapper);
+        return jdbcTemplate.query(sql, createSqlParameterSource(query.toParamMap()), rowMapper);
     }
 
     @Override
@@ -56,7 +57,7 @@ public abstract class BaseSpringJdbcReadOnlyRepository<E> extends BaseCommonRepo
     @Override
     public Integer count(Query query) {
         String sql = sqlGenerator.generateCountByQuerySql(entityMeta, query);
-        return jdbcTemplate.queryForObject(sql, query.toParamMap(), Integer.class);
+        return jdbcTemplate.queryForObject(sql, createSqlParameterSource(query.toParamMap()), Integer.class);
     }
 
     protected RowMapper<E> createRowMapper(Class<E> entityClass) {
@@ -72,5 +73,10 @@ public abstract class BaseSpringJdbcReadOnlyRepository<E> extends BaseCommonRepo
     protected int getSqlCacheLimit() {
         return DEFAULT_SQL_CACHE_LIMIT;
     }
+
+    protected SqlParameterSource createSqlParameterSource(Map<String, Object> paramMap) {
+        return new MapSqlParameterSource(paramMap);
+    }
+
 
 }
