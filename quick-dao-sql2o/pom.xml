@@ -7,7 +7,7 @@
     <parent>
         <groupId>io.github.yangziwen</groupId>
         <artifactId>quick-dao</artifactId>
-        <version>0.0.11-SNAPSHOT</version>
+        <version>0.0.11</version>
     </parent>
     <artifactId>quick-dao-sql2o</artifactId>
     <name>quick-dao-sql2o</name>
