@@ -87,13 +87,13 @@ public abstract class BaseSpringJdbcRepository<E> extends BaseSpringJdbcReadOnly
     @Override
     public void delete(Criteria criteria) {
         String sql = sqlGenerator.generateDeleteByCriteriaSql(entityMeta, criteria);
-        jdbcTemplate.update(sql, new Query().where(criteria).toParamMap());
+        jdbcTemplate.update(sql, createSqlParameterSource(criteria));
     }
 
     @Override
     public void delete(Query query) {
         String sql = sqlGenerator.generateDeleteByQuerySql(entityMeta, query);
-        jdbcTemplate.update(sql, query.toParamMap());
+        jdbcTemplate.update(sql, createSqlParameterSource(query.toParamMap()));
     }
 
     @Override
