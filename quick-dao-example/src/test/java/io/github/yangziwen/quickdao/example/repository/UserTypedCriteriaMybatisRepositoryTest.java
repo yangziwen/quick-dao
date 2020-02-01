@@ -10,6 +10,7 @@ import org.apache.ibatis.transaction.TransactionFactory;
 import org.apache.ibatis.transaction.managed.ManagedTransactionFactory;
 
 import io.github.yangziwen.quickdao.example.repository.base.BaseUserTypedCriteriaRepositoryTest;
+import io.github.yangziwen.quickdao.mybatis.CustomEnumTypeHandler;
 
 public class UserTypedCriteriaMybatisRepositoryTest extends BaseUserTypedCriteriaRepositoryTest {
 
@@ -23,6 +24,7 @@ public class UserTypedCriteriaMybatisRepositoryTest extends BaseUserTypedCriteri
         configuration.setLazyLoadingEnabled(false);
         configuration.setMapUnderscoreToCamelCase(true);
         configuration.setUseGeneratedKeys(true);
+        configuration.setDefaultEnumTypeHandler(CustomEnumTypeHandler.class);
         return new SqlSessionFactoryBuilder().build(configuration);
     }
 

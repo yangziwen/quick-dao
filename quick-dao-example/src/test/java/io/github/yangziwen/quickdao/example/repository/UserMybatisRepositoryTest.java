@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import io.github.yangziwen.quickdao.example.entity.User;
 import io.github.yangziwen.quickdao.example.repository.base.BaseUserRepositoryTest;
+import io.github.yangziwen.quickdao.mybatis.CustomEnumTypeHandler;
 
 public class UserMybatisRepositoryTest extends BaseUserRepositoryTest {
 
@@ -26,6 +27,7 @@ public class UserMybatisRepositoryTest extends BaseUserRepositoryTest {
         configuration.setLazyLoadingEnabled(false);
         configuration.setMapUnderscoreToCamelCase(true);
         configuration.setUseGeneratedKeys(true);
+        configuration.setDefaultEnumTypeHandler(CustomEnumTypeHandler.class);
         return new SqlSessionFactoryBuilder().build(configuration);
     }
 
