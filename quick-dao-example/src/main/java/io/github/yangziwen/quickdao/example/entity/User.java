@@ -6,6 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import io.github.yangziwen.quickdao.example.enums.Gender;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,6 +28,9 @@ public class User {
 
     @Column
     private String email;
+
+    @Column
+    private Gender gender;
 
     @Column
     private Date createTime;

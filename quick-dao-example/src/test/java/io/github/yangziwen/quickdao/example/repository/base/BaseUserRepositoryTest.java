@@ -17,6 +17,7 @@ import io.github.yangziwen.quickdao.core.Order.Direction;
 import io.github.yangziwen.quickdao.core.Page;
 import io.github.yangziwen.quickdao.core.Query;
 import io.github.yangziwen.quickdao.example.entity.User;
+import io.github.yangziwen.quickdao.example.enums.Gender;
 
 public abstract class BaseUserRepositoryTest extends BaseRepositoryTest {
 
@@ -64,6 +65,7 @@ public abstract class BaseUserRepositoryTest extends BaseRepositoryTest {
                 .and("id").in(Arrays.asList(2L, 3L))
                 .and("username").endWith("2")
                 .and("email").isNotNull()
+                .and("gender").eq(Gender.FEMALE)
                 .and("createTime").lt(new Date());
         Query query = new Query().where(criteria);
         List<User> userList = createRepository().list(query);
@@ -76,6 +78,7 @@ public abstract class BaseUserRepositoryTest extends BaseRepositoryTest {
                 .and("id").in(Arrays.asList(2L, 3L))
                 .and("username").endWith("2")
                 .and("email").isNotNull()
+                .and("gender").eq(Gender.FEMALE)
                 .and("createTime").lt(new Date());
         criteria = Criteria.fromParamMap(criteria.toParamMap());
         List<User> userList = createRepository().list(criteria);
@@ -195,6 +198,7 @@ public abstract class BaseUserRepositoryTest extends BaseRepositoryTest {
         User user = User.builder()
                 .username("user3")
                 .email("user3@test.com")
+                .gender(Gender.MALE)
                 .createTime(new Date())
                 .updateTime(new Date())
                 .build();
@@ -210,18 +214,21 @@ public abstract class BaseUserRepositoryTest extends BaseRepositoryTest {
         User user3 = User.builder()
                 .username("user3")
                 .email("user3@test.com")
+                .gender(Gender.MALE)
                 .createTime(new Date())
                 .updateTime(new Date())
                 .build();
         User user4 = User.builder()
                 .username("user4")
                 .email("user4@test.com")
+                .gender(Gender.FEMALE)
                 .createTime(new Date())
                 .updateTime(new Date())
                 .build();
         User user5 = User.builder()
                 .username("user5")
                 .email("user5@test.com")
+                .gender(Gender.MALE)
                 .createTime(new Date())
                 .updateTime(new Date())
                 .build();
@@ -240,6 +247,7 @@ public abstract class BaseUserRepositoryTest extends BaseRepositoryTest {
                 .id(id)
                 .username(username)
                 .email(email)
+                .gender(Gender.FEMALE)
                 .createTime(new Date())
                 .updateTime(new Date())
                 .build();
@@ -255,6 +263,7 @@ public abstract class BaseUserRepositoryTest extends BaseRepositoryTest {
         User user = User.builder()
                 .id(id)
                 .username(username)
+                .gender(Gender.FEMALE)
                 .build();
         BaseRepository<User> repository = createRepository();
         repository.updateSelective(user);

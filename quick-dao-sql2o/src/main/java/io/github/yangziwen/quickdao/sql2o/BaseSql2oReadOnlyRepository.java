@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import org.apache.commons.collections4.CollectionUtils;
 import org.sql2o.Connection;
 import org.sql2o.Sql2o;
+import org.sql2o.converters.Convert;
 
 import io.github.yangziwen.quickdao.core.BaseCommonRepository;
 import io.github.yangziwen.quickdao.core.Criteria;
@@ -18,6 +19,10 @@ import io.github.yangziwen.quickdao.core.SqlGenerator;
 import io.github.yangziwen.quickdao.core.util.StringWrapper;
 
 public abstract class BaseSql2oReadOnlyRepository<E> extends BaseCommonRepository<E> {
+
+    static {
+        Convert.registerEnumConverter(new CustomEnumConverterFactory());
+    }
 
     protected final Sql2o sql2o;
 
@@ -40,8 +45,8 @@ public abstract class BaseSql2oReadOnlyRepository<E> extends BaseCommonRepositor
         String sql = sqlGenerator.generateListByQuerySql(entityMeta, query);
         Map<String, Object> paramMap = query.toParamMap();
         sql = sqlGenerator.flattenCollectionValues(sql, paramMap);
-        try (Connection conn = sql2o.open()) {
-            org.sql2o.Query sql2oQuery = conn.createQuery(sql);
+        try (Connection conn = sql2o.open();
+                org.sql2o.Query sql2oQuery = conn.createQuery(sql)) {
             for (Entry<String, Object> entry : paramMap.entrySet()) {
                 if (entry.getValue() == null) {
                     continue;

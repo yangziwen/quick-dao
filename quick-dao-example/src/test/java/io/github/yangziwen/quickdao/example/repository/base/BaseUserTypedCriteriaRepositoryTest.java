@@ -18,6 +18,7 @@ import io.github.yangziwen.quickdao.core.Query;
 import io.github.yangziwen.quickdao.core.TypedCriteria;
 import io.github.yangziwen.quickdao.core.TypedQuery;
 import io.github.yangziwen.quickdao.example.entity.User;
+import io.github.yangziwen.quickdao.example.enums.Gender;
 
 public abstract class BaseUserTypedCriteriaRepositoryTest extends BaseRepositoryTest {
 
@@ -36,6 +37,7 @@ public abstract class BaseUserTypedCriteriaRepositoryTest extends BaseRepository
                 .and(User::getId).in(Arrays.asList(2L, 3L))
                 .and(User::getUsername).endWith("2")
                 .and(User::getEmail).isNotNull()
+                .and(User::getGender).eq(Gender.FEMALE)
                 .and(User::getCreateTime).lt(new Date());
         TypedQuery<User> query = new TypedQuery<>(User.class)
                 .where(criteria);
@@ -49,6 +51,7 @@ public abstract class BaseUserTypedCriteriaRepositoryTest extends BaseRepository
                 .and(User::getId).in(Arrays.asList(2L, 3L))
                 .and(User::getUsername).endWith("2")
                 .and(User::getEmail).isNotNull()
+                .and(User::getGender).eq(Gender.FEMALE)
                 .and(User::getCreateTime).lt(new Date());
         criteria = TypedCriteria.fromParamMap(User.class, criteria.toParamMap());
         List<User> userList = createRepository().list(criteria);
