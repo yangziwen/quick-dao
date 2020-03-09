@@ -1,5 +1,7 @@
 package io.github.yangziwen.quickdao.core;
 
+import java.util.Objects;
+
 import org.apache.commons.lang3.StringUtils;
 
 import io.github.yangziwen.quickdao.core.util.StringWrapper;
@@ -23,6 +25,9 @@ public class Criterion {
     @Getter
     private Operator operator = Operator.eq;
 
+    @Getter
+    private boolean valid;
+
     Criterion(String name, Criteria criteria) {
         this(name, criteria, true);
     }
@@ -30,15 +35,29 @@ public class Criterion {
     Criterion(String name, Criteria criteria, boolean valid) {
         this.name = StringUtils.replacePattern(name, "\\s+", "");
         this.criteria = criteria;
-        if (valid) {
-            criteria.getCriterionList().add(this);
-        }
+        this.valid = valid;
     }
 
     Criteria op(Operator operator, Object value) {
         this.operator = operator;
         this.value = value;
+        if (valid && !isRedundant()) {
+            criteria.getCriterionList().add(this);
+        }
         return this.criteria;
+    }
+
+    private boolean isRedundant() {
+        for (Criterion criterion : criteria.getCriterionList()) {
+            if (Objects.equals(criterion.getName(), getName())
+                    && Objects.equals(criterion.getJsonField(), getJsonField())
+                    // be aware that the value comparation is based on the shallow equals
+                    && Objects.equals(criterion.getValue(), getValue())
+                    && Objects.equals(criterion.getOperator(), getOperator())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public Criterion jsonField(String jsonField) {
