@@ -15,7 +15,7 @@ quick-dao通过对Spring JDBC, MyBatis, sql2o等orm框架进行简单封装，�
 <dependency>
     <groupId>io.github.yangziwen</groupId>
     <artifactId>quick-dao-spring-jdbc</artifactId>
-    <version>0.0.9</version>
+    <version>0.0.13</version>
 </dependency>
 
 <!-- 使用MyBatis的情形(需注意SqlSession的线程安全) -->
@@ -23,14 +23,14 @@ quick-dao通过对Spring JDBC, MyBatis, sql2o等orm框架进行简单封装，�
 <dependency>
     <groupId>io.github.yangziwen</groupId>
     <artifactId>quick-dao-mybatis</artifactId>
-    <version>0.0.9</version>
+    <version>0.0.13</version>
 </dependency>
 
 <!-- 使用sql2o的情形(适合快速开发demo) -->
 <dependency>
     <groupId>io.github.yangziwen</groupId>
     <artifactId>quick-dao-sql2o</artifactId>
-    <version>0.0.9</version>
+    <version>0.0.13</version>
 </dependency>
 ```
 
