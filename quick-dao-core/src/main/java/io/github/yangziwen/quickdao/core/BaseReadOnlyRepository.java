@@ -53,16 +53,44 @@ public interface BaseReadOnlyRepository<E> {
         return paginate(new Query().where(criteria), pageNo, pageSize);
     }
 
-    List<E> listQuery(Consumer<TypedQuery<E>> consumer);
+    default List<E> listQuery(Consumer<TypedQuery<E>> consumer) {
+        TypedQuery<E> query = newTypedQuery();
+        consumer.accept(query);
+        return list(query);
+    }
 
-    List<E> listCriteria(Consumer<TypedCriteria<E>> consumer);
+    default List<E> listCriteria(Consumer<TypedCriteria<E>> consumer) {
+        TypedCriteria<E> criteria = newTypedCriteria();
+        consumer.accept(criteria);
+        return list(criteria);
+    }
 
-    Integer countQuery(Consumer<TypedQuery<E>> consumer);
+    default Integer countQuery(Consumer<TypedQuery<E>> consumer) {
+        TypedQuery<E> query = newTypedQuery();
+        consumer.accept(query);
+        return count(query);
+    }
 
-    Integer countCriteria(Consumer<TypedCriteria<E>> consumer);
+    default Integer countCriteria(Consumer<TypedCriteria<E>> consumer) {
+        TypedCriteria<E> criteria = newTypedCriteria();
+        consumer.accept(criteria);
+        return count(criteria);
+    }
 
-    Page<E> paginateQuery(Consumer<TypedQuery<E>> consumer, int pageNo, int pageSize);
+    default Page<E> paginateQuery(Consumer<TypedQuery<E>> consumer, int pageNo, int pageSize) {
+        TypedQuery<E> query = newTypedQuery();
+        consumer.accept(query);
+        return paginate(query, pageNo, pageSize);
+    }
 
-    Page<E> paginateCriteria(Consumer<TypedCriteria<E>> consumer, int pageNo, int pageSize);
+    default Page<E> paginateCriteria(Consumer<TypedCriteria<E>> consumer, int pageNo, int pageSize) {
+        TypedCriteria<E> criteria = newTypedCriteria();
+        consumer.accept(criteria);
+        return paginate(criteria, pageNo, pageSize);
+    }
+
+    TypedCriteria<E> newTypedCriteria();
+
+    TypedQuery<E> newTypedQuery();
 
 }
