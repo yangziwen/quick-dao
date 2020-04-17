@@ -1,5 +1,6 @@
 package io.github.yangziwen.quickdao.core;
 
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import io.github.yangziwen.quickdao.core.Order.Direction;
@@ -10,6 +11,8 @@ public class TypedQuery<E> extends Query {
 
     private static final long serialVersionUID = 1L;
 
+    private final Class<E> classType;
+
     private final InvokedMethodExtractor<E> extractor;
 
     @Getter
@@ -19,6 +22,7 @@ public class TypedQuery<E> extends Query {
     private TypedCriteria<E> havingCriteria;
 
     public TypedQuery(Class<E> classType) {
+        this.classType = classType;
         this.extractor = new InvokedMethodExtractor<>(classType);
         this.criteria = new TypedCriteria<>(classType);
         this.havingCriteria = new TypedCriteria<>(classType, null, 0 + RepoKeys.HAVING);
@@ -41,6 +45,14 @@ public class TypedQuery<E> extends Query {
         return this;
     }
 
+    public TypedQuery<E> where(Consumer<TypedCriteria<E>> consumer) {
+        if (this.criteria == null) {
+            this.where(new TypedCriteria<>(classType));
+        }
+        consumer.accept(getCriteria());
+        return this;
+    }
+
     @Override
     public TypedQuery<E> groupBy(String stmt) {
         super.groupBy(stmt);
@@ -55,6 +67,14 @@ public class TypedQuery<E> extends Query {
     public TypedQuery<E> having(TypedCriteria<E> criteria) {
         criteria.setKey(RepoKeys.HAVING);
         super.having(this.havingCriteria = criteria);
+        return this;
+    }
+
+    public TypedQuery<E> having(Consumer<TypedCriteria<E>> consumer) {
+        if (this.havingCriteria == null) {
+            this.having(new TypedCriteria<>(classType));
+        }
+        consumer.accept(getHavingCriteria());
         return this;
     }
 

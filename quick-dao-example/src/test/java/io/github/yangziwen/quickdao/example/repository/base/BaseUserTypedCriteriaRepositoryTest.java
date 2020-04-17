@@ -33,16 +33,16 @@ public abstract class BaseUserTypedCriteriaRepositoryTest extends BaseRepository
 
     @Test
     public void testListWithQuery() {
-        TypedCriteria<User> criteria = new TypedCriteria<User>(User.class)
-                .and(User::getId).in(Arrays.asList(2L, 3L))
-                .and(User::getUsername).endWith("2")
-                .and(User::getEmail).isNotNull()
-                .and(User::getGender).eq(Gender.FEMALE)
-                .and(User::getCreateTime).lt(new Date());
         TypedQuery<User> query = new TypedQuery<>(User.class)
-                .where(criteria);
+                .where(criteria -> criteria
+                        .and(User::getId).in(Arrays.asList(2L, 3L))
+                        .and(User::getUsername).endWith("2")
+                        .and(User::getEmail).isNotNull()
+                        .and(User::getGender).eq(Gender.FEMALE)
+                        .and(User::getCreateTime).lt(new Date()));
         List<User> userList = createRepository().list(query);
         Assert.assertEquals(1, userList.size());
+        Assert.assertEquals("user2", userList.get(0).getUsername());
     }
 
     @Test
@@ -133,22 +133,20 @@ public abstract class BaseUserTypedCriteriaRepositoryTest extends BaseRepository
 
     @Test
     public void testListWithGroup() throws Exception {
-        TypedCriteria<User> criteria = new TypedCriteria<User>(User.class)
-                .and(User::getId).in(Arrays.asList(2L, 3L))
-                .and(User::getUsername).endWith("2")
-                .and(User::getEmail).isNotNull()
-                .and(User::getCreateTime).lt(new Date())
-                .or()
-                    .and(User::getId).eq(1L)
-                    .and(User::getUsername).endWith("1")
-                .end();
-        TypedCriteria<User> havingCriteria = new TypedCriteria<User>(User.class)
-                .and(User::getCreateTime).lt(new Date());
         TypedQuery<User> query = new TypedQuery<>(User.class)
                 .select(User::getCreateTime)
-                .where(criteria)
+                .where(criteria -> criteria
+                        .and(User::getId).in(Arrays.asList(2L, 3L))
+                        .and(User::getUsername).endWith("2")
+                        .and(User::getEmail).isNotNull()
+                        .and(User::getCreateTime).lt(new Date())
+                        .or()
+                            .and(User::getId).eq(1L)
+                            .and(User::getUsername).endWith("1")
+                        .end())
                 .groupBy(User::getCreateTime)
-                .having(havingCriteria)
+                .having(criteria -> criteria
+                        .and(User::getCreateTime).lt(new Date()))
                 .limit(2);
         List<User> userList = createRepository().list(query);
         Assert.assertEquals(1, userList.size());

@@ -3,8 +3,8 @@ package io.github.yangziwen.quickdao.core;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.function.BooleanSupplier;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -29,28 +29,28 @@ public class TypedCriteria<E> extends Criteria {
         this.extractor = new InvokedMethodExtractor<>(classType);
     }
 
-    public InnerCriteria ifValid(Supplier<Boolean> supplier) {
-        return new InnerCriteria(supplier.get());
+    public InnerCriteria ifValid(BooleanSupplier supplier) {
+        return new InnerCriteria(supplier.getAsBoolean());
     }
 
     @Override
     public TypedCriterion<E> and(String name) {
-        return new TypedCriterion<E>(name, this);
+        return new TypedCriterion<>(name, this);
     }
 
     public TypedCriterion<E> and(Function<E, ?> getter) {
         String name = extractor.extractFieldNameFromGetter(getter);
-        return new TypedCriterion<E>(name, this);
+        return new TypedCriterion<>(name, this);
     }
 
     public TypedCriterion<E> or(Function<E, ?> getter) {
         String name = extractor.extractFieldNameFromGetter(getter);
-        return new TypedCriterion<E>(name, or());
+        return new TypedCriterion<>(name, or());
     }
 
     @Override
     public TypedCriterion<E> or(String name) {
-        return new TypedCriterion<E>(name, or());
+        return new TypedCriterion<>(name, or());
     }
 
     @Override
@@ -70,7 +70,7 @@ public class TypedCriteria<E> extends Criteria {
     protected TypedCriteria<E> ensureNestedCriteria(String criteriaKey) {
         TypedCriteria<E> criteria = (TypedCriteria<E>) getNestedCriteriaMap().get(criteriaKey);
         if (criteria == null) {
-            criteria = new TypedCriteria<E>(classType, this, criteriaKey);
+            criteria = new TypedCriteria<>(classType, this, criteriaKey);
             getNestedCriteriaMap().put(criteriaKey, criteria);
         }
         return criteria;
@@ -114,7 +114,7 @@ public class TypedCriteria<E> extends Criteria {
 
         public TypedCriterion<E> then(Function<E, ?> getter) {
             String name = extractor.extractFieldNameFromGetter(getter);
-            return new TypedCriterion<E>(name, TypedCriteria.this, valid);
+            return new TypedCriterion<>(name, TypedCriteria.this, valid);
         }
 
     }

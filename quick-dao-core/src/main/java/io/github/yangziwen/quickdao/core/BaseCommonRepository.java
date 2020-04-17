@@ -15,7 +15,7 @@ public abstract class BaseCommonRepository<E> implements BaseReadOnlyRepository<
     }
 
     public TypedCriteria<E> newTypedCriteria() {
-        return new TypedCriteria<E>(entityMeta.getClassType());
+        return new TypedCriteria<>(entityMeta.getClassType());
     }
 
     public TypedQuery<E> newTypedQuery() {
