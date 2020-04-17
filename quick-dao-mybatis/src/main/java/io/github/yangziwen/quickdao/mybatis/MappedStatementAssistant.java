@@ -15,6 +15,8 @@ import org.apache.ibatis.session.Configuration;
 
 public class MappedStatementAssistant {
 
+    private static final String DEFAULT_RESULT_MAP_ID = "defaultResultMap";
+
     private Configuration configuration;
 
     private LanguageDriver languageDriver;
@@ -36,7 +38,7 @@ public class MappedStatementAssistant {
 
     private void newSelectMappedStatement(String id, SqlSource sqlSource, final Class<?> resultType) {
         List<ResultMap> resultMaps = new ArrayList<>();
-        resultMaps.add(new ResultMap.Builder(configuration, "defaultResultMap", resultType, new ArrayList<ResultMapping>(0)).build());
+        resultMaps.add(new ResultMap.Builder(configuration, DEFAULT_RESULT_MAP_ID, resultType, new ArrayList<ResultMapping>(0)).build());
         MappedStatement mappedStatement = new MappedStatement.Builder(configuration, id, sqlSource, SqlCommandType.SELECT)
                 .resultMaps(resultMaps)
                 .build();
@@ -45,7 +47,7 @@ public class MappedStatementAssistant {
 
     private void newInsertMappedStatement(String id, SqlSource sqlSource, String keyProperty) {
         List<ResultMap> resultMaps = new ArrayList<>();
-        resultMaps.add(new ResultMap.Builder(configuration, "defaultResultMap", int.class, new ArrayList<ResultMapping>(0)).build());
+        resultMaps.add(new ResultMap.Builder(configuration, DEFAULT_RESULT_MAP_ID, int.class, new ArrayList<ResultMapping>(0)).build());
         MappedStatement.Builder builder = new MappedStatement.Builder(configuration, id, sqlSource, SqlCommandType.INSERT)
                 .resultMaps(resultMaps);
         if (StringUtils.isNotBlank(keyProperty)) {
@@ -57,7 +59,7 @@ public class MappedStatementAssistant {
 
     private void newUpdateMappedStatement(String id, SqlSource sqlSource, SqlCommandType sqlCommandType) {
         List<ResultMap> resultMaps = new ArrayList<>();
-        resultMaps.add(new ResultMap.Builder(configuration, "defaultResultMap", int.class, new ArrayList<ResultMapping>(0)).build());
+        resultMaps.add(new ResultMap.Builder(configuration, DEFAULT_RESULT_MAP_ID, int.class, new ArrayList<ResultMapping>(0)).build());
         MappedStatement mappedStatement = new MappedStatement.Builder(configuration, id, sqlSource, sqlCommandType)
                 .resultMaps(resultMaps)
                 .build();
