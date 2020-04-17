@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.yangziwen</groupId>
     <artifactId>quick-dao</artifactId>
-    <version>0.0.14-SNAPSHOT</version>
+    <version>0.0.14</version>
     <packaging>pom</packaging>
     <name>quick-dao</name>
     <url>http://maven.apache.org</url>
