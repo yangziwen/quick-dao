@@ -3,6 +3,7 @@ package io.github.yangziwen.quickdao.core;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -51,5 +52,17 @@ public interface BaseReadOnlyRepository<E> {
     default Page<E> paginate(Criteria criteria, int pageNo, int pageSize) {
         return paginate(new Query().where(criteria), pageNo, pageSize);
     }
+
+    List<E> listQuery(Consumer<TypedQuery<E>> consumer);
+
+    List<E> listCriteria(Consumer<TypedCriteria<E>> consumer);
+
+    Integer countQuery(Consumer<TypedQuery<E>> consumer);
+
+    Integer countCriteria(Consumer<TypedCriteria<E>> consumer);
+
+    Page<E> paginateQuery(Consumer<TypedQuery<E>> consumer, int pageNo, int pageSize);
+
+    Page<E> paginateCriteria(Consumer<TypedCriteria<E>> consumer, int pageNo, int pageSize);
 
 }

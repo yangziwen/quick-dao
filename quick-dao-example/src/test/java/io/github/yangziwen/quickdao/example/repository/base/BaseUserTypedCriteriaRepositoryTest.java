@@ -33,14 +33,13 @@ public abstract class BaseUserTypedCriteriaRepositoryTest extends BaseRepository
 
     @Test
     public void testListWithQuery() {
-        TypedQuery<User> query = new TypedQuery<>(User.class)
+        List<User> userList = createRepository().listQuery(query -> query
                 .where(criteria -> criteria
                         .and(User::getId).in(Arrays.asList(2L, 3L))
                         .and(User::getUsername).endWith("2")
                         .and(User::getEmail).isNotNull()
                         .and(User::getGender).eq(Gender.FEMALE)
-                        .and(User::getCreateTime).lt(new Date()));
-        List<User> userList = createRepository().list(query);
+                        .and(User::getCreateTime).lt(new Date())));
         Assert.assertEquals(1, userList.size());
         Assert.assertEquals("user2", userList.get(0).getUsername());
     }
@@ -60,20 +59,18 @@ public abstract class BaseUserTypedCriteriaRepositoryTest extends BaseRepository
 
     @Test
     public void testListWithOrQuery() {
-        TypedCriteria<User> criteria = new TypedCriteria<User>(User.class)
-                .and(User::getId).in(Arrays.asList(2L, 3L))
-                .and(User::getUsername).endWith("2")
-                .and(User::getEmail).isNotNull()
-                .and(User::getCreateTime).lt(new Date())
-                .or()
-                    .and(User::getId).eq(1L)
-                    .and(User::getUsername).endWith("1")
-                .end();
-        TypedQuery<User> query = new TypedQuery<>(User.class)
-                .where(criteria)
+        List<User> userList = createRepository().listQuery(query -> query
+                .where(criteria -> criteria
+                        .and(User::getId).in(Arrays.asList(2L, 3L))
+                        .and(User::getUsername).endWith("2")
+                        .and(User::getEmail).isNotNull()
+                        .and(User::getCreateTime).lt(new Date())
+                        .or()
+                            .and(User::getId).eq(1L)
+                            .and(User::getUsername).endWith("1")
+                        .end())
                 .orderBy(User::getId, Direction.DESC)
-                .limit(2);
-        List<User> userList = createRepository().list(query);
+                .limit(2));
         Assert.assertEquals(2, userList.size());
     }
 
@@ -88,29 +85,25 @@ public abstract class BaseUserTypedCriteriaRepositoryTest extends BaseRepository
                     .and(User::getId).eq(1L)
                     .and(User::getUsername).endWith("1")
                 .end();
-        criteria = TypedCriteria.fromParamMap(User.class, criteria.toParamMap());
-        TypedQuery<User> query = new TypedQuery<>(User.class)
-                .where(criteria)
+        List<User> userList = createRepository().listQuery(query -> query
+                .where(TypedCriteria.fromParamMap(User.class, criteria.toParamMap()))
                 .orderBy(User::getId, Direction.DESC)
-                .limit(2);
-        List<User> userList = createRepository().list(query);
+                .limit(2));
         Assert.assertEquals(2, userList.size());
     }
 
     @Test
     public void testListContain() throws Exception {
         ITable table = loadTable(tableName, DataSourceUtils.getConnection(dataSource));
-        Query query = new TypedQuery<>(User.class).where(new TypedCriteria<>(User.class)
-                .and(User::getEmail).contain("@"));
-        List<User> userList = createRepository().list(query);
+        List<User> userList = createRepository().listQuery(query -> query
+                .where(criteria -> criteria.and(User::getEmail).contain("@")));
         Assert.assertEquals(table.getRowCount(), userList.size());
     }
 
     @Test
     public void testListNotContain() {
-        Query query = new TypedQuery<>(User.class).where(new TypedCriteria<>(User.class)
-                .and(User::getEmail).notContain("@"));
-        List<User> userList = createRepository().list(query);
+        List<User> userList = createRepository().listQuery(query -> query
+                .where(criteria -> criteria.and(User::getEmail).notContain("@")));
         Assert.assertEquals(0, userList.size());
     }
 
@@ -133,7 +126,7 @@ public abstract class BaseUserTypedCriteriaRepositoryTest extends BaseRepository
 
     @Test
     public void testListWithGroup() throws Exception {
-        TypedQuery<User> query = new TypedQuery<>(User.class)
+        List<User> userList = createRepository().listQuery(query -> query
                 .select(User::getCreateTime)
                 .where(criteria -> criteria
                         .and(User::getId).in(Arrays.asList(2L, 3L))
@@ -147,17 +140,15 @@ public abstract class BaseUserTypedCriteriaRepositoryTest extends BaseRepository
                 .groupBy(User::getCreateTime)
                 .having(criteria -> criteria
                         .and(User::getCreateTime).lt(new Date()))
-                .limit(2);
-        List<User> userList = createRepository().list(query);
+                .limit(2));
         Assert.assertEquals(1, userList.size());
     }
 
     @Test
     public void testListWithLimit() {
-        Query query = new TypedQuery<>(User.class).where(new TypedCriteria<>(User.class)
-                .and(User::getId).ge(1))
-                .offset(1).limit(100);
-        List<User> userList = createRepository().list(query);
+        List<User> userList = createRepository().listQuery(query -> query
+                .where(criteria -> criteria.and(User::getId).ge(1))
+                .offset(1).limit(100));
         Assert.assertEquals(1, userList.size());
     }
 
