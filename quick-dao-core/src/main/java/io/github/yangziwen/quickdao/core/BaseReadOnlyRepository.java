@@ -53,6 +53,18 @@ public interface BaseReadOnlyRepository<E> {
         return paginate(new Query().where(criteria), pageNo, pageSize);
     }
 
+    default E firstQuery(Consumer<TypedQuery<E>> consumer) {
+        TypedQuery<E> query = newTypedQuery();
+        consumer.accept(query);
+        return first(query);
+    }
+
+    default E firstCriteria(Consumer<TypedCriteria<E>> consumer) {
+        TypedCriteria<E> criteria = newTypedCriteria();
+        consumer.accept(criteria);
+        return first(criteria);
+    }
+
     default List<E> listQuery(Consumer<TypedQuery<E>> consumer) {
         TypedQuery<E> query = newTypedQuery();
         consumer.accept(query);
