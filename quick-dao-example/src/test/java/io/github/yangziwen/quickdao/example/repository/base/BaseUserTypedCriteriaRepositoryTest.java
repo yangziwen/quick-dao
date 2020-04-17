@@ -16,7 +16,6 @@ import io.github.yangziwen.quickdao.core.Order.Direction;
 import io.github.yangziwen.quickdao.core.Page;
 import io.github.yangziwen.quickdao.core.Query;
 import io.github.yangziwen.quickdao.core.TypedCriteria;
-import io.github.yangziwen.quickdao.core.TypedQuery;
 import io.github.yangziwen.quickdao.example.entity.User;
 import io.github.yangziwen.quickdao.example.enums.Gender;
 
@@ -109,18 +108,16 @@ public abstract class BaseUserTypedCriteriaRepositoryTest extends BaseRepository
 
     @Test
     public void testListIsNull() {
-        Query query = new TypedQuery<>(User.class).where(new TypedCriteria<>(User.class)
-                .and(User::getUsername).isNull());
-        List<User> userList = createRepository().list(query);
+        List<User> userList = createRepository().listQuery(query -> query
+                .where(criteria -> criteria.and(User::getUsername).isNull()));
         Assert.assertEquals(0, userList.size());
     }
 
     @Test
     public void testListIsNotNull() throws Exception {
         ITable table = loadTable(tableName, DataSourceUtils.getConnection(dataSource));
-        Query query = new TypedQuery<>(User.class).where(new TypedCriteria<>(User.class)
-                .and(User::getUsername).isNotNull());
-        List<User> userList = createRepository().list(query);
+        List<User> userList = createRepository().listQuery(query -> query
+                .where(criteria -> criteria.and(User::getUsername).isNotNull()));
         Assert.assertEquals(table.getRowCount(), userList.size());
     }
 
