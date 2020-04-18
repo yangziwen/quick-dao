@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import io.github.yangziwen.quickdao.core.Order.Direction;
 import lombok.Getter;
@@ -41,6 +42,10 @@ public class Query extends LinkedHashMap<String, Object> {
     public Query select(String...fields) {
         selectStmtList.addAll(Arrays.asList(fields));
         return this;
+    }
+
+    public InnerQuery select(String field) {
+        return this.new InnerQuery(field);
     }
 
     public Query where(Criteria criteria) {
@@ -95,6 +100,74 @@ public class Query extends LinkedHashMap<String, Object> {
             put(RepoKeys.LIMIT, limit);
         }
         return this;
+    }
+
+    public class InnerQuery {
+
+        String field;
+
+        String alias;
+
+        public InnerQuery(String field) {
+            this.field = field;
+        }
+
+        public Query as(String alias) {
+            this.alias = alias;
+            return Query.this.select(toFields());
+        }
+
+        public Query select(String...fields) {
+            return Query.this.select(toFields()).select(fields);
+        }
+
+        public InnerQuery select(String field) {
+            return Query.this.select(toFields()).select(field);
+        }
+
+        public Query where(Criteria criteria) {
+            return Query.this.select(toFields()).where(criteria);
+        }
+
+        public Query groupBy(String stmt) {
+            return Query.this.select(toFields()).groupBy(stmt);
+        }
+
+        public Query having(Criteria criteria) {
+            return Query.this.select(toFields()).having(criteria);
+        }
+
+        public Query orderBy(String name, Direction direction) {
+            return Query.this.select(toFields()).orderBy(name, direction);
+        }
+
+        public Query orderBy(String name) {
+            return Query.this.select(toFields()).orderBy(name);
+        }
+
+        public Query offset(int offset) {
+            return Query.this.select(toFields()).offset(offset);
+        }
+
+        public Query limit(int limit) {
+            return Query.this.select(toFields()).limit(limit);
+        }
+
+        public Map<String, Object> asMap() {
+            return Query.this.select(toFields());
+        }
+
+        public Map<String, Object> toParamMap() {
+            return Query.this.select(toFields()).toParamMap();
+        }
+
+        protected String[] toFields() {
+            if (StringUtils.isBlank(alias)) {
+                return new String[] { field };
+            }
+            return new String[]{ field + " AS " + alias };
+        }
+
     }
 
 }

@@ -59,6 +59,9 @@ public abstract class BaseUserTypedCriteriaRepositoryTest extends BaseRepository
     @Test
     public void testListWithOrQuery() {
         List<User> userList = createRepository().listQuery(query -> query
+                .select(User::getId)
+                .select(User::getUsername)
+                .select("create_time").as(User::getCreateTime)
                 .where(criteria -> criteria
                         .and(User::getId).in(Arrays.asList(2L, 3L))
                         .and(User::getUsername).endWith("2")

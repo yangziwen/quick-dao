@@ -162,7 +162,7 @@ public abstract class BaseUserRepositoryTest extends BaseRepositoryTest {
         Criteria havingCriteria = new Criteria()
                 .and("createTime").lt(new Date());
         Query query = new Query()
-                .select("create_time as createTime")
+                .select("create_time").as("createTime")
                 .where(criteria)
                 .groupBy("createTime")
                 .having(havingCriteria)

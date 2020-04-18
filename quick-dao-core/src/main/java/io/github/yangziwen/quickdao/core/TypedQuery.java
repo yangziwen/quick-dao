@@ -36,8 +36,13 @@ public class TypedQuery<E> extends Query {
         return this;
     }
 
+    @Override
+    public InnerQuery select(String field) {
+        return this.new InnerQuery(field);
+    }
+
     public TypedQuery<E> select(Function<E, ?> getter) {
-        return this.select(extractor.extractFieldNameFromGetter(getter));
+        return this.select(extractor.extractFieldNameFromGetter(getter)).as("");
     }
 
     public TypedQuery<E> where(TypedCriteria<E> criteria) {
@@ -108,6 +113,92 @@ public class TypedQuery<E> extends Query {
     public TypedQuery<E> limit(int limit) {
         super.limit(limit);
         return this;
+    }
+
+    public class InnerQuery extends Query.InnerQuery {
+
+        public InnerQuery(String field) {
+            super(field);
+        }
+
+        @Override
+        public TypedQuery<E> as(String alias) {
+            this.alias = alias;
+            return TypedQuery.this.select(toFields());
+        }
+
+        public TypedQuery<E> as(Function<E, ?> getter) {
+            this.alias = extractor.extractFieldNameFromGetter(getter);
+            return TypedQuery.this.select(toFields());
+        }
+
+        @Override
+        public TypedQuery<E> select(String...fields) {
+            return TypedQuery.this.select(toFields()).select(fields);
+        }
+
+        @Override
+        public InnerQuery select(String field) {
+            return TypedQuery.this.select(toFields()).select(field);
+        }
+
+        public TypedQuery<E> select(Function<E, ?> getter) {
+            return TypedQuery.this.select(toFields()).select(getter);
+        }
+
+        public TypedQuery<E> where(TypedCriteria<E> criteria) {
+            return TypedQuery.this.select(toFields()).where(criteria);
+        }
+
+        public TypedQuery<E> where(Consumer<TypedCriteria<E>> consumer) {
+            return TypedQuery.this.select(toFields()).where(consumer);
+        }
+
+        @Override
+        public TypedQuery<E> groupBy(String stmt) {
+            return TypedQuery.this.select(toFields()).groupBy(stmt);
+        }
+
+        public TypedQuery<E> groupBy(Function<E, ?> getter) {
+            return TypedQuery.this.select(toFields()).groupBy(getter);
+        }
+
+        public TypedQuery<E> having(TypedCriteria<E> criteria) {
+            return TypedQuery.this.select(toFields()).having(criteria);
+        }
+
+        public TypedQuery<E> having(Consumer<TypedCriteria<E>> consumer) {
+            return TypedQuery.this.select(toFields()).having(consumer);
+        }
+
+        @Override
+        public TypedQuery<E> orderBy(String name, Direction direction) {
+            return TypedQuery.this.select(toFields()).orderBy(name, direction);
+        }
+
+        public TypedQuery<E> orderBy(Function<E, ?> getter, Direction direction) {
+            return TypedQuery.this.select(toFields()).orderBy(getter, direction);
+        }
+
+        @Override
+        public TypedQuery<E> orderBy(String name) {
+            return TypedQuery.this.select(toFields()).orderBy(name);
+        }
+
+        public TypedQuery<E> orderBy(Function<E, ?> getter) {
+            return TypedQuery.this.select(toFields()).orderBy(getter);
+        }
+
+        @Override
+        public TypedQuery<E> offset(int offset) {
+            return TypedQuery.this.select(toFields()).offset(offset);
+        }
+
+        @Override
+        public TypedQuery<E> limit(int limit) {
+            return TypedQuery.this.select(toFields()).limit(limit);
+        }
+
     }
 
 }
