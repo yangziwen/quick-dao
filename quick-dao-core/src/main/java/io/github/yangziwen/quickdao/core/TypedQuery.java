@@ -37,8 +37,14 @@ public class TypedQuery<E> extends Query {
     }
 
     @Override
+    public TypedQuery<E> select(Stmt stmt) {
+        super.select(stmt);
+        return this;
+    }
+
+    @Override
     public InnerQuery select(String field) {
-        return this.new InnerQuery(field);
+        return this.new InnerQuery(new Stmt(field));
     }
 
     public TypedQuery<E> select(Function<E, ?> getter) {
@@ -117,86 +123,86 @@ public class TypedQuery<E> extends Query {
 
     public class InnerQuery extends Query.InnerQuery {
 
-        public InnerQuery(String field) {
-            super(field);
+        public InnerQuery(Stmt stmt) {
+            super(stmt);
         }
 
         @Override
         public TypedQuery<E> as(String alias) {
-            this.alias = alias;
-            return TypedQuery.this.select(toFields());
+            this.stmt.setAlias(alias);
+            return TypedQuery.this.select(this.stmt);
         }
 
         public TypedQuery<E> as(Function<E, ?> getter) {
-            this.alias = extractor.extractFieldNameFromGetter(getter);
-            return TypedQuery.this.select(toFields());
+            this.stmt.setAlias(extractor.extractFieldNameFromGetter(getter));
+            return TypedQuery.this.select(this.stmt);
         }
 
         @Override
         public TypedQuery<E> select(String...fields) {
-            return TypedQuery.this.select(toFields()).select(fields);
+            return TypedQuery.this.select(this.stmt).select(fields);
         }
 
         @Override
         public InnerQuery select(String field) {
-            return TypedQuery.this.select(toFields()).select(field);
+            return TypedQuery.this.select(this.stmt).select(field);
         }
 
         public TypedQuery<E> select(Function<E, ?> getter) {
-            return TypedQuery.this.select(toFields()).select(getter);
+            return TypedQuery.this.select(this.stmt).select(getter);
         }
 
         public TypedQuery<E> where(TypedCriteria<E> criteria) {
-            return TypedQuery.this.select(toFields()).where(criteria);
+            return TypedQuery.this.select(this.stmt).where(criteria);
         }
 
         public TypedQuery<E> where(Consumer<TypedCriteria<E>> consumer) {
-            return TypedQuery.this.select(toFields()).where(consumer);
+            return TypedQuery.this.select(this.stmt).where(consumer);
         }
 
         @Override
         public TypedQuery<E> groupBy(String stmt) {
-            return TypedQuery.this.select(toFields()).groupBy(stmt);
+            return TypedQuery.this.select(this.stmt).groupBy(stmt);
         }
 
         public TypedQuery<E> groupBy(Function<E, ?> getter) {
-            return TypedQuery.this.select(toFields()).groupBy(getter);
+            return TypedQuery.this.select(this.stmt).groupBy(getter);
         }
 
         public TypedQuery<E> having(TypedCriteria<E> criteria) {
-            return TypedQuery.this.select(toFields()).having(criteria);
+            return TypedQuery.this.select(this.stmt).having(criteria);
         }
 
         public TypedQuery<E> having(Consumer<TypedCriteria<E>> consumer) {
-            return TypedQuery.this.select(toFields()).having(consumer);
+            return TypedQuery.this.select(this.stmt).having(consumer);
         }
 
         @Override
         public TypedQuery<E> orderBy(String name, Direction direction) {
-            return TypedQuery.this.select(toFields()).orderBy(name, direction);
+            return TypedQuery.this.select(this.stmt).orderBy(name, direction);
         }
 
         public TypedQuery<E> orderBy(Function<E, ?> getter, Direction direction) {
-            return TypedQuery.this.select(toFields()).orderBy(getter, direction);
+            return TypedQuery.this.select(this.stmt).orderBy(getter, direction);
         }
 
         @Override
         public TypedQuery<E> orderBy(String name) {
-            return TypedQuery.this.select(toFields()).orderBy(name);
+            return TypedQuery.this.select(this.stmt).orderBy(name);
         }
 
         public TypedQuery<E> orderBy(Function<E, ?> getter) {
-            return TypedQuery.this.select(toFields()).orderBy(getter);
+            return TypedQuery.this.select(this.stmt).orderBy(getter);
         }
 
         @Override
         public TypedQuery<E> offset(int offset) {
-            return TypedQuery.this.select(toFields()).offset(offset);
+            return TypedQuery.this.select(this.stmt).offset(offset);
         }
 
         @Override
         public TypedQuery<E> limit(int limit) {
-            return TypedQuery.this.select(toFields()).limit(limit);
+            return TypedQuery.this.select(this.stmt).limit(limit);
         }
 
     }

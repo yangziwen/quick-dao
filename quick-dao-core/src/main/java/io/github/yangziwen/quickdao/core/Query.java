@@ -5,9 +5,9 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import io.github.yangziwen.quickdao.core.Order.Direction;
 import lombok.Getter;
@@ -17,7 +17,7 @@ public class Query extends LinkedHashMap<String, Object> {
     private static final long serialVersionUID = 1L;
 
     @Getter
-    private List<String> selectStmtList = new ArrayList<>();
+    private List<Stmt> selectStmtList = new ArrayList<>();
 
     @Getter
     private Criteria criteria = new Criteria();
@@ -40,12 +40,20 @@ public class Query extends LinkedHashMap<String, Object> {
     public Query() { }
 
     public Query select(String...fields) {
-        selectStmtList.addAll(Arrays.asList(fields));
+        this.selectStmtList.addAll(Arrays
+                .stream(fields)
+                .map(Stmt::new)
+                .collect(Collectors.toList()));
         return this;
     }
 
     public InnerQuery select(String field) {
-        return this.new InnerQuery(field);
+        return this.new InnerQuery(new Stmt(field));
+    }
+
+    public Query select(Stmt stmt) {
+        this.selectStmtList.add(stmt);
+        return this;
     }
 
     public Query where(Criteria criteria) {
@@ -54,7 +62,7 @@ public class Query extends LinkedHashMap<String, Object> {
     }
 
     public Query groupBy(String stmt) {
-        groupByList.add(stmt);
+        this.groupByList.add(stmt);
         return this;
     }
 
@@ -104,68 +112,59 @@ public class Query extends LinkedHashMap<String, Object> {
 
     public class InnerQuery {
 
-        String field;
+        Stmt stmt;
 
-        String alias;
-
-        public InnerQuery(String field) {
-            this.field = field;
+        public InnerQuery(Stmt stmt) {
+            this.stmt = stmt;
         }
 
         public Query as(String alias) {
-            this.alias = alias;
-            return Query.this.select(toFields());
+            this.stmt.setAlias(alias);
+            return Query.this.select(this.stmt);
         }
 
         public Query select(String...fields) {
-            return Query.this.select(toFields()).select(fields);
+            return Query.this.select(this.stmt).select(fields);
         }
 
         public InnerQuery select(String field) {
-            return Query.this.select(toFields()).select(field);
+            return Query.this.select(this.stmt).select(field);
         }
 
         public Query where(Criteria criteria) {
-            return Query.this.select(toFields()).where(criteria);
+            return Query.this.select(this.stmt).where(criteria);
         }
 
         public Query groupBy(String stmt) {
-            return Query.this.select(toFields()).groupBy(stmt);
+            return Query.this.select(this.stmt).groupBy(stmt);
         }
 
         public Query having(Criteria criteria) {
-            return Query.this.select(toFields()).having(criteria);
+            return Query.this.select(this.stmt).having(criteria);
         }
 
         public Query orderBy(String name, Direction direction) {
-            return Query.this.select(toFields()).orderBy(name, direction);
+            return Query.this.select(this.stmt).orderBy(name, direction);
         }
 
         public Query orderBy(String name) {
-            return Query.this.select(toFields()).orderBy(name);
+            return Query.this.select(this.stmt).orderBy(name);
         }
 
         public Query offset(int offset) {
-            return Query.this.select(toFields()).offset(offset);
+            return Query.this.select(this.stmt).offset(offset);
         }
 
         public Query limit(int limit) {
-            return Query.this.select(toFields()).limit(limit);
+            return Query.this.select(this.stmt).limit(limit);
         }
 
         public Map<String, Object> asMap() {
-            return Query.this.select(toFields());
+            return Query.this.select(this.stmt);
         }
 
         public Map<String, Object> toParamMap() {
-            return Query.this.select(toFields()).toParamMap();
-        }
-
-        protected String[] toFields() {
-            if (StringUtils.isBlank(alias)) {
-                return new String[] { field };
-            }
-            return new String[]{ field + " AS " + alias };
+            return Query.this.select(this.stmt).toParamMap();
         }
 
     }

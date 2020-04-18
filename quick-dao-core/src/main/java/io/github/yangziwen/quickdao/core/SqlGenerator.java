@@ -255,12 +255,16 @@ public class SqlGenerator {
         buff.append(" SELECT ");
         if (CollectionUtils.isNotEmpty(query.getSelectStmtList())) {
             List<String> selectStmtList = new ArrayList<>(query.getSelectStmtList().size());
-            for (String stmt : query.getSelectStmtList()) {
-                String columnName = entityMeta.getColumnNameByFieldName(stmt);
+            for (Stmt stmt : query.getSelectStmtList()) {
+                String columnName = entityMeta.getColumnNameByFieldName(stmt.getField());
                 if (StringUtils.isEmpty(columnName)) {
-                    selectStmtList.add(stmt);
+                    String suffix = "";
+                    if (StringUtils.isNotBlank(stmt.getAlias())) {
+                        suffix = " AS " + aliasWrapper.wrap(stmt.getAlias());
+                    }
+                    selectStmtList.add(stmt.getField() + suffix);
                 } else {
-                    selectStmtList.add(columnWrapper.wrap(columnName) + " AS " + aliasWrapper.wrap(stmt));
+                    selectStmtList.add(columnWrapper.wrap(columnName) + " AS " + aliasWrapper.wrap(stmt.getStmtAlias()));
                 }
             }
             buff.append(selectStmtList.get(0));
