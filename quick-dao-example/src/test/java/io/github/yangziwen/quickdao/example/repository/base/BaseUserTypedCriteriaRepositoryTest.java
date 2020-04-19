@@ -189,6 +189,15 @@ public abstract class BaseUserTypedCriteriaRepositoryTest extends BaseRepository
         Assert.assertNotEquals(username, userList.get(0).getUsername());
     }
 
+    @Test
+    public void testSelectOfExpression() {
+        User user = createRepository().firstQuery(query -> query
+                .selectExpr(expr -> expr.max(User::getId)).as(User::getId)
+                .selectExpr(expr -> expr.min("update_time")).as(User::getUpdateTime)
+                .select("max(create_time)").as("createTime"));
+        Assert.assertEquals(2L, user.getId().longValue());
+    }
+
     protected abstract BaseRepository<User> createRepository();
 
 }

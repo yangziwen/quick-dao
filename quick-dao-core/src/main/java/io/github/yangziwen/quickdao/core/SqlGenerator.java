@@ -9,8 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.Function;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import io.github.yangziwen.quickdao.core.util.ReflectionUtil;
@@ -251,20 +253,16 @@ public class SqlGenerator {
         return buff.toString();
     }
 
+    @SuppressWarnings("unchecked")
     private <T> void appendSelect(StringBuilder buff, EntityMeta<T> entityMeta, Query query) {
         buff.append(" SELECT ");
         if (CollectionUtils.isNotEmpty(query.getSelectStmtList())) {
             List<String> selectStmtList = new ArrayList<>(query.getSelectStmtList().size());
             for (Stmt stmt : query.getSelectStmtList()) {
-                String columnName = entityMeta.getColumnNameByFieldName(stmt.getField());
-                if (StringUtils.isEmpty(columnName)) {
-                    String suffix = "";
-                    if (StringUtils.isNotBlank(stmt.getAlias())) {
-                        suffix = " AS " + aliasWrapper.wrap(stmt.getAlias());
-                    }
-                    selectStmtList.add(stmt.getField() + suffix);
+                if (stmt instanceof FunctionStmt) {
+                    selectStmtList.add(renderFunctionStmt((FunctionStmt<T>)stmt, entityMeta));
                 } else {
-                    selectStmtList.add(columnWrapper.wrap(columnName) + " AS " + aliasWrapper.wrap(stmt.getStmtAlias()));
+                    selectStmtList.add(renderStmt(stmt, entityMeta));
                 }
             }
             buff.append(selectStmtList.get(0));
@@ -280,6 +278,46 @@ public class SqlGenerator {
             }
             buff.append(stmt);
         }
+    }
+
+    private <T> String renderStmt(Stmt stmt, EntityMeta<T> entityMeta) {
+        String columnName = entityMeta.getColumnNameByFieldName(stmt.getField());
+        if (StringUtils.isEmpty(columnName)) {
+            String suffix = "";
+            if (StringUtils.isNotBlank(stmt.getAlias())) {
+                suffix = " AS " + aliasWrapper.wrap(stmt.getAlias());
+            }
+            return stmt.getField() + suffix;
+        } else {
+            return columnWrapper.wrap(columnName) + " AS " + aliasWrapper.wrap(stmt.getStmtAlias());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> String renderFunctionStmt(FunctionStmt<T> stmt, EntityMeta<T> entityMeta) {
+        List<String> args = new ArrayList<>();
+        if (stmt.getExpression().getArgs() instanceof String[]) {
+            for (String arg : (String[]) stmt.getExpression().getArgs()) {
+                String column = entityMeta.getColumnNameByFieldName(arg);
+                if (StringUtils.isBlank(column)) {
+                    args.add(arg);
+                } else {
+                    args.add(columnWrapper.wrap(column));
+                }
+            }
+        } else if (stmt.getExpression().getArgs() instanceof Function[]) {
+            for (Function<T, ?> getter : (Function[]) stmt.getExpression().getArgs()) {
+                String field = stmt.getExtractor().extractFieldNameFromGetter(getter);
+                String column = entityMeta.getColumnNameByFieldName(field);
+                args.add(columnWrapper.wrap(column));
+            }
+        }
+        String expr = stmt.getExpression().getFunc().render(args.toArray(ArrayUtils.EMPTY_OBJECT_ARRAY));
+        String suffix = "";
+        if (StringUtils.isNotBlank(stmt.getAlias())) {
+            suffix = " AS " + aliasWrapper.wrap(stmt.getAlias());
+        }
+        return expr + suffix;
     }
 
     private <T> void appendFrom(StringBuilder buff, EntityMeta<T> entityMeta) {

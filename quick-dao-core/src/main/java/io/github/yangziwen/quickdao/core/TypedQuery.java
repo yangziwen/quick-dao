@@ -51,6 +51,12 @@ public class TypedQuery<E> extends Query {
         return this.select(extractor.extractFieldNameFromGetter(getter)).as("");
     }
 
+    public InnerQuery selectExpr(Consumer<SqlFunctionExpression<E>> consumer) {
+        SqlFunctionExpression<E> expression = new SqlFunctionExpression<>(classType);
+        consumer.accept(expression);
+        return this.new InnerQuery(new FunctionStmt<E>(expression, extractor));
+    }
+
     public TypedQuery<E> where(TypedCriteria<E> criteria) {
         super.where(this.criteria = criteria);
         return this;
@@ -150,6 +156,10 @@ public class TypedQuery<E> extends Query {
 
         public TypedQuery<E> select(Function<E, ?> getter) {
             return TypedQuery.this.select(this.stmt).select(getter);
+        }
+
+        public InnerQuery selectExpr(Consumer<SqlFunctionExpression<E>> consumer) {
+            return TypedQuery.this.select(this.stmt).selectExpr(consumer);
         }
 
         public TypedQuery<E> where(TypedCriteria<E> criteria) {

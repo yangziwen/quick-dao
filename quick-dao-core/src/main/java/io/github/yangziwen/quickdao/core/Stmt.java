@@ -11,6 +11,8 @@ public class Stmt {
 
     private String alias;
 
+    public Stmt() { }
+
     public Stmt(String field) {
         this.field = field;
     }
