@@ -18,6 +18,8 @@ public class SqlFunctions {
 
     public static final VarArgsSQLFunction AVG_FUNC = new VarArgsSQLFunction("AVG(", ",", ")");
 
+    public static final VarArgsSQLFunction SUM_FUNC = new VarArgsSQLFunction("SUM(", ",", ")");
+
     private SqlFunctions() {}
 
 }

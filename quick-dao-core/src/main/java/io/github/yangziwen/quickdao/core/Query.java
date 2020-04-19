@@ -110,17 +110,25 @@ public class Query extends LinkedHashMap<String, Object> {
         return this;
     }
 
-    public class InnerQuery {
+    public abstract class BaseQuery {
 
         Stmt stmt;
 
-        public InnerQuery(Stmt stmt) {
+        public BaseQuery(Stmt stmt) {
             this.stmt = stmt;
         }
 
         public Query as(String alias) {
             this.stmt.setAlias(alias);
             return Query.this.select(this.stmt);
+        }
+
+    }
+
+    public class InnerQuery extends BaseQuery {
+
+        public InnerQuery(Stmt stmt) {
+            super(stmt);
         }
 
         public Query select(String...fields) {

@@ -23,24 +23,24 @@ public class SqlFunctionExpression<E> {
         this.classType = classType;
     }
 
-    public void distinct(String...args) {
+    public void distinct(String arg) {
         this.func = SqlFunctions.DISTINCT_FUNC;
-        this.args = args;
+        this.args = new String[] { arg };
     }
 
-    public void distinct(Function<E, ?>...getters) {
+    public void distinct(Function<E, ?> getter) {
         this.func = SqlFunctions.DISTINCT_FUNC;
-        this.args = getters;
+        this.args = new Function[] { getter };
     }
 
-    public void countDistinct(String...args) {
+    public void countDistinct(String arg) {
         this.func = SqlFunctions.COUNT_DISTINCT_FUNC;
-        this.args = args;
+        this.args = new String[] { arg };
     }
 
-    public void countDistinct(Function<E, ?>...getters) {
+    public void countDistinct(Function<E, ?> getter) {
         this.func = SqlFunctions.COUNT_DISTINCT_FUNC;
-        this.args = getters;
+        this.args = new Function[] { getter };
     }
 
     public void concat(String...args) {
@@ -53,6 +53,7 @@ public class SqlFunctionExpression<E> {
         this.args = args;
     }
 
+    @SuppressWarnings("unchecked")
     public void concat(Function<E, ?>...getters) {
         DatabaseType type = DatabaseTypeUtil.getDatabaseType();
         if (type == DatabaseType.SQLITE) {
@@ -105,6 +106,16 @@ public class SqlFunctionExpression<E> {
 
     public void avg(Function<E, ?> getter) {
         this.func = SqlFunctions.AVG_FUNC;
+        this.args = new Function[] { getter };
+    }
+
+    public void sum(String arg) {
+        this.func = SqlFunctions.SUM_FUNC;
+        this.args = new String[] { arg };
+    }
+
+    public void sum(Function<E, ?> getter) {
+        this.func = SqlFunctions.SUM_FUNC;
         this.args = new Function[] { getter };
     }
 

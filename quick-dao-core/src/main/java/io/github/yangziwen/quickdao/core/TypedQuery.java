@@ -51,10 +51,10 @@ public class TypedQuery<E> extends Query {
         return this.select(extractor.extractFieldNameFromGetter(getter)).as("");
     }
 
-    public InnerQuery selectExpr(Consumer<SqlFunctionExpression<E>> consumer) {
+    public InnerExprQuery selectExpr(Consumer<SqlFunctionExpression<E>> consumer) {
         SqlFunctionExpression<E> expression = new SqlFunctionExpression<>(classType);
         consumer.accept(expression);
-        return this.new InnerQuery(new FunctionStmt<E>(expression, extractor));
+        return this.new InnerExprQuery(new FunctionStmt<E>(expression, extractor));
     }
 
     public TypedQuery<E> where(TypedCriteria<E> criteria) {
@@ -127,6 +127,25 @@ public class TypedQuery<E> extends Query {
         return this;
     }
 
+    public class InnerExprQuery extends Query.BaseQuery {
+
+        public InnerExprQuery(Stmt stmt) {
+            super(stmt);
+        }
+
+        @Override
+        public TypedQuery<E> as(String alias) {
+            this.stmt.setAlias(alias);
+            return TypedQuery.this.select(this.stmt);
+        }
+
+        public TypedQuery<E> as(Function<E, ?> getter) {
+            this.stmt.setAlias(extractor.extractFieldNameFromGetter(getter));
+            return TypedQuery.this.select(this.stmt);
+        }
+
+    }
+
     public class InnerQuery extends Query.InnerQuery {
 
         public InnerQuery(Stmt stmt) {
@@ -158,7 +177,7 @@ public class TypedQuery<E> extends Query {
             return TypedQuery.this.select(this.stmt).select(getter);
         }
 
-        public InnerQuery selectExpr(Consumer<SqlFunctionExpression<E>> consumer) {
+        public InnerExprQuery selectExpr(Consumer<SqlFunctionExpression<E>> consumer) {
             return TypedQuery.this.select(this.stmt).selectExpr(consumer);
         }
 
