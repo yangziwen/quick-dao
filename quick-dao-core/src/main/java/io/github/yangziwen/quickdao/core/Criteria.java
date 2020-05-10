@@ -70,7 +70,7 @@ public class Criteria {
     }
 
     public Criterion or(String name) {
-        return new Criterion(name, or());
+        return new Criterion(name, or()).autoEnd(true);
     }
 
     public Criteria and() {

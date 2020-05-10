@@ -45,12 +45,12 @@ public class TypedCriteria<E> extends Criteria {
 
     public TypedCriterion<E> or(Function<E, ?> getter) {
         String name = extractor.extractFieldNameFromGetter(getter);
-        return new TypedCriterion<>(name, or());
+        return new TypedCriterion<>(name, or()).autoEnd(true);
     }
 
     @Override
     public TypedCriterion<E> or(String name) {
-        return new TypedCriterion<>(name, or());
+        return new TypedCriterion<>(name, or()).autoEnd(true);
     }
 
     @Override

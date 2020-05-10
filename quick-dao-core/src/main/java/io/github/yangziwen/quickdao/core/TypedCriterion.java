@@ -15,9 +15,15 @@ public class TypedCriterion<E> extends Criterion {
     }
 
     @Override
+    protected TypedCriterion<E> autoEnd(boolean autoEnd) {
+        super.autoEnd(autoEnd);
+        return this;
+    }
+
+    @Override
     TypedCriteria<E> op(Operator operator, Object value) {
         super.op(operator, value);
-        return typedCriteria;
+        return isAutoEnd() ? typedCriteria.end() : typedCriteria;
     }
 
     @Override

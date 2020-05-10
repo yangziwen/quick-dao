@@ -28,6 +28,9 @@ public class Criterion {
     @Getter
     private boolean valid;
 
+    @Getter
+    private boolean autoEnd = false;
+
     Criterion(String name, Criteria criteria) {
         this(name, criteria, true);
     }
@@ -44,7 +47,12 @@ public class Criterion {
         if (valid && !isRedundant()) {
             criteria.getCriterionList().add(this);
         }
-        return this.criteria;
+        return autoEnd ? this.criteria.end() : this.criteria;
+    }
+
+    protected Criterion autoEnd(boolean autoEnd) {
+        this.autoEnd = autoEnd;
+        return this;
     }
 
     private boolean isRedundant() {
