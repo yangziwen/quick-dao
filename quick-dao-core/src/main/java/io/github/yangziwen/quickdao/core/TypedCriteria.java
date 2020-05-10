@@ -54,6 +54,12 @@ public class TypedCriteria<E> extends Criteria {
     }
 
     @Override
+    public TypedCriteria<E> and() {
+        String prefix = StringUtils.isNotBlank(getKey()) ? getKey() + RepoKeys.__ : "";
+        return ensureNestedCriteria(prefix + getSequenceKey() + RepoKeys.AND);
+    }
+
+    @Override
     public TypedCriteria<E> or() {
         String prefix = StringUtils.isNotBlank(getKey()) ? getKey() + RepoKeys.__ : "";
         return ensureNestedCriteria(prefix + getSequenceKey() + RepoKeys.OR);

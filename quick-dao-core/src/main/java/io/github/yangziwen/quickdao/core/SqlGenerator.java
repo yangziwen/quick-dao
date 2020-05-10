@@ -348,6 +348,16 @@ public class SqlGenerator {
             buff.append(") ");
         }
         for (Entry<String, Criteria> entry : criteria.getNestedCriteriaMap().entrySet()) {
+            if (entry.getKey().endsWith(RepoKeys.AND)) {
+                boolean keywordRequired = i++ > 0;
+                if (keywordRequired) {
+                    buff.append(" AND ( ");
+                }
+                appendConditions(buff, entityMeta, entry.getValue());
+                if (keywordRequired) {
+                    buff.append(" ) ");
+                }
+            }
             if (entry.getKey().endsWith(RepoKeys.OR)) {
                 if (i++ > 0) {
                     buff.append(" OR ");

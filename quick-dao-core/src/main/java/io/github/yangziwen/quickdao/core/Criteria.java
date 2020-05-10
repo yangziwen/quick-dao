@@ -73,6 +73,11 @@ public class Criteria {
         return new Criterion(name, or());
     }
 
+    public Criteria and() {
+        String prefix = StringUtils.isNotBlank(key) ? key + RepoKeys.__ : "";
+        return ensureNestedCriteria(prefix + getSequenceKey() + RepoKeys.AND);
+    }
+
     public Criteria or() {
         String prefix = StringUtils.isNotBlank(key) ? key + RepoKeys.__ : "";
         return ensureNestedCriteria(prefix + getSequenceKey() + RepoKeys.OR);

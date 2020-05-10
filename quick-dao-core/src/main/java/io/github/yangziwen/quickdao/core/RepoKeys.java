@@ -4,6 +4,8 @@ public final class RepoKeys {
 
     private RepoKeys() { }
 
+    public static final String AND = "__and";
+
     public static final String OR = "__or";
 
     public static final String ORDER_ASC = "__asc";
