@@ -87,18 +87,29 @@ public class TypedCriteria<E> extends Criteria {
         if (MapUtils.isEmpty(paramMap)) {
             return criteria;
         }
+        String andSep = RepoKeys.AND + RepoKeys.__;
         String orSep = RepoKeys.OR + RepoKeys.__;
         for (Entry<String, Object> entry : paramMap.entrySet()) {
             String key = entry.getKey();
             Object value = entry.getValue();
             TypedCriteria<T> currentCriteria = criteria;
-            if (key.contains(orSep)) {
+            if (key.contains(andSep) || key.contains(orSep)) {
                 int fromIndex = 0;
-                int pos = -1;
-                while ((pos = key.indexOf(orSep, fromIndex)) >= 0) {
-                    String criteriaKey = key.substring(0, pos + RepoKeys.OR.length());
+                int andPos = -1;
+                int orPos = -1;
+                while ((andPos = key.indexOf(andPos, fromIndex)) >= 0
+                        || (orPos = key.indexOf(orSep, fromIndex)) >= 0) {
+                    String keyword = RepoKeys.OR;
+                    int pos = orPos;
+                    String sep = orSep;
+                    if (andPos > -1 && andPos < orPos) {
+                        keyword = RepoKeys.AND;
+                        pos = andPos;
+                        sep = andSep;
+                    }
+                    String criteriaKey = key.substring(0, pos + keyword.length());
                     currentCriteria = currentCriteria.ensureNestedCriteria(criteriaKey);
-                    fromIndex = pos + orSep.length();
+                    fromIndex = pos + sep.length();
                 }
                 key = key.substring(fromIndex);
             }
