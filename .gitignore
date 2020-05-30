@@ -8,3 +8,4 @@ target/
 *.class
 RemoteSystemsTempFiles/
 node_modules/
+dist/
