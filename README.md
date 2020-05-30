@@ -1,11 +1,11 @@
-# quick-dao
+# QuickDAO
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/a0dae0dc0c074da9b90f58303af14249)](https://app.codacy.com/app/yangziwen/quick-dao?utm_source=github.com&utm_medium=referral&utm_content=yangziwen/quick-dao&utm_campaign=Badge_Grade_Settings)
 [![Build Status](https://www.travis-ci.org/yangziwen/quick-dao.svg?branch=master)](https://www.travis-ci.org/yangziwen/quick-dao)
 [![Coverage Status](https://coveralls.io/repos/github/yangziwen/quick-dao/badge.svg?branch=master)](https://coveralls.io/github/yangziwen/quick-dao?branch=master)
 
 ### 项目介绍
-quick-dao通过对Spring JDBC, MyBatis, sql2o等orm框架进行简单封装，实现增删改查方法的抽象和复用，有效消除dao层的样板代码。
+QuickDAO通过对Spring JDBC, MyBatis, sql2o等orm框架进行简单封装，实现增删改查方法的抽象和复用，有效消除DAO层的样板代码。
 
 ### 快速开始
 * 引入项目依赖
