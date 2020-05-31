@@ -60,7 +60,7 @@ public class User {
 ```
 
 ## 实现数据访问类
-声明一个UserRepository数据访问类，并继承BaseRepository接口或BaseReadOnlyRepository接口的某个实现类(以Spring JDBC为例)。
+声明一个UserRepository数据访问类，并继承[BaseRepository](https://github.com/yangziwen/quick-dao/blob/master/quick-dao-core/src/main/java/io/github/yangziwen/quickdao/core/BaseRepository.java)接口或[BaseReadOnlyRepository](https://github.com/yangziwen/quick-dao/blob/master/quick-dao-core/src/main/java/io/github/yangziwen/quickdao/core/BaseReadOnlyRepository.java)接口的某个实现类(以Spring JDBC为例)。
 ```java
 public class UserRepository extends BaseSpringJdbcRepository<User> {
 
