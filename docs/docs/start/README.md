@@ -130,7 +130,7 @@ public List<String> listUsernameOfEldestMaleUser(int limit) {
             .select(User::getUsername)
             .where(criteria -> criteria
                     .and(User::getGender).eq(Gender.MALE))
-            .orderBy(User::getGender, Direction.DESC)
+            .orderBy(User::getAge, Direction.DESC)
             .limit(limit);
     return list(query).stream()
             .map(User::getUsername)

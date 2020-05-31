@@ -199,10 +199,77 @@ Page<E> paginateQuery(Consumer<TypedQuery<E>> consumer, int pageNo, int pageSize
 | Consumer&#60;TypedQuery&#60;E&#62;&#62; | consumer | 用于构造查询条件的函数式接口 |
 
 ## 构造查询条件
+QuickDAO基于Java DSL构造查询语句，其中`Criteria`对象（包括`TypedCriteria`）代表`WHERE`和`HAVING`后的一系列过滤条件，而`Query`对象（包括`TypedQuery`）代表整个SQL语句，可指定`SELECT`的字段、`GROUP BY`的字段、`ORDER BY`的方式、`LIMIT`的限制，以及为`WHERE`和`HAVING`设置相应的`Criteria`对象。
+<br/>
+<br/>
+在编写Java DSL的过程中，用户可以选择使用字符串来声明字段，也可以基于getter方法的lambda表达是来声明字段。<br/>
+* 使用字符串声明字段时，既可以使用数据库表中的原始字段名，也可以使用Java实体类中的字段名，同时还可以在`Query`对象的`select`方法中使用各种数据库函数。当使用Java实体类中的字段名编写DSL时，QuickDAO会自动完成向数据库表中原始字段名的转换。<br/>
+* 使用基于getter方法的lambda表达式声明字段时，QuickDAO将会根据`TypedCriteria`或者`TypedQuery`对象声明的泛型，对lambda表达式进行编译期检查，可有效避免DSL中的字段声明错误。`TypedQuery`对象暴露了`selectExpr`方法，也可以支持少数常用数据库函数结合这种lambda表达式的形式进行调用。
 
 ### 构造简单查询
+当SQL中仅需要指定`WHERE`后的查询条件时，可直接使用`Criteria`对象编写DSL
+
+使用字符串指定字段的方式
+```java
+new Criteria()
+    .and("email").endWith("@qq.com")
+    .and("age").ge(20)
+    .and("age").le(30);
+```
+或使用lambda表达式指定字段的方式
+```java
+new TypedCriteria<>(User.class)
+    .and(User::getEmail).endWith("@qq.com")
+    .and(User::getAge).ge(20)
+    .and(User::getAge).le(30);
+```
+以上DSL将会生成如下SQL
+```sql
+SELECT
+  `id` AS 'id',
+  `username` AS 'username',
+  `email` AS 'email',
+  `gender` AS 'gender',
+  `age` AS 'age'
+FROM `user`
+WHERE `email` LIKE '%@qq.com'
+  AND `age` >= 20
+  AND `age` <= 30
+```
 
 ### 构造复杂查询
+当SQL中需要指定查询字段、聚合方式、排序方式等条件时，需要使用`Criteria`对象编写DSL
+
+使用字符串指定字段的方式
+```java
+new Query()
+    .select("username")
+    .where(new Criteria()
+        .and("gender").eq(Gender.MALE))
+    .orderBy("age", Direction.DESC)
+    .limit(10);
+```
+
+使用lambda表达式指定字段的方式
+```java
+new TypedCriteria<>(User.class)
+    .select(User::getUsername)
+    .where(criteria -> criteria
+        .and(User::getGender).eq(Gender.MALE))
+    .orderBy(User::getAge, Direction.DESC)
+    .limit(10);
+```
+
+以上DSL将会生成如下SQL
+```sql
+SELECT
+  `username` AS 'username'
+FROM `user`
+WHERE `gender` = 1
+ORDER BY `age` DESC
+LIMIT 10
+```
+枚举类Gender在声明时实现了[IEnum](https://github.com/yangziwen/quick-dao/blob/master/quick-dao-core/src/main/java/io/github/yangziwen/quickdao/core/IEnum.java)接口，可以参见[Gender](https://github.com/yangziwen/quick-dao/blob/master/quick-dao-example/src/main/java/io/github/yangziwen/quickdao/example/enums/Gender.java)。
 
 ### 构造聚合查询
 

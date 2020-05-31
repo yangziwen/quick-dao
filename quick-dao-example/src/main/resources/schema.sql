@@ -3,6 +3,7 @@ create table `user` (
     `username` varchar(32) not null unique,
     `email` varchar(64) not null unique,
     `gender` integer,
+    `age` integer,
     `create_time` datetime,
     `update_time` datetime
 );

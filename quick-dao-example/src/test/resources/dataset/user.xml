@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataset>
-    <user id="1" username="user1" email="user1@test.com" gender="1" create_time="2019-01-05" update_time="2019-01-05"/>
-    <user id="2" username="user2" email="user2@test.com" gender="2" create_time="2019-01-05" update_time="2019-01-05"/>
+    <user id="1" username="user1" email="user1@test.com" gender="1" age="25" create_time="2019-01-05" update_time="2019-01-05"/>
+    <user id="2" username="user2" email="user2@test.com" gender="2" age="20" create_time="2019-01-05" update_time="2019-01-05"/>
 </dataset>

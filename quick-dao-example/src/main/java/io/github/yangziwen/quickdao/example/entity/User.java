@@ -33,6 +33,9 @@ public class User {
     private Gender gender;
 
     @Column
+    private Integer age;
+
+    @Column
     private Date createTime;
 
     @Column
