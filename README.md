@@ -7,6 +7,9 @@
 ### 项目介绍
 quick-dao通过对Spring JDBC, MyBatis, sql2o等orm框架进行简单封装，实现增删改查方法的抽象和复用，有效消除dao层的样板代码。
 
+### 项目文档
+[https://yangziwen.github.io/quick-dao](https://yangziwen.github.io/quick-dao/)
+
 ### 快速开始
 * 引入项目依赖
 
