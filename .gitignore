@@ -7,3 +7,5 @@ target/
 .settings/
 *.class
 RemoteSystemsTempFiles/
+node_modules/
+dist/
