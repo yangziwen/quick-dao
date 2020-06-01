@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.apache.commons.collections4.MapUtils;
@@ -43,14 +44,26 @@ public class TypedCriteria<E> extends Criteria {
         return new TypedCriterion<>(name, this);
     }
 
-    public TypedCriterion<E> or(Function<E, ?> getter) {
-        String name = extractor.extractFieldNameFromGetter(getter);
-        return new TypedCriterion<>(name, or()).autoEnd(true);
+    public FunctionCriterion<E> andExpr(Consumer<SqlFunctionExpression<E>> consumer) {
+        SqlFunctionExpression<E> expression = new SqlFunctionExpression<>(classType);
+        consumer.accept(expression);
+        return new FunctionCriterion<>(expression, extractor, this);
     }
 
     @Override
     public TypedCriterion<E> or(String name) {
         return new TypedCriterion<>(name, or()).autoEnd(true);
+    }
+
+    public TypedCriterion<E> or(Function<E, ?> getter) {
+        String name = extractor.extractFieldNameFromGetter(getter);
+        return new TypedCriterion<>(name, or()).autoEnd(true);
+    }
+
+    public FunctionCriterion<E> orExpr(Consumer<SqlFunctionExpression<E>> consumer) {
+        SqlFunctionExpression<E> expression = new SqlFunctionExpression<>(classType);
+        consumer.accept(expression);
+        return new FunctionCriterion<>(expression, extractor, or()).autoEnd(true);
     }
 
     @Override
