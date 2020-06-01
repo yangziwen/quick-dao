@@ -357,6 +357,55 @@ WHERE (`username` LIKE '张%' OR `username` LIKE '李%') AND (`age` <= 20 OR `ag
 ```
 
 ## 使用数据库函数
+当使用字符串指定字段时，可以在构造`SELECT`、`WHERE`、`HAVING`的过程中使用任意的数据库函数。
+
+在使用lambda表达式指定字段的方式时，QuickDAO提供了`selectExpr`、`andExpr`、`orExpr`等方法，用来支持类型安全的数据库函数构造。
+
+但是目前的API仅能支持一些常用的函数，如果需要使用API支持范围以外的数据库函数，则只能使用字符串的表达方式。
+
+另外，虽然`DISTINCT`是SQL的关键字，但在API中也被实现成了一种函数。
+
+API支持的函数列表如下所示，详情请见[SqlFunctionExpression](https://github.com/yangziwen/quick-dao/blob/master/quick-dao-core/src/main/java/io/github/yangziwen/quickdao/core/SqlFunctionExpression.java)
+| 方法声明 | 入参 | 功能描述 |
+| :-: | :-: | :-: |
+| distinct | String 或 Function | 计算去重后的内容 |
+| countDistinct | String 或 Function | 计算去重后的数量 |
+| concat | String... 或 Function... | 连接字符串 |
+| count | String 或 Function | 计算数量 |
+| max | String 或 Function | 计算最大值 |
+| min | String 或 Function | 计算最小值 |
+| avg | String 或 Function | 计算平均值 |
+| sum | String 或 Function | 计算求和 |
+
+使用字符串指定字段的方式
+```java
+new Query()
+    .select("gender")
+    .select("avg(`age`) AS 'age'")
+    .groupBy("gender")
+    .having(new Criteria().and("min(`age`)").ge(20))
+    .orderBy("gender");
+```
+
+使用lambda表达式指定字段的方式
+```java
+new TypedQuery<>(User.class)
+    .select(User::getGender)
+    .selectExpr(expr -> expr.avg(User::getAge)).as(User::getAge)
+    .groupBy(User::getGender)
+    .having(criteria -> criteria.andExpr(expr -> expr.min(User::getAge)).ge(20))
+    .orderBy(User::getGender);
+```
+
+也可以混合使用字符串和lambda表达式
+```java
+new TypedQuery<>(User.class)
+    .select(User::getGender)
+    .selectExpr(expr -> expr.avg("age")).as("age")
+    .groupBy("gender")
+    .having(criteria -> criteria.andExpr(expr -> expr.min("age")).ge(20))
+    .orderBy("gender");
+```
 
 ## 如何处理枚举
 
