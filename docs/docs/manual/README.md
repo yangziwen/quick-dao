@@ -306,6 +306,55 @@ ORDER BY `GENDER`
 ```
 
 ### 构造嵌套条件查询
+有些情况下，`WHERE`中的各种`AND`和`OR`的条件可能会涉及嵌套，可按如下方式编写DSL。
+
+使用字符串指定字段的方式
+```java
+new Criteria()
+    .or()
+        .and("username").startWith("张")
+        .and("gender").eq(Gender.MALE)
+    .end()
+    .or()
+        .and("username").startWith("李")
+        .and("gender").eq(Gender.FEMALE)
+    .end();
+```
+
+使用lambda表达式指定字段的方式
+```java
+new TypedCriteria<>(User.class)
+    .or()
+        .and(User::getUsername).startWith("张")
+        .and(User::getGender).eq(Gender.MALE)
+    .end()
+    .or()
+        .and(User::getUsername).startWith("李")
+        .and(User::getGender).eq(Gender.FEMALE)
+    .end();
+```
+
+以上DSL将会生成如下查询条件
+```sql
+WHERE (`username` LIKE '张%' AND gender = 1) OR (`username` LIKE '李%' AND gender = 2)
+```
+
+同样的，也可以在`AND`中嵌套`OR`条件，例如
+```java
+new Criteria()
+    .and()
+        .or("username").startWith("张")
+        .or("username").startWith("李")
+    .end()
+    .and()
+        .or("age").le(20)
+        .or("age").ge(30)
+    .end();
+```
+上述DSL将会生成如下查询条件
+```sql
+WHERE (`username` LIKE '张%' OR `username` LIKE '李%') AND (`age` <= 20 OR `age` >= 30)
+```
 
 ## 使用数据库函数
 
