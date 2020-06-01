@@ -252,7 +252,7 @@ new Query()
 
 使用lambda表达式指定字段的方式
 ```java
-new TypedCriteria<>(User.class)
+new TypedQuery<>(User.class)
     .select(User::getUsername)
     .where(criteria -> criteria
         .and(User::getGender).eq(Gender.MALE))
@@ -272,6 +272,38 @@ LIMIT 10
 枚举类Gender在声明时实现了[IEnum](https://github.com/yangziwen/quick-dao/blob/master/quick-dao-core/src/main/java/io/github/yangziwen/quickdao/core/IEnum.java)接口，可以参见[Gender](https://github.com/yangziwen/quick-dao/blob/master/quick-dao-example/src/main/java/io/github/yangziwen/quickdao/example/enums/Gender.java)。
 
 ### 构造聚合查询
+`Query`对象对聚合查询也提供了支持
+
+使用字符串指定字段的方式
+```java
+new Query()
+    .select("gender")
+    .select("avg(`age`) AS 'age'")
+    .groupBy("gender")
+    .having(new Criteria().and("min(`age`)").ge(20))
+    .orderBy("gender");
+```
+
+使用lambda表达式指定字段的方式
+```java
+new TypedQuery<>(User.class)
+    .select(User::getGender)
+    .selectExpr(expr -> expr.avg(User::getAge)).as(User::getAge)
+    .groupBy(User::getGender)
+    .having(criteria -> criteria.andExpr(expr -> expr.min(User::getAge)).ge(20))
+    .orderBy(User::getGender);
+```
+
+以上DSL将会生成如下SQL
+```sql
+SELECT
+  `gender` AS 'gender',
+  AVG(`age`) AS 'age'
+FROM `user`
+GROUP BY `gender`
+HAVING MIN(`avg`) >= 20
+ORDER BY `GENDER`
+```
 
 ### 构造嵌套条件查询
 
