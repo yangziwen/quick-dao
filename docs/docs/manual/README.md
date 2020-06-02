@@ -206,7 +206,7 @@ QuickDAO基于Java DSL构造查询语句，其中`Criteria`对象（包括`Typed
 * 使用字符串声明字段时，既可以使用数据库表中的原始字段名，也可以使用Java实体类中的字段名，同时还可以在`Query`对象的`select`方法中使用各种数据库函数。当使用Java实体类中的字段名编写DSL时，QuickDAO会自动完成向数据库表中原始字段名的转换。<br/>
 * 使用基于getter方法的lambda表达式声明字段时，QuickDAO将会根据`TypedCriteria`或者`TypedQuery`对象声明的泛型，对lambda表达式进行编译期检查，可有效避免DSL中的字段声明错误。`TypedQuery`对象暴露了`selectExpr`方法，也可以支持少数常用数据库函数结合这种lambda表达式的形式进行调用。
 
-### 构造简单查询
+### 简单查询条件
 当SQL中仅需要指定`WHERE`后的查询条件时，可直接使用`Criteria`对象编写DSL
 
 使用字符串指定字段的方式
@@ -237,7 +237,7 @@ WHERE `email` LIKE '%@qq.com'
   AND `age` <= 30
 ```
 
-### 构造复杂查询
+### 复杂查询条件
 当SQL中需要指定查询字段、聚合方式、排序方式等条件时，需要使用`Criteria`对象编写DSL
 
 使用字符串指定字段的方式
@@ -271,7 +271,7 @@ LIMIT 10
 ```
 枚举类Gender在声明时实现了[IEnum](https://github.com/yangziwen/quick-dao/blob/master/quick-dao-core/src/main/java/io/github/yangziwen/quickdao/core/IEnum.java)接口，可以参见[Gender](https://github.com/yangziwen/quick-dao/blob/master/quick-dao-example/src/main/java/io/github/yangziwen/quickdao/example/enums/Gender.java)。
 
-### 构造聚合查询
+### 聚合查询条件
 `Query`对象对聚合查询也提供了支持
 
 使用字符串指定字段的方式
@@ -305,7 +305,7 @@ HAVING MIN(`avg`) >= 20
 ORDER BY `GENDER`
 ```
 
-### 构造嵌套条件查询
+### 嵌套查询条件
 有些情况下，`WHERE`中的各种`AND`和`OR`的条件可能会涉及嵌套，可按如下方式编写DSL。
 
 使用字符串指定字段的方式
@@ -354,6 +354,39 @@ new Criteria()
 上述DSL将会生成如下查询条件
 ```sql
 WHERE (`username` LIKE '张%' OR `username` LIKE '李%') AND (`age` <= 20 OR `age` >= 30)
+```
+
+### 基于断言的查询条件
+QuickDAO还提供了基于断言的查询条件构造方式，在保持链式的DSL的前提下，提供了动态控制查询条件拼装的能力。
+
+使用字符串指定字段的方式
+```java
+public Criteria toCriteria(String username, Integer minAge, Integer maxAge) {
+    new Criteria()
+        .ifValid(StringUtils.isNotEmpty(username))
+        .then("username").contain(StringUtils.trim(username))
+
+        .ifValid(minAge != null)
+        .then("age").ge(minAge)
+
+        .ifValid(maxAge != null)
+        .then("age").le(maxAge);
+}
+```
+
+使用lambda表达式指定字段的方式
+```java
+public TypedCriteria<User> toCriteria(String username, Integer minAge, Integer maxAge) {
+    return new TypedCriteria<>(User.class)
+        .ifValid(() -> StringUtils.isNotBlank(username))
+        .then(User::getUsername).contain(StringUtils.trim(username))
+
+        .ifValid(() -> minAge != null)
+        .then(User::getAge).ge(minAge)
+
+        .ifValid(() -> maxAge != null)
+        .then(User::getAge).le(maxAge);
+}
 ```
 
 ## 使用数据库函数
