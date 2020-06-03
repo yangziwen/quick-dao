@@ -37,8 +37,8 @@ QuickDAO通过对Spring JDBC, MyBatis, sql2o等orm框架进行简单封装，实
 </dependency>
 ```
 
-* 定义数据的实体类
-    - 数据库的表名、字段名默认由实体类的类名、字段名按驼峰法转下划线法获得，也可基于JPA注解显式指定
+* 定义数据的实体类<br/>
+  数据库的表名、字段名默认由实体类的类名、字段名按驼峰法转下划线法获得，也可基于JPA注解显式指定
 
 ```java
 @Data
@@ -98,4 +98,4 @@ public List<User> listByAgeRange(int minAge, int maxAge) {
 }
 ```
 
-* 更多例子，请参考 [quick-dao-example](https://github.com/yangziwen/quick-dao/tree/master/quick-dao-example) 中的[单元测试](https://github.com/yangziwen/quick-dao/tree/master/quick-dao-example/src/test/java/io/github/yangziwen/quickdao/example/repository/base)
+* 更多例子，可参考[使用手册](https://yangziwen.github.io/quick-dao/manual/)以及 [quick-dao-example](https://github.com/yangziwen/quick-dao/tree/master/quick-dao-example) 中的[单元测试](https://github.com/yangziwen/quick-dao/tree/master/quick-dao-example/src/test/java/io/github/yangziwen/quickdao/example/repository/base)
