@@ -4,6 +4,7 @@ module.exports = {
     base: '/quick-dao/',
     themeConfig: {
         nav: [
+            { text: '首页', link: '/' },
             { text: '快速开始', link: '/start/index.html' },
             { text: '使用手册', link: '/manual/index.html' },
             { text: 'GitHub', link: 'https://github.com/yangziwen/quick-dao', target: '_blank' }
