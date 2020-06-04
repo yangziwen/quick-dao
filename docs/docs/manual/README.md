@@ -1,6 +1,92 @@
 # 使用手册
 
 ## 构建数据访问类
+基于实体类的泛型声明，QuickDAO的数据访问类([BaseRepository](https://github.com/yangziwen/quick-dao/blob/master/quick-dao-spring-jdbc/src/main/java/io/github/yangziwen/quickdao/springjdbc/BaseSpringJdbcRepository.java))为用户提供了基本的增删改查功能。在使用时，用户可以根据自身的需要，选用基于不同ORM框架的封装实现。<br/>
+以下用基于Spring JDBC封装的[BaseSpringJdbcRepository](https://github.com/yangziwen/quick-dao/blob/master/quick-dao-spring-jdbc/src/main/java/io/github/yangziwen/quickdao/springjdbc/BaseSpringJdbcRepository.java)为例，说明如何构建指定实体类的数据访问类。
+
+### 引入依赖
+```xml
+<dependency>
+    <groupId>io.github.yangziwen</groupId>
+    <artifactId>quick-dao-spring-jdbc</artifactId>
+    <version>0.0.16</version>
+</dependency>
+```
+
+### 声明实体类
+注意，使用`@Table`修饰的实体和使用`@Column`修饰的字段，才会被QuickDAO使用。<br/>
+数据库的表名、字段名默认由实体类的类名、字段名按驼峰法转下划线法获得，也可以在`@Table`和`@Column`注解中显式指定。
+```java
+@Data
+@Table(name = "user")
+public class User {
+
+    @Id
+    @Column
+    private Long id;
+
+    @Column
+    private String username;
+
+    @Column
+    private String email;
+
+    @Column
+    private Gender gender;
+
+    @Column
+    private Integer age;
+
+}
+```
+
+### 实现数据访问类
+```java
+public class UserRepository extends BaseSpringJdbcRepository<User> {
+    
+    public UserRepository(DataSource dataSource) {
+        super(new JdbcTemplate(dataSource));
+    }
+
+}
+```
+`UserRepository`类即可针对`User`实体类为用户提供基本的增删改查和分页查询的功能。<br/>
+
+其中[BaseSpringJdbcReadOnlyRepository](https://github.com/yangziwen/quick-dao/blob/master/quick-dao-spring-jdbc/src/main/java/io/github/yangziwen/quickdao/springjdbc/BaseSpringJdbcReadOnlyRepository.java)接口的实现类中包含以下查询方法以及各种变体
+* getById
+* first
+* list
+* listByIds
+* count
+* paginate
+
+而[BaseSpringJdbcRepository](https://github.com/yangziwen/quick-dao/blob/master/quick-dao-spring-jdbc/src/main/java/io/github/yangziwen/quickdao/springjdbc/BaseSpringJdbcRepository.java)接口的实现类中不仅包含上述的查询方法，还包含以下的增删改操作
+* insert
+* batchInsert
+* update
+* updateSelective
+* delete
+* deleteById
+* deleteByIds
+
+在`UserRepository`类上添加`@Repository`注解，同时在构造方法上添加`@Autowired`注解，即可将数据访问类的实例托管给Spring容器维护。
+
+### 数据访问类中添加个性化方法
+建议将查询条件的构造过程实现在数据访问类中，对外仅暴露语义明确的方法，尽量不要将构造查询条件的过程泄漏到数据访问层以外。
+```java
+public class UserRepository extends BaseSpringJdbcRepository<User> {
+
+    public UserRepository(DataSource dataSource) {
+        super(new JdbcTemplate(dataSource));
+    }
+
+    public List<User> listByUsernameStartWith(String usernamePrefix) {
+        return listCriteria(criteria -> criteria
+                .and(User:getUsername).startWith(usernamePrefix));
+    }
+
+}
+```
 
 ## 修改操作
 [BaseRepository](https://github.com/yangziwen/quick-dao/blob/master/quick-dao-core/src/main/java/io/github/yangziwen/quickdao/core/BaseRepository.java)接口的实现类中提供了以下修改数据的方法

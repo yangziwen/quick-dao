@@ -1,7 +1,7 @@
 # 快速开始
 
 ## 简介
-QuickDAO通过对Spring JDBC, MyBatis, sql2o等orm框架进行简单封装，实现增删改查方法的抽象和复用，有效消除DAO层的样板代码。
+QuickDAO通过对Spring JDBC, MyBatis, sql2o等ORM框架进行简单封装，实现增删改查方法的抽象和复用，有效消除DAO层的样板代码。
 
 ## 引入依赖
 基于Spring JDBC、MyBatis、sql2o的三种依赖引入其一即可。
