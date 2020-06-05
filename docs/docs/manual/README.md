@@ -524,6 +524,27 @@ public TypedCriteria<User> toCriteria(String username, Integer minAge, Integer m
 }
 ```
 
+### 条件比较运算符
+上述构造`Criteria`条件的过程中，使用了各种比较运算符。QuickDAO目前支持的[比较运算符](https://github.com/yangziwen/quick-dao/blob/master/quick-dao-core/src/main/java/io/github/yangziwen/quickdao/core/Operator.java)如下表所示。
+| 方法名 | <div style="width: 100px">描述</div> | <div style="width: 440px">示例</div> |
+| :-: | :-: | :-: |
+| eq | 判断相等 | ```criteria.and("username").eq("zhangsan")``` |
+| ne | 判断不等 | ```criteria.and("username").ne("zhangsan")```  |
+| gt | 判断大于 | ```criteria.and("age").gt(20)```  |
+| ge | 判断大于等于 | ```criteria.and("age").ge(21)``` |
+| lt | 判断小于 | ```criteria.and("age").lt(30)``` |
+| le | 判断小于等于 | ```criteria.and("age").le(29)``` |
+| contain | 判断包含指定字符串 | ```criteria.and("email").contain("@qq")``` |
+| notContain | 判断不包含指定字符串 | ```criteria.and("email").notContain("@qq")``` |
+| startWith | 判断以指定字符串开始 | ```criteria.and("email").startWith("zhangsan")``` |
+| notStartWith | 判断不以指定字符串开始 | ```criteria.and("email").notStartWith("zhangsan")``` |
+| endWith | 判断以指定字符串结束 | ```criteria.and("email").endWith("@qq.com")``` |
+| notEndWith | 判断不以指定字符串结束 | ```criteria.and("email").notEndWith("@qq.com")``` |
+| in | 判断包含于集合或数组中 | ```criteria.and("id").in(Arrays.asList(1L, 2L))``` |
+| notIn | 判断不包含于集合或数组中 | ```criteria.and("id").notIn(Arrays.asList(1L, 2L))``` |
+| isNull | 判断为空 | ```criteria.and("username").isNull()``` |
+| isNotNull | 判断不为空 | ```criteria.and("username").isNotNull()``` |
+
 ## 使用数据库函数
 当使用字符串指定字段时，可以在构造`SELECT`、`WHERE`、`HAVING`的过程中使用任意的数据库函数。
 
