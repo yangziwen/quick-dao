@@ -527,5 +527,36 @@ new TypedQuery<>(User.class)
 ```
 
 ## 如何处理枚举
+ORM框架（如Spring JDBC、Mybatis等）在处理枚举类型的字段时，一般会将枚举的name或者ordinal值写入数据库，但是这种处理方式可能无法完全满足开发的需求。
+
+例如用varchar类型保存枚举字段可能在存储效率上不够理想，而存储ordinal的值，则会导致枚举的值与他们在枚举类中声明的顺序强绑定。
+
+因此，一些团队会为每个枚举类显式的声明一个value字段，然后在用于数据持久化的实体类中，使用Integer类型的字段替换枚举字段。这种方式能够避免上述提到的问题，但是在编写代码时（例如赋值或者比较的逻辑），会涉及各种枚举字段与整数的转换，不仅丧失了使用枚举的可读性和安全性，同时增加了代码的繁琐性，以及引入了转换错误的潜在风险。
+
+所以有没有既能在实体类中直接声明和使用枚举类型的字段，又能使用枚举中显式声明的value值来进行数据存储的方式呢？<br/>
+
+为此，QuickDAO中提供了[IEnum](https://github.com/yangziwen/quick-dao/blob/master/quick-dao-core/src/main/java/io/github/yangziwen/quickdao/core/IEnum.java)接口。当一个枚举类实现了`IEnum`接口中的`getValue`方法后，数据持久化和查询的过程中，QuickDAO就会自动完成实体中该枚举类的字段与value值之间的转换。这里`IEnum`的`getValue`方法返回的不一定非要是整数，也可以是字符串或者其他类型，返回类型由实现`IEnum`接口时声明的泛型决定。
+
+以`User`实体类中的`Gender`枚举为例，给出如下的枚举实现。
+```java
+public enum Gender implements IEnum<Gender, Integer> {
+
+    MALE(1),
+
+    FEMALE(2);
+
+    private Integer value;
+
+    Gender(Integer value) {
+        this.value = value;
+    }
+
+    @Override
+    public Integer getValue() {
+        return value;
+    }
+
+}
+```
 
 ## 逻辑删除的实现
