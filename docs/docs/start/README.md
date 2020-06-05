@@ -137,6 +137,8 @@ public List<String> listUsernameOfEldestMaleUser(int limit) {
             .collect(Collectors.toList());
 }
 ```
-注意，如果实体中定义了枚举类型的字段，且数据库中对应的字段类型为int时，枚举类需要实现[IEnum](https://github.com/yangziwen/quick-dao/blob/master/quick-dao-core/src/main/java/io/github/yangziwen/quickdao/core/IEnum.java)接口的getValue()方法，数据访问操作才能将代码中的枚举对象正确的转换成int数值。<br/>
-另外，`Criteria`和`Query`均有基于lambda表达式的类型安全的版本，分别是[TypedCriteria](https://github.com/yangziwen/quick-dao/blob/master/quick-dao-core/src/main/java/io/github/yangziwen/quickdao/core/TypedQuery.java)和[TypedQuery](https://github.com/yangziwen/quick-dao/blob/master/quick-dao-core/src/main/java/io/github/yangziwen/quickdao/core/TypedQuery.java)。<br/>
+注意，如果实体中定义了枚举类型的字段，且数据库中对应的字段类型为int时，枚举类需要实现[IEnum](https://github.com/yangziwen/quick-dao/blob/master/quick-dao-core/src/main/java/io/github/yangziwen/quickdao/core/IEnum.java)接口的getValue()方法，数据访问操作才能将代码中的枚举对象正确的转换成int数值。
+
+另外，`Criteria`和`Query`均有基于lambda表达式的类型安全的版本，分别是[TypedCriteria](https://github.com/yangziwen/quick-dao/blob/master/quick-dao-core/src/main/java/io/github/yangziwen/quickdao/core/TypedQuery.java)和[TypedQuery](https://github.com/yangziwen/quick-dao/blob/master/quick-dao-core/src/main/java/io/github/yangziwen/quickdao/core/TypedQuery.java)。
+
 更多`Query`对象和`Criteria`对象的使用方法，可以参考[quick-dao-example](https://github.com/yangziwen/quick-dao/tree/master/quick-dao-example)中的[单元测试](https://github.com/yangziwen/quick-dao/tree/master/quick-dao-example/src/test/java/io/github/yangziwen/quickdao/example/repository/base)。

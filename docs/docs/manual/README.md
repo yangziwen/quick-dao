@@ -1,8 +1,9 @@
 # 使用手册
 
 ## 构建数据访问类
-基于实体类的泛型声明，QuickDAO的数据访问类([BaseRepository](https://github.com/yangziwen/quick-dao/blob/master/quick-dao-spring-jdbc/src/main/java/io/github/yangziwen/quickdao/springjdbc/BaseSpringJdbcRepository.java))为用户提供了基本的增删改查功能。在使用时，用户可以根据自身的需要，选用基于不同ORM框架的封装实现。<br/>
-以下用基于Spring JDBC封装的[BaseSpringJdbcRepository](https://github.com/yangziwen/quick-dao/blob/master/quick-dao-spring-jdbc/src/main/java/io/github/yangziwen/quickdao/springjdbc/BaseSpringJdbcRepository.java)为例，说明如何构建指定实体类的数据访问类。
+基于实体类的泛型声明，QuickDAO的数据访问类([BaseRepository](https://github.com/yangziwen/quick-dao/blob/master/quick-dao-spring-jdbc/src/main/java/io/github/yangziwen/quickdao/springjdbc/BaseSpringJdbcRepository.java))为用户提供了基本的增删改查功能。在使用时，用户可以根据自身的需要，选用基于不同ORM框架的封装实现。
+
+下面以基于Spring JDBC封装的[BaseSpringJdbcRepository](https://github.com/yangziwen/quick-dao/blob/master/quick-dao-spring-jdbc/src/main/java/io/github/yangziwen/quickdao/springjdbc/BaseSpringJdbcRepository.java)为例，说明如何构建指定实体类的数据访问类。
 
 ### 引入依赖
 ```xml
@@ -373,7 +374,7 @@ WHERE `email` LIKE '%@qq.com'
 ```
 
 ### 复杂查询条件
-当SQL中需要指定查询字段、聚合方式、排序方式等条件时，需要使用`Criteria`对象编写DSL
+当SQL中需要指定查询字段、聚合方式、排序方式等条件时，需要使用`Query`对象编写DSL
 
 使用字符串指定字段的方式
 ```java
@@ -564,7 +565,7 @@ API支持的函数列表如下所示，详情请见[SqlFunctionExpression](https
 | max | String 或 Function | 计算最大值 |
 | min | String 或 Function | 计算最小值 |
 | avg | String 或 Function | 计算平均值 |
-| sum | String 或 Function | 计算求和 |
+| sum | String 或 Function | 计算总和 |
 
 使用字符串指定字段的方式
 ```java
@@ -605,7 +606,7 @@ ORM框架（如Spring JDBC、Mybatis等）在处理枚举类型的字段时，�
 
 所以有没有既能在实体类中直接声明和使用枚举类型的字段，又能使用枚举中显式声明的value值来进行数据存储的方式呢？<br/>
 
-为此，QuickDAO中提供了[IEnum](https://github.com/yangziwen/quick-dao/blob/master/quick-dao-core/src/main/java/io/github/yangziwen/quickdao/core/IEnum.java)接口。当一个枚举类实现了`IEnum`接口中的`getValue`方法后，数据持久化和查询的过程中，QuickDAO就会自动完成实体中该枚举类的字段与value值之间的转换。这里`IEnum`的`getValue`方法返回的不一定非要是整数，也可以是字符串或者其他类型，返回类型由实现`IEnum`接口时声明的泛型决定。
+为此，QuickDAO中提供了[IEnum](https://github.com/yangziwen/quick-dao/blob/master/quick-dao-core/src/main/java/io/github/yangziwen/quickdao/core/IEnum.java)接口。当一个枚举类实现了`IEnum`接口中的`getValue`方法后，数据持久化和查询的过程中，QuickDAO就会自动完成实体中该枚举类的字段与value值之间的转换。这里`IEnum`的`getValue`方法返回的不一定需要是整数，也可以是字符串或者其他类型，返回类型由实现`IEnum`接口时声明的泛型决定。
 
 以`User`实体类中的`Gender`枚举为例，给出如下的枚举实现。
 ```java
