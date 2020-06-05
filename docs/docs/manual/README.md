@@ -71,7 +71,7 @@ public class UserRepository extends BaseSpringJdbcRepository<User> {
 
 在`UserRepository`类上添加`@Repository`注解，同时在构造方法上添加`@Autowired`注解，即可将数据访问类的实例托管给Spring容器维护。
 
-### 数据访问类中添加个性化方法
+### 添加个性化方法
 建议将查询条件的构造过程实现在数据访问类中，对外仅暴露语义明确的方法，尽量不要将构造查询条件的过程泄漏到数据访问层以外。
 ```java
 public class UserRepository extends BaseSpringJdbcRepository<User> {
@@ -85,6 +85,55 @@ public class UserRepository extends BaseSpringJdbcRepository<User> {
                 .and(User:getUsername).startWith(usernamePrefix));
     }
 
+}
+```
+
+### 配置字段包装符号
+当数据表中存在一些与数据库关键字同名的字段时，则需要使用字段包装符号，才能正常操作这些字段。例如
+```sql
+SELECT `id`, `order`, `group` FROM `data` WHERE `order` = 1;
+```
+
+对于不同的数据库，字段包装符号会有所不同。
+
+例如MySQL数据库的字段包装符号如下
+| 字段类型 | 包装符号 | 示例 |
+| :-: | :-: | :-: |
+| 表名 | `` | ``` SELECT * FROM `user` ``` |
+| 字段名 | `` | ``` SELECT `username` FROM `user` ``` |
+| 别名 | '' | ``` SELECT `username` AS 'name' FROM `user` ```|
+
+对于不同ORM框架，变量占位符的包装符号也会有所不同。
+
+例如Spring JDBC的变量占位符是`:username`的形式，而Mybatis的变量占位符是`#{username}`的形式。
+
+这就要求我们在声明数据访问类时，能够定制化的配置这些字段包装符号。
+
+仍以MySQL和Spring JDBC的组合为例，可按如下方式声明字段的包装符号。
+```java
+public class UserRepository extends BaseSpringJdbcRepository<User> {
+
+    public UserRepository(DataSource dataSource) {
+        super(new JdbcTemplate(dataSource), new SqlGenerator(
+            new StringWrapper("`", "`"),
+            new StringWrapper("`", "`"),
+            new StringWrapper("'", "'"),
+            new StringWrapper(":", "")));
+    }
+
+}
+```
+包装符号的配置，是通过显式的调用[SqlGenerator](https://github.com/yangziwen/quick-dao/blob/master/quick-dao-core/src/main/java/io/github/yangziwen/quickdao/core/SqlGenerator.java)的以下构造方法实现的。
+```java
+public SqlGenerator(
+        StringWrapper tableWrapper,
+        StringWrapper columnWrapper,
+        StringWrapper aliasWrapper,
+        StringWrapper placeholderWrapper) {
+    this.tableWrapper = tableWrapper;
+    this.columnWrapper = columnWrapper;
+    this.aliasWrapper = aliasWrapper;
+    this.placeholderWrapper = placeholderWrapper;
 }
 ```
 
@@ -560,3 +609,4 @@ public enum Gender implements IEnum<Gender, Integer> {
 ```
 
 ## 逻辑删除的实现
+TODO
