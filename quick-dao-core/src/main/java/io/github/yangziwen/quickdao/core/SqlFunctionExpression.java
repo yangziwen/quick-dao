@@ -1,10 +1,17 @@
 package io.github.yangziwen.quickdao.core;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
+
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import io.github.yangziwen.quickdao.core.util.DatabaseTypeUtil;
 import io.github.yangziwen.quickdao.core.util.DatabaseTypeUtil.DatabaseType;
+import io.github.yangziwen.quickdao.core.util.InvokedMethodExtractor;
 import io.github.yangziwen.quickdao.core.util.SqlFunctions;
+import io.github.yangziwen.quickdao.core.util.StringWrapper;
 import io.github.yangziwen.quickdao.core.util.VarArgsSQLFunction;
 import lombok.Getter;
 
@@ -117,6 +124,31 @@ public class SqlFunctionExpression<E> {
     public void sum(Function<E, ?> getter) {
         this.func = SqlFunctions.SUM_FUNC;
         this.args = new Function[] { getter };
+    }
+
+    @SuppressWarnings("unchecked")
+    public String render(
+            EntityMeta<?> entityMeta,
+            InvokedMethodExtractor<E> extractor,
+            StringWrapper columnWrapper) {
+        List<String> argList = new ArrayList<>();
+        if (this.getArgs() instanceof String[]) {
+            for (String arg : (String[]) this.getArgs()) {
+                String column = entityMeta.getColumnNameByFieldName(arg);
+                if (StringUtils.isBlank(column)) {
+                    argList.add(arg);
+                } else {
+                    argList.add(columnWrapper.wrap(column));
+                }
+            }
+        } else if (this.getArgs() instanceof Function[]) {
+            for (Function<E, ?> getter : (Function[]) this.getArgs()) {
+                String field = extractor.extractFieldNameFromGetter(getter);
+                String column = entityMeta.getColumnNameByFieldName(field);
+                argList.add(columnWrapper.wrap(column));
+            }
+        }
+        return this.getFunc().render(argList.toArray(ArrayUtils.EMPTY_OBJECT_ARRAY));
     }
 
 }

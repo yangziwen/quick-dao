@@ -1,12 +1,18 @@
 package io.github.yangziwen.quickdao.core.util;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 @AllArgsConstructor
 public class VarArgsSQLFunction {
 
+    @Getter
+    private final String name;
+
     private final String begin;
+
     private final String sep;
+
     private final String end;
 
     public String render(Object... args) {

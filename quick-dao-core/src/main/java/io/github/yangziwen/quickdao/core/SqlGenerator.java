@@ -9,10 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.function.Function;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import io.github.yangziwen.quickdao.core.util.ReflectionUtil;
@@ -293,26 +291,8 @@ public class SqlGenerator {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private <T> String renderFunctionStmt(FunctionStmt<T> stmt, EntityMeta<T> entityMeta) {
-        List<String> args = new ArrayList<>();
-        if (stmt.getExpression().getArgs() instanceof String[]) {
-            for (String arg : (String[]) stmt.getExpression().getArgs()) {
-                String column = entityMeta.getColumnNameByFieldName(arg);
-                if (StringUtils.isBlank(column)) {
-                    args.add(arg);
-                } else {
-                    args.add(columnWrapper.wrap(column));
-                }
-            }
-        } else if (stmt.getExpression().getArgs() instanceof Function[]) {
-            for (Function<T, ?> getter : (Function[]) stmt.getExpression().getArgs()) {
-                String field = stmt.getExtractor().extractFieldNameFromGetter(getter);
-                String column = entityMeta.getColumnNameByFieldName(field);
-                args.add(columnWrapper.wrap(column));
-            }
-        }
-        String expr = stmt.getExpression().getFunc().render(args.toArray(ArrayUtils.EMPTY_OBJECT_ARRAY));
+        String expr = stmt.getExpression().render(entityMeta, stmt.getExtractor(), columnWrapper);
         String suffix = "";
         if (StringUtils.isNotBlank(stmt.getAlias())) {
             suffix = " AS " + aliasWrapper.wrap(stmt.getAlias());
