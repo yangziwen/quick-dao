@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.sql.DataSource;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -27,6 +29,14 @@ public abstract class BaseSpringJdbcRepository<E> extends BaseSpringJdbcReadOnly
     protected BaseSpringJdbcRepository(JdbcTemplate jdbcTemplate, SqlGenerator sqlGenerator) {
         super(jdbcTemplate, sqlGenerator);
         this.jdbcInsert = createJdbcInsert(jdbcTemplate);
+    }
+
+    protected BaseSpringJdbcRepository(DataSource dataSource) {
+        this(new JdbcTemplate(dataSource));
+    }
+
+    protected BaseSpringJdbcRepository(DataSource dataSource, SqlGenerator sqlGenerator) {
+        this(new JdbcTemplate(dataSource), sqlGenerator);
     }
 
     private SimpleJdbcInsert createJdbcInsert(JdbcTemplate jdbcTemplate) {

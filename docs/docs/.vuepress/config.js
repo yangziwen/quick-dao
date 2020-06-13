@@ -16,6 +16,7 @@ module.exports = {
             title: '使用手册',
             path: '/manual/'
         }],
-        sidebarDepth: 2
+        sidebarDepth: 2,
+        smoothScroll: true
     }
 }

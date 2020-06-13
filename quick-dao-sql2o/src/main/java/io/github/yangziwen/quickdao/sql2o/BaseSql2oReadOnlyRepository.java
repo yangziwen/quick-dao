@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.sql.DataSource;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.sql2o.Connection;
 import org.sql2o.Sql2o;
@@ -33,6 +35,14 @@ public abstract class BaseSql2oReadOnlyRepository<E> extends BaseCommonRepositor
     protected BaseSql2oReadOnlyRepository(Sql2o sql2o, SqlGenerator sqlGenerator) {
         super(sqlGenerator);
         this.sql2o = sql2o;
+    }
+
+    protected BaseSql2oReadOnlyRepository(DataSource dataSource) {
+        this(new Sql2o(dataSource));
+    }
+
+    protected BaseSql2oReadOnlyRepository(DataSource dataSource, SqlGenerator sqlGenerator) {
+        this(new Sql2o(dataSource), sqlGenerator);
     }
 
     @Override

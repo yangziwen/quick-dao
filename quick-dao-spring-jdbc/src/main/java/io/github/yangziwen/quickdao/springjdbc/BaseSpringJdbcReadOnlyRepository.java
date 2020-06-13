@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -33,6 +35,14 @@ public abstract class BaseSpringJdbcReadOnlyRepository<E> extends BaseCommonRepo
         super(sqlGenerator);
         this.jdbcTemplate = createNamedParameterJdbcTemplate(jdbcTemplate);
         this.rowMapper = createRowMapper(entityMeta.getClassType());
+    }
+
+    protected BaseSpringJdbcReadOnlyRepository(DataSource dataSource) {
+        this(new JdbcTemplate(dataSource));
+    }
+
+    protected BaseSpringJdbcReadOnlyRepository(DataSource dataSource, SqlGenerator sqlGenerator) {
+        this(new JdbcTemplate(dataSource), sqlGenerator);
     }
 
     @Override
