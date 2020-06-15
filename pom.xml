@@ -17,7 +17,7 @@
         <sql2o.version>1.5.4</sql2o.version>
         <spring.jdbc.version>4.3.19.RELEASE</spring.jdbc.version>
         <commons.lang3.version>3.3.2</commons.lang3.version>
-        <commons.collections4.version>4.0</commons.collections4.version>
+        <commons.collections4.version>4.1</commons.collections4.version>
         <cglib.version>3.1</cglib.version>
         <lombok.version>1.18.2</lombok.version>
         <junit.version>4.12</junit.version>
