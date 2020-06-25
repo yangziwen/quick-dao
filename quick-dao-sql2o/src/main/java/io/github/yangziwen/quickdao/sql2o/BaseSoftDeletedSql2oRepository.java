@@ -2,6 +2,7 @@ package io.github.yangziwen.quickdao.sql2o;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.sql.DataSource;
@@ -11,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.sql2o.Connection;
 import org.sql2o.Sql2o;
 
+import io.github.yangziwen.quickdao.core.BaseSoftDeletedRepository;
 import io.github.yangziwen.quickdao.core.Criteria;
 import io.github.yangziwen.quickdao.core.Query;
 import io.github.yangziwen.quickdao.core.SqlGenerator;
@@ -23,7 +25,7 @@ import io.github.yangziwen.quickdao.core.SqlGenerator;
  *
  * @param <E>
  */
-public abstract class BaseSoftDeletedSql2oRepository<E> extends BaseSql2oRepository<E> {
+public abstract class BaseSoftDeletedSql2oRepository<E> extends BaseSql2oRepository<E> implements BaseSoftDeletedRepository<E> {
 
     private final E emptyEntity;
 
@@ -44,41 +46,6 @@ public abstract class BaseSoftDeletedSql2oRepository<E> extends BaseSql2oReposit
     protected BaseSoftDeletedSql2oRepository(DataSource dataSource, SqlGenerator sqlGenerator) {
          this(new Sql2o(dataSource), sqlGenerator);
      }
-
-    /**
-     * 逻辑删除的标识字段（不需要在entity中声明）
-     *
-     * @return
-     */
-    protected abstract String getDeletedFlagColumn();
-
-    /**
-     * 已删除数据的逻辑删除标识字段值
-     *
-     * @return
-     */
-    protected abstract Object getDeletedFlagValue();
-
-    /**
-     * 未删除数据的逻辑删除标识字段值
-     *
-     * @return
-     */
-    protected abstract Object getNotDeletedFlagValue();
-
-    /**
-     * 数据表中的更新时间字段，返回空则逻辑删除时忽略更新时间
-     *
-     * @return
-     */
-    protected abstract String getUpdateTimeColumn();
-
-    /**
-     * 数据表中更新时间字段的取值，返回空则逻辑删除时忽略更新时间 只能返回new Date().getTime() 或 "now()"，不能返回Date对象
-     *
-     * @return
-     */
-    protected abstract Object getUpdateTimeValue();
 
     private E newEntityInstance() {
         try {
@@ -146,11 +113,13 @@ public abstract class BaseSoftDeletedSql2oRepository<E> extends BaseSql2oReposit
             sql += " LIMIT " + query.getLimit();
         }
 
-        sql = sqlGenerator.flattenCollectionValues(sql, query.getCriteria().toParamMap());
+        Map<String, Object> paramMap = query.getCriteria().toParamMap();
+
+        sql = sqlGenerator.flattenCollectionValues(sql, paramMap);
 
         try (Connection conn = sql2o.open();
                 org.sql2o.Query sql2oQuery = conn.createQuery(sql)) {
-            for (Entry<String, Object> entry : query.getCriteria().toParamMap().entrySet()) {
+            for (Entry<String, Object> entry : paramMap.entrySet()) {
                 if (entry.getValue() == null) {
                     continue;
                 }

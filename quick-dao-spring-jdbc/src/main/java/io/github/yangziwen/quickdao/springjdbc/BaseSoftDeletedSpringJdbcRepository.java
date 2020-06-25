@@ -9,10 +9,10 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import io.github.yangziwen.quickdao.core.BaseSoftDeletedRepository;
 import io.github.yangziwen.quickdao.core.Criteria;
 import io.github.yangziwen.quickdao.core.Query;
 import io.github.yangziwen.quickdao.core.SqlGenerator;
-import io.github.yangziwen.quickdao.springjdbc.BaseSpringJdbcRepository;
 
 /**
  * BaseSoftDeletedSpringJdbcRepository
@@ -22,7 +22,7 @@ import io.github.yangziwen.quickdao.springjdbc.BaseSpringJdbcRepository;
  *
  * @param <E>
  */
-public abstract class BaseSoftDeletedSpringJdbcRepository<E> extends BaseSpringJdbcRepository<E> {
+public abstract class BaseSoftDeletedSpringJdbcRepository<E> extends BaseSpringJdbcRepository<E> implements BaseSoftDeletedRepository<E> {
 
     private final E emptyEntity;
 
@@ -43,37 +43,6 @@ public abstract class BaseSoftDeletedSpringJdbcRepository<E> extends BaseSpringJ
     protected BaseSoftDeletedSpringJdbcRepository(DataSource dataSource, SqlGenerator sqlGenerator) {
         this(new JdbcTemplate(dataSource), sqlGenerator);
     }
-
-    /**
-     * 逻辑删除的标识字段（不需要在entity中声明）
-     * @return
-     */
-    protected abstract String getDeletedFlagColumn();
-
-    /**
-     * 已删除数据的逻辑删除标识字段值
-     * @return
-     */
-    protected abstract Object getDeletedFlagValue();
-
-    /**
-     * 未删除数据的逻辑删除标识字段值
-     * @return
-     */
-    protected abstract Object getNotDeletedFlagValue();
-
-    /**
-     * 数据表中的更新时间字段，返回空则逻辑删除时忽略更新时间
-     * @return
-     */
-    protected abstract String getUpdateTimeColumn();
-
-    /**
-     * 数据表中更新时间字段的取值，返回空则逻辑删除时忽略更新时间
-     * 只能返回new Date().getTime() 或 "now()"，不能返回Date对象
-     * @return
-     */
-    protected abstract Object getUpdateTimeValue();
 
     private E newEntityInstance() {
         try {
