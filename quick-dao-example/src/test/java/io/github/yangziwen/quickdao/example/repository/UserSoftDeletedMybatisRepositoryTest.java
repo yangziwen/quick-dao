@@ -1,0 +1,44 @@
+package io.github.yangziwen.quickdao.example.repository;
+
+import javax.sql.DataSource;
+
+import org.apache.ibatis.mapping.Environment;
+import org.apache.ibatis.session.Configuration;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+import org.apache.ibatis.transaction.TransactionFactory;
+import org.apache.ibatis.transaction.managed.ManagedTransactionFactory;
+
+import io.github.yangziwen.quickdao.core.BaseRepository;
+import io.github.yangziwen.quickdao.example.entity.User;
+import io.github.yangziwen.quickdao.example.repository.base.BaseUserSoftDeletedRepositoryTest;
+import io.github.yangziwen.quickdao.mybatis.CustomEnumTypeHandler;
+
+public class UserSoftDeletedMybatisRepositoryTest extends BaseUserSoftDeletedRepositoryTest {
+
+
+    private static SqlSessionFactory sqlSessionFactory = createSqlSessionFactory(dataSource);
+
+    private static SqlSessionFactory createSqlSessionFactory(DataSource dataSource) {
+        TransactionFactory transactionFactory = new ManagedTransactionFactory();
+        Environment environment = new Environment("test", transactionFactory, dataSource);
+        Configuration configuration = new Configuration(environment);
+        configuration.setCacheEnabled(false);
+        configuration.setLazyLoadingEnabled(false);
+        configuration.setMapUnderscoreToCamelCase(true);
+        configuration.setUseGeneratedKeys(true);
+        configuration.setDefaultEnumTypeHandler(CustomEnumTypeHandler.class);
+        return new SqlSessionFactoryBuilder().build(configuration);
+    }
+
+    @Override
+    protected BaseRepository<User> createSoftDeletedRepository() {
+        return new UserSoftDeletedMybatisRepository(sqlSessionFactory.openSession());
+    }
+
+    @Override
+    protected BaseRepository<User> createRepository() {
+        return new UserMybatisRepository(sqlSessionFactory.openSession());
+    }
+
+}
