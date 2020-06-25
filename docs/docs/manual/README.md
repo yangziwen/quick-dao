@@ -631,4 +631,107 @@ public enum Gender implements IEnum<Gender, Integer> {
 ```
 
 ## 逻辑删除的实现
-TODO
+一些团队在开发项目过程中习惯使用逻辑删除（Soft Delete）来替代物理删除（Hard Delete）操作，即使用类似`is_deleted`的字段来标记数据是否被删除。
+
+这种做法可以带来一些好处，比如在发生误删除时可以比较容易的找回数据，同时已删除的数据在商业分析和审计等层面可能也存在一定价值。
+
+但是，逻辑删除的缺点也很明显，例如所有的查询操作都要携带`is_deleted = false`的条件，同时所有的删除操作都要按修改操作来实现。如果这些针对逻辑删除的细节都在应用程序中实现，则会给代码的编写和维护带来额外的复杂度，同时一旦开发人员在某处遗漏了对逻辑删除标识的判断，就会引发bug。
+
+从本质上讲，应用程序的业务逻辑不应感知数据的持久化操作到底是物理删除还是逻辑删除，这就要求数据持久化框架能够统一的抽象并支持切换物理删除和逻辑删除的相关操作。
+
+QuickDAO从这一观点出发，扩展出了[BaseSoftDeletedRepository](https://github.com/yangziwen/quick-dao/blob/master/quick-dao-core/src/main/java/io/github/yangziwen/quickdao/core/BaseSoftDeletedRepository.java)的各种实现，对外暴露了统一的增删改查API，很好的屏蔽了逻辑删除的实现细节。以下将以[BaseSoftDeletedSpringJdbcRepository](https://github.com/yangziwen/quick-dao/blob/master/quick-dao-spring-jdbc/src/main/java/io/github/yangziwen/quickdao/springjdbc/BaseSoftDeletedSpringJdbcRepository.java)为例，来说明逻辑删除的实现方法。
+
+首先是表结构的声明，需要声明逻辑删除标识字段`is_deleted`及其**默认值**。
+```sql
+CREATE TABLE `user` (
+    `id` BIGINT(20) PRIMARY KEY AUTO_INCREMENT,
+    `username` VARCHAR(128) NOT NULL,
+    `email` VARCHAR(128) NOT NULL,
+    `gender` INT(11),
+    `age` INT(11),
+    `update_time` DATETIME,
+    `is_deleted` TINYINT(1) NOT NULL DEFAULT '0'
+);
+```
+
+之后是声明数据实体类。需要注意的是，业务代码并不关心删除操作是否为逻辑删除，因此实体类中也不应声明`is_deleted`对应的成员变量，插入数据时也不会指定`is_deleted`字段的值，这也是声明表结构时一定要为`is_deleted`字段声明默认值的原因。
+```java
+@Data
+@Table(name = "user")
+public class User {
+
+    @Id
+    @Column
+    private Long id;
+
+    @Column
+    private String username;
+
+    @Column
+    private String email;
+
+    @Column
+    private Gender gender;
+
+    @Column
+    private Integer age;
+
+}
+```
+
+最后按如下方式声明数据实体类对应的数据访问类，即可实现逻辑删除功能。
+```java
+public class UserRepository extends BaseSoftDeletedSpringJdbcRepository<User> {
+
+    public UserSoftDeletedSpringJdbcRepository(JdbcTemplate jdbcTemplate) {
+        super(jdbcTemplate);
+    }
+
+    /**
+     * 逻辑删除的标识字段（不需要在entity中声明）
+     */
+    @Override
+    public String getDeletedFlagColumn() {
+        return "is_deleted";
+    }
+
+    /**
+     * 已删除数据的逻辑删除标识字段值
+     * 对于`is_deleted`字段，true表示已删除
+     */
+    @Override
+    public Object getDeletedFlagValue() {
+        return true;
+    }
+
+    /**
+     * 未删除数据的逻辑删除标识字段值
+     * 对于`is_deleted`字段，false表示未删除
+     */
+    @Override
+    public Object getNotDeletedFlagValue() {
+        return false;
+    }
+
+    /**
+     * 数据表中的更新时间字段，返回空则逻辑删除时忽略更新时间
+     */
+    @Override
+    public String getUpdateTimeColumn() {
+        return "update_time";
+    }
+
+    /**
+     * 数据表中更新时间字段的取值，返回空则逻辑删除时忽略更新时间
+     * 只能返回new Date().getTime() 或 "now()"，不能返回Date对象
+     */
+    @Override
+    public Object getUpdateTimeValue() {
+        return "now()";
+    }
+
+}
+```
+
+通常情况下，一个项目中所有数据表的逻辑删除标识字段名称以及取值应是统一的，因此在项目范围内可实现一个继承了`BaseSoftDeletedSpringJdbcRepository`的抽象类，对逻辑删除标识字段和更新时间字段作统一声明。
+

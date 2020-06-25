@@ -28,13 +28,18 @@ public interface BaseSoftDeletedRepository<E> extends BaseRepository<E> {
      *
      * @return
      */
-    String getUpdateTimeColumn();
+    default String getUpdateTimeColumn() {
+        return "";
+    }
 
     /**
-     * 数据表中更新时间字段的取值，返回空则逻辑删除时忽略更新时间 只能返回new Date().getTime() 或 "now()"，不能返回Date对象
+     * 数据表中更新时间字段的取值，返回空则逻辑删除时忽略更新时间
+     * 只能返回new Date().getTime() 或 "now()"，不能返回Date对象
      *
      * @return
      */
-    Object getUpdateTimeValue();
+    default Object getUpdateTimeValue() {
+        return null;
+    }
 
 }
