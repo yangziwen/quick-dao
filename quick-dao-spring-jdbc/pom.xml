@@ -7,7 +7,7 @@
     <parent>
         <groupId>io.github.yangziwen</groupId>
         <artifactId>quick-dao</artifactId>
-        <version>0.0.18-SNAPSHOT</version>
+        <version>0.0.18</version>
     </parent>
     <artifactId>quick-dao-spring-jdbc</artifactId>
     <name>quick-dao-spring-jdbc</name>
