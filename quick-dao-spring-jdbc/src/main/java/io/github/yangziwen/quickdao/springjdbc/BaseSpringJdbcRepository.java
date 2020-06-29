@@ -50,9 +50,10 @@ public abstract class BaseSpringJdbcRepository<E> extends BaseSpringJdbcReadOnly
     }
 
     @Override
-    public void insert(E entity) {
+    public int insert(E entity) {
         Number key = jdbcInsert.executeAndReturnKey(createSqlParameterSource(entity));
         entityMeta.fillIdValue(entity, key);
+        return key != null ? 1 : 0;
     }
 
     @Override
@@ -68,50 +69,50 @@ public abstract class BaseSpringJdbcRepository<E> extends BaseSpringJdbcReadOnly
     }
 
     @Override
-    public void update(E entity) {
+    public int update(E entity) {
         String sql = sqlGenerator.generateUpdateSql(entityMeta);
-        jdbcTemplate.update(sql, createSqlParameterSource(entity));
+        return jdbcTemplate.update(sql, createSqlParameterSource(entity));
     }
 
     @Override
-    public void updateSelective(E entity) {
+    public int updateSelective(E entity) {
         String sql = sqlGenerator.generateUpdateSelectiveSql(entityMeta, entity);
-        jdbcTemplate.update(sql, createSqlParameterSource(entity));
+        return jdbcTemplate.update(sql, createSqlParameterSource(entity));
     }
 
     @Override
-    public void updateSelective(E entity, Criteria criteria) {
+    public int updateSelective(E entity, Criteria criteria) {
         String sql = sqlGenerator.generateUpdateSelectiveByCriteriaSql(entityMeta, entity, criteria);
         SqlParameterSource source = new CompositeSqlParameterSource(
                 createSqlParameterSource(entity),
                 createSqlParameterSource(criteria));
-        jdbcTemplate.update(sql, source);
+        return jdbcTemplate.update(sql, source);
     }
 
     @Override
-    public void deleteById(Object id) {
+    public int deleteById(Object id) {
         String sql = sqlGenerator.generateDeleteByPrimaryKeySql(entityMeta);
-        jdbcTemplate.update(sql, new MapSqlParameterSource().addValue(entityMeta.getIdColumnName(), id));
+        return jdbcTemplate.update(sql, new MapSqlParameterSource().addValue(entityMeta.getIdColumnName(), id));
     }
 
     @Override
-    public void delete(Criteria criteria) {
+    public int delete(Criteria criteria) {
         String sql = sqlGenerator.generateDeleteByCriteriaSql(entityMeta, criteria);
-        jdbcTemplate.update(sql, createSqlParameterSource(criteria));
+        return jdbcTemplate.update(sql, createSqlParameterSource(criteria));
     }
 
     @Override
-    public void delete(Query query) {
+    public int delete(Query query) {
         String sql = sqlGenerator.generateDeleteByQuerySql(entityMeta, query);
-        jdbcTemplate.update(sql, createSqlParameterSource(query.toParamMap()));
+        return jdbcTemplate.update(sql, createSqlParameterSource(query.toParamMap()));
     }
 
     @Override
-    public void deleteByIds(Collection<?> ids) {
+    public int deleteByIds(Collection<?> ids) {
         if (CollectionUtils.isEmpty(ids)) {
-            return;
+            return 0;
         }
-        delete(new Criteria().and(entityMeta.getIdFieldName()).in(ids));
+        return delete(new Criteria().and(entityMeta.getIdFieldName()).in(ids));
     }
 
     protected SqlParameterSource createSqlParameterSource(Criteria criteria) {

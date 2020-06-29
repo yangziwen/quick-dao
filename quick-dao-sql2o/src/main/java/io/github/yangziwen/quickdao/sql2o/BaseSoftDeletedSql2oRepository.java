@@ -74,9 +74,9 @@ public abstract class BaseSoftDeletedSql2oRepository<E> extends BaseSql2oReposit
     }
 
     @Override
-    public void updateSelective(E entity, Criteria criteria) {
+    public int updateSelective(E entity, Criteria criteria) {
         criteria.and(getDeletedFlagColumn()).eq(getNotDeletedFlagValue());
-        super.updateSelective(entity, criteria);
+        return super.updateSelective(entity, criteria);
     }
 
     /**
@@ -85,15 +85,15 @@ public abstract class BaseSoftDeletedSql2oRepository<E> extends BaseSql2oReposit
      * @param criteria 删除条件
      */
     @Override
-    public void delete(Criteria criteria) {
-        delete(new Query().where(criteria));
+    public int delete(Criteria criteria) {
+        return delete(new Query().where(criteria));
     }
 
     /**
      * 逻辑删除
      */
     @Override
-    public void delete(Query query) {
+    public int delete(Query query) {
 
         query.getCriteria().and(getDeletedFlagColumn()).eq(getNotDeletedFlagValue());
 
@@ -125,7 +125,7 @@ public abstract class BaseSoftDeletedSql2oRepository<E> extends BaseSql2oReposit
                 }
                 sql2oQuery.addParameter(entry.getKey(), entry.getValue());
             }
-            sql2oQuery.executeUpdate();
+            return sql2oQuery.executeUpdate().getResult();
         }
     }
 
@@ -133,18 +133,18 @@ public abstract class BaseSoftDeletedSql2oRepository<E> extends BaseSql2oReposit
      * 逻辑删除
      */
     @Override
-    public void deleteByIds(Collection<?> ids) {
+    public int deleteByIds(Collection<?> ids) {
         if (CollectionUtils.isEmpty(ids)) {
-            return;
+            return 0;
         }
-        delete(new Criteria().and(entityMeta.getIdFieldName()).in(ids));
+        return delete(new Criteria().and(entityMeta.getIdFieldName()).in(ids));
     }
 
     /**
      * 逻辑删除
      */
     @Override
-    public void deleteById(Object id) {
+    public int deleteById(Object id) {
         Criteria criteria = new Criteria()
                 .and(entityMeta.getIdFieldName()).eq(id)
                 .and(getDeletedFlagColumn()).eq(getNotDeletedFlagValue());
@@ -164,7 +164,7 @@ public abstract class BaseSoftDeletedSql2oRepository<E> extends BaseSql2oReposit
                 }
                 sql2oQuery.addParameter(entry.getKey(), entry.getValue());
             }
-            sql2oQuery.executeUpdate();
+            return sql2oQuery.executeUpdate().getResult();
         }
     }
 

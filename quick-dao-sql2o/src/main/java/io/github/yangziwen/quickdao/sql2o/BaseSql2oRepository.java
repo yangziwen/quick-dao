@@ -39,7 +39,7 @@ public abstract class BaseSql2oRepository<E> extends BaseSql2oReadOnlyRepository
     }
 
     @Override
-    public void insert(E entity) {
+    public int insert(E entity) {
         String sql = sqlGenerator.generateInsertSql(entityMeta);
         try (Connection conn = sql2o.open();
                 org.sql2o.Query sql2oQuery = conn.createQuery(sql)) {
@@ -47,8 +47,10 @@ public abstract class BaseSql2oRepository<E> extends BaseSql2oReadOnlyRepository
                 Object value = ReflectionUtil.getFieldValue(entity, field);
                 sql2oQuery.addParameter(field.getName(), value);
             }
-            Object id = sql2oQuery.executeUpdate().getKey();
+            Connection connection = sql2oQuery.executeUpdate();
+            Object id = connection.getKey();
             entityMeta.fillIdValue(entity, id);
+            return connection.getResult();
         }
     }
 
@@ -84,7 +86,7 @@ public abstract class BaseSql2oRepository<E> extends BaseSql2oReadOnlyRepository
     }
 
     @Override
-    public void update(E entity) {
+    public int update(E entity) {
         String sql = sqlGenerator.generateUpdateSql(entityMeta);
         try (Connection conn = sql2o.open();
                 org.sql2o.Query sql2oQuery = conn.createQuery(sql)) {
@@ -92,12 +94,12 @@ public abstract class BaseSql2oRepository<E> extends BaseSql2oReadOnlyRepository
                 Object value = ReflectionUtil.getFieldValue(entity, field);
                 sql2oQuery.addParameter(field.getName(), value);
             }
-            sql2oQuery.executeUpdate();
+            return sql2oQuery.executeUpdate().getResult();
         }
     }
 
     @Override
-    public void updateSelective(E entity) {
+    public int updateSelective(E entity) {
         String sql = sqlGenerator.generateUpdateSelectiveSql(entityMeta, entity);
         try (Connection conn = sql2o.open();
                 org.sql2o.Query sql2oQuery = conn.createQuery(sql)) {
@@ -108,12 +110,12 @@ public abstract class BaseSql2oRepository<E> extends BaseSql2oReadOnlyRepository
                 }
                 sql2oQuery.addParameter(field.getName(), value);
             }
-            sql2oQuery.executeUpdate();
+            return sql2oQuery.executeUpdate().getResult();
         }
     }
 
     @Override
-    public void updateSelective(E entity, Criteria criteria) {
+    public int updateSelective(E entity, Criteria criteria) {
         Map<String, Object> paramMap = criteria.toParamMap();
         String sql = sqlGenerator.generateUpdateSelectiveByCriteriaSql(entityMeta, entity, criteria);
         sql = sqlGenerator.flattenCollectionValues(sql, paramMap);
@@ -132,24 +134,24 @@ public abstract class BaseSql2oRepository<E> extends BaseSql2oReadOnlyRepository
                 }
                 sql2oQuery.addParameter(entry.getKey(), entry.getValue());
             }
-            sql2oQuery.executeUpdate();
+            return sql2oQuery.executeUpdate().getResult();
         }
     }
 
     @Override
-    public void deleteById(Object id) {
+    public int deleteById(Object id) {
         String sql = sqlGenerator.generateDeleteByPrimaryKeySql(entityMeta);
         Field idField = entityMeta.getIdField();
         try (Connection conn = sql2o.open();
                 org.sql2o.Query sql2oQuery = conn.createQuery(sql)) {
-            sql2oQuery
+            return sql2oQuery
                 .addParameter(idField.getName(), id)
-                .executeUpdate();
+                .executeUpdate().getResult();
         }
     }
 
     @Override
-    public void delete(Criteria criteria) {
+    public int delete(Criteria criteria) {
         String sql = sqlGenerator.generateDeleteByCriteriaSql(entityMeta, criteria);
         Map<String, Object> paramMap = criteria.toParamMap();
         sql = sqlGenerator.flattenCollectionValues(sql, paramMap);
@@ -158,12 +160,12 @@ public abstract class BaseSql2oRepository<E> extends BaseSql2oReadOnlyRepository
             for (Entry<String, Object> entry : paramMap.entrySet()) {
                 sql2oQuery.addParameter(entry.getKey(), entry.getValue());
             }
-            sql2oQuery.executeUpdate();
+            return sql2oQuery.executeUpdate().getResult();
         }
     }
 
     @Override
-    public void delete(Query query) {
+    public int delete(Query query) {
         String sql = sqlGenerator.generateDeleteByQuerySql(entityMeta, query);
         Map<String, Object> paramMap = query.toParamMap();
         sql = sqlGenerator.flattenCollectionValues(sql, paramMap);
@@ -172,16 +174,16 @@ public abstract class BaseSql2oRepository<E> extends BaseSql2oReadOnlyRepository
             for (Entry<String, Object> entry : paramMap.entrySet()) {
                 sql2oQuery.addParameter(entry.getKey(), entry.getValue());
             }
-            sql2oQuery.executeUpdate();
+            return sql2oQuery.executeUpdate().getResult();
         }
     }
 
     @Override
-    public void deleteByIds(Collection<?> ids) {
+    public int deleteByIds(Collection<?> ids) {
         if (CollectionUtils.isEmpty(ids)) {
-            return;
+            return 0;
         }
-        delete(new Criteria().and(entityMeta.getIdFieldName()).in(ids));
+        return delete(new Criteria().and(entityMeta.getIdFieldName()).in(ids));
     }
 
 }

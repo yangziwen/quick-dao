@@ -6,7 +6,7 @@ import java.util.function.Consumer;
 
 public interface BaseRepository<E> extends BaseReadOnlyRepository<E> {
 
-    void insert(E entity);
+    int insert(E entity);
 
     default void batchInsert(List<E> entities) {
         batchInsert(entities, entities.size());
@@ -14,40 +14,36 @@ public interface BaseRepository<E> extends BaseReadOnlyRepository<E> {
 
     void batchInsert(List<E> entities, int batchSize);
 
-    void update(E entity);
+    int update(E entity);
 
-    void updateSelective(E entity);
+    int updateSelective(E entity);
 
-    void updateSelective(E entity, Criteria criteria);
+    int updateSelective(E entity, Criteria criteria);
 
-    default void updateSelective(E entity, Consumer<TypedCriteria<E>> consumer) {
+    default int updateSelective(E entity, Consumer<TypedCriteria<E>> consumer) {
         TypedCriteria<E> criteria = newTypedCriteria();
         consumer.accept(criteria);
-        updateSelective(entity, criteria);
+        return updateSelective(entity, criteria);
     }
 
-    void deleteById(Object id);
+    int deleteById(Object id);
 
-    void delete(Criteria criteria);
+    int delete(Criteria criteria);
 
-    void delete(Query query);
+    int delete(Query query);
 
-    void deleteByIds(Collection<?> ids);
+    int deleteByIds(Collection<?> ids);
 
-    default void deleteCriteria(Consumer<TypedCriteria<E>> consumer) {
+    default int deleteCriteria(Consumer<TypedCriteria<E>> consumer) {
         TypedCriteria<E> criteria = newTypedCriteria();
         consumer.accept(criteria);
-        delete(criteria);
+        return delete(criteria);
     }
 
-    default void deleteQuery(Consumer<TypedQuery<E>> consumer) {
+    default int deleteQuery(Consumer<TypedQuery<E>> consumer) {
         TypedQuery<E> query = newTypedQuery();
         consumer.accept(query);
-        delete(query);
-    }
-
-    default void deleteAll() {
-        delete(Criteria.emptyCriteria());
+        return delete(query);
     }
 
 }
