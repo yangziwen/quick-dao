@@ -146,7 +146,8 @@ public abstract class BaseSql2oRepository<E> extends BaseSql2oReadOnlyRepository
                 org.sql2o.Query sql2oQuery = conn.createQuery(sql)) {
             return sql2oQuery
                 .addParameter(idField.getName(), id)
-                .executeUpdate().getResult();
+                .executeUpdate()
+                .getResult();
         }
     }
 
