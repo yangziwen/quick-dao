@@ -203,9 +203,10 @@ public abstract class BaseUserRepositoryTest extends BaseRepositoryTest {
                 .updateTime(new Date())
                 .build();
         BaseRepository<User> repository = createRepository();
-        repository.insert(user);
+        int rows = repository.insert(user);
         Assert.assertEquals(table.getRowCount() + 1, repository.count().intValue());
         Assert.assertNotNull(user.getId());
+        Assert.assertEquals(1, rows);
     }
 
     @Test
@@ -252,8 +253,9 @@ public abstract class BaseUserRepositoryTest extends BaseRepositoryTest {
                 .updateTime(new Date())
                 .build();
         BaseRepository<User> repository = createRepository();
-        repository.update(user);
+        int rows = repository.update(user);
         Assert.assertEquals(username, repository.getById(id).getUsername());
+        Assert.assertEquals(1, rows);
     }
 
     @Test
@@ -266,8 +268,9 @@ public abstract class BaseUserRepositoryTest extends BaseRepositoryTest {
                 .gender(Gender.FEMALE)
                 .build();
         BaseRepository<User> repository = createRepository();
-        repository.updateSelective(user);
+        int rows = repository.updateSelective(user);
         Assert.assertEquals(username, repository.getById(id).getUsername());
+        Assert.assertEquals(1, rows);
     }
 
     @Test
@@ -275,10 +278,11 @@ public abstract class BaseUserRepositoryTest extends BaseRepositoryTest {
         ITable table = loadTable(tableName, DataSourceUtils.getConnection(dataSource));
         Long id = 1L;
         BaseRepository<User> repository = createRepository();
-        repository.deleteById(id);
+        int rows = repository.deleteById(id);
         List<User> userList = repository.list();
         Assert.assertEquals(table.getRowCount() - 1, userList.size());
         Assert.assertNotEquals(id, userList.get(0).getId());
+        Assert.assertEquals(1, rows);
     }
 
     @Test
@@ -287,18 +291,20 @@ public abstract class BaseUserRepositoryTest extends BaseRepositoryTest {
         String username = "user1";
         Criteria criteria = new Criteria().and("username").eq(username);
         BaseRepository<User> repository = createRepository();
-        repository.delete(criteria);
+        int rows = repository.delete(criteria);
         List<User> userList = repository.list();
         Assert.assertEquals(table.getRowCount() - 1, userList.size());
         Assert.assertNotEquals(username, userList.get(0).getUsername());
+        Assert.assertEquals(1, rows);
     }
 
     @Test
     public void testDeleteByIds() throws Exception {
         ITable table = loadTable(tableName, DataSourceUtils.getConnection(dataSource));
         BaseRepository<User> repository = createRepository();
-        repository.deleteByIds(Arrays.asList(1L, 2L));
+        int rows = repository.deleteByIds(Arrays.asList(1L, 2L));
         Assert.assertEquals(table.getRowCount() - 2, repository.list().size());
+        Assert.assertEquals(2, rows);
     }
 
     protected abstract BaseRepository<User> createRepository();

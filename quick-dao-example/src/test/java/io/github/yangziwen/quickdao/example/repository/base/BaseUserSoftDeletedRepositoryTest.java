@@ -70,7 +70,7 @@ public abstract class BaseUserSoftDeletedRepositoryTest extends BaseRepositoryTe
                 .username("test")
                 .build();
 
-        createSoftDeletedRepository().updateSelective(toUpdate, criteria -> criteria
+        int rows = createSoftDeletedRepository().updateSelective(toUpdate, criteria -> criteria
                 .and(User::getUsername).startWith("user"));
 
         User user1 = createRepository().firstCriteria(criteria -> criteria.and(User::getUsername).eq("user1"));
@@ -84,6 +84,8 @@ public abstract class BaseUserSoftDeletedRepositoryTest extends BaseRepositoryTe
         // 逻辑删除的数据没有被修改
         Assert.assertNotNull(user1);
         Assert.assertSame(1L, user1.getId());
+
+        Assert.assertEquals(2, rows);
     }
 
     @Test
@@ -91,7 +93,7 @@ public abstract class BaseUserSoftDeletedRepositoryTest extends BaseRepositoryTe
 
         Date time = DateUtils.addSeconds(new Date(), -1);
 
-        createSoftDeletedRepository().deleteCriteria(criteria -> criteria
+        int rows = createSoftDeletedRepository().deleteCriteria(criteria -> criteria
                 .and(User::getUsername).startWith("user"));
 
         User user1 = createRepository().getById(1L);
@@ -104,6 +106,8 @@ public abstract class BaseUserSoftDeletedRepositoryTest extends BaseRepositoryTe
 
         Assert.assertEquals(0, createSoftDeletedRepository().count().intValue());
 
+        Assert.assertEquals(2, rows);
+
     }
 
     @Test
@@ -111,7 +115,7 @@ public abstract class BaseUserSoftDeletedRepositoryTest extends BaseRepositoryTe
 
         Date time = DateUtils.addSeconds(new Date(), -1);
 
-        createSoftDeletedRepository().deleteQuery(query -> query
+        int rows = createSoftDeletedRepository().deleteQuery(query -> query
                 .where(criteria -> criteria
                         .and(User::getUsername).startWith("user"))
                 .limit(1));
@@ -130,6 +134,8 @@ public abstract class BaseUserSoftDeletedRepositoryTest extends BaseRepositoryTe
 
         Assert.assertEquals(1, createSoftDeletedRepository().count().intValue());
 
+        Assert.assertEquals(1, rows);
+
     }
 
     @Test
@@ -137,7 +143,7 @@ public abstract class BaseUserSoftDeletedRepositoryTest extends BaseRepositoryTe
 
         Date time = DateUtils.addSeconds(new Date(), -1);
 
-        createSoftDeletedRepository().deleteByIds(Arrays.asList(1L, 2L));
+        int rows = createSoftDeletedRepository().deleteByIds(Arrays.asList(1L, 2L));
 
         User user1 = createRepository().getById(1L);
 
@@ -153,6 +159,8 @@ public abstract class BaseUserSoftDeletedRepositoryTest extends BaseRepositoryTe
 
         Assert.assertEquals(1, createSoftDeletedRepository().count().intValue());
 
+        Assert.assertEquals(1, rows);
+
     }
 
     @Test
@@ -160,19 +168,25 @@ public abstract class BaseUserSoftDeletedRepositoryTest extends BaseRepositoryTe
 
         Date time = DateUtils.addSeconds(new Date(), -1);
 
-        createSoftDeletedRepository().deleteById(1L);
+        int rows = 0;
+
+        rows = createSoftDeletedRepository().deleteById(1L);
 
         User user1 = createRepository().getById(1L);
 
         Assert.assertTrue(user1.getUpdateTime().before(time));
 
-        createSoftDeletedRepository().deleteById(2L);
+        Assert.assertEquals(0, rows);
+
+        rows = createSoftDeletedRepository().deleteById(2L);
 
         User user2 = createRepository().getById(2L);
 
         Assert.assertTrue(user2.getUpdateTime().after(time));
 
         Assert.assertEquals(1, createSoftDeletedRepository().count().intValue());
+
+        Assert.assertEquals(1, rows);
 
     }
 

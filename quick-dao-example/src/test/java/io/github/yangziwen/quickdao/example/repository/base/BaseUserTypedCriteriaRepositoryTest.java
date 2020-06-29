@@ -174,8 +174,9 @@ public abstract class BaseUserTypedCriteriaRepositoryTest extends BaseRepository
                 .username(username)
                 .build();
         BaseRepository<User> repository = createRepository();
-        createRepository().updateSelective(user, criteria -> criteria.and(User::getId).in(Arrays.asList(id)));
+        int rows = createRepository().updateSelective(user, criteria -> criteria.and(User::getId).in(Arrays.asList(id)));
         Assert.assertEquals(username, repository.getById(id).getUsername());
+        Assert.assertEquals(1, rows);
     }
 
     @Test
@@ -183,10 +184,11 @@ public abstract class BaseUserTypedCriteriaRepositoryTest extends BaseRepository
         ITable table = loadTable(tableName, DataSourceUtils.getConnection(dataSource));
         String username = "user1";
         BaseRepository<User> repository = createRepository();
-        repository.deleteCriteria(criteria -> criteria.and(User::getUsername).eq(username));
+        int rows = repository.deleteCriteria(criteria -> criteria.and(User::getUsername).eq(username));
         List<User> userList = repository.list();
         Assert.assertEquals(table.getRowCount() - 1, userList.size());
         Assert.assertNotEquals(username, userList.get(0).getUsername());
+        Assert.assertEquals(1, rows);
     }
 
     @Test
