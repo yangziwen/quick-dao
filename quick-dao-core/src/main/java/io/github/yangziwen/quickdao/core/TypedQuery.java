@@ -127,6 +127,12 @@ public class TypedQuery<E> extends Query {
         return this;
     }
 
+    @Override
+    public TypedQuery<E> forceIndex(String indexName) {
+        super.forceIndex(indexName);
+        return this;
+    }
+
     public class InnerExprQuery extends Query.BaseQuery {
 
         public InnerExprQuery(Stmt stmt) {

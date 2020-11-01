@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import io.github.yangziwen.quickdao.core.Order.Direction;
 import lombok.Getter;
@@ -33,6 +34,9 @@ public class Query extends LinkedHashMap<String, Object> {
 
     @Getter
     private int limit = Integer.MAX_VALUE;
+
+    @Getter
+    private String indexName = "";
 
     @Getter
     private List<Order> orderList = new ArrayList<>();
@@ -91,6 +95,11 @@ public class Query extends LinkedHashMap<String, Object> {
         return this;
     }
 
+    public Query forceIndex(String indexName) {
+        this.indexName = indexName;
+        return this;
+    }
+
     public Map<String, Object> asMap() {
         return this;
     }
@@ -106,6 +115,9 @@ public class Query extends LinkedHashMap<String, Object> {
                 put(RepoKeys.OFFSET, offset);
             }
             put(RepoKeys.LIMIT, limit);
+        }
+        if (StringUtils.isNotBlank(indexName)) {
+            put(RepoKeys.FORCE_INDEX, indexName);
         }
         return this;
     }

@@ -26,6 +26,8 @@ public final class RepoKeys {
 
     public static final String JSON_FIELD = "_JSON_FIELD_";
 
+    public static final String FORCE_INDEX = "__force_index";
+
     public static final String __ = "__";
 
 }
