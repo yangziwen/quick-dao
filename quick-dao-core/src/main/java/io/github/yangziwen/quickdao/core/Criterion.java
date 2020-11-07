@@ -8,7 +8,7 @@ import io.github.yangziwen.quickdao.core.util.StringWrapper;
 import lombok.Getter;
 import lombok.Setter;
 
-public class Criterion {
+public class Criterion<V> {
 
     private Criteria criteria;
 
@@ -50,13 +50,13 @@ public class Criterion {
         return autoEnd ? this.criteria.end() : this.criteria;
     }
 
-    protected Criterion autoEnd(boolean autoEnd) {
+    protected Criterion<V> autoEnd(boolean autoEnd) {
         this.autoEnd = autoEnd;
         return this;
     }
 
     private boolean isRedundant() {
-        for (Criterion criterion : criteria.getCriterionList()) {
+        for (Criterion<?> criterion : criteria.getCriterionList()) {
             if (Objects.equals(criterion.getName(), getName())
                     && Objects.equals(criterion.getJsonField(), getJsonField())
                     // be aware that the value comparation is based on the shallow equals
@@ -68,56 +68,56 @@ public class Criterion {
         return false;
     }
 
-    public Criterion jsonField(String jsonField) {
+    public Criterion<?> jsonField(String jsonField) {
         this.jsonField = StringUtils.replacePattern(jsonField, "\\s+", "");
         return this;
     }
 
-    public Criteria eq(Object value) {
+    public Criteria eq(V value) {
         return op(Operator.eq, value);
     }
 
-    public Criteria ne(Object value) {
+    public Criteria ne(V value) {
         return op(Operator.ne, value);
     }
 
-    public Criteria gt(Object value) {
+    public Criteria gt(V value) {
         return op(Operator.gt, value);
     }
 
-    public Criteria ge(Object value) {
+    public Criteria ge(V value) {
         return op(Operator.ge, value);
     }
 
-    public Criteria lt(Object value) {
+    public Criteria lt(V value) {
         return op(Operator.lt, value);
     }
 
-    public Criteria le(Object value) {
+    public Criteria le(V value) {
         return op(Operator.le, value);
     }
 
-    public Criteria contain(Object value) {
+    public Criteria contain(V value) {
         return op(Operator.contain, value);
     }
 
-    public Criteria notContain(Object value) {
+    public Criteria notContain(V value) {
         return op(Operator.not_contain, value);
     }
 
-    public Criteria startWith(Object value) {
+    public Criteria startWith(V value) {
         return op(Operator.start_with, value);
     }
 
-    public Criteria notStartWith(Object value) {
+    public Criteria notStartWith(V value) {
         return op(Operator.not_start_with, value);
     }
 
-    public Criteria endWith(Object value) {
+    public Criteria endWith(V value) {
         return op(Operator.end_with, value);
     }
 
-    public Criteria notEndWith(Object value) {
+    public Criteria notEndWith(V value) {
         return op(Operator.not_end_with, value);
     }
 

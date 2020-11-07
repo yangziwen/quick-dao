@@ -147,7 +147,7 @@ public abstract class BaseUserTypedCriteriaRepositoryTest extends BaseRepository
     @Test
     public void testListWithLimit() {
         List<User> userList = createRepository().listQuery(query -> query
-                .where(criteria -> criteria.and(User::getId).ge(1))
+                .where(criteria -> criteria.and(User::getId).ge(1L))
                 .offset(1).limit(100));
         Assert.assertEquals(1, userList.size());
     }

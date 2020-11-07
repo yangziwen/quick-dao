@@ -5,7 +5,7 @@ import io.github.yangziwen.quickdao.core.util.StringWrapper;
 import lombok.Getter;
 
 @Getter
-public class FunctionCriterion<E> extends TypedCriterion<E> {
+public class FunctionCriterion<E> extends TypedCriterion<E, Object> {
 
     private final InvokedMethodExtractor<E> extractor;
 

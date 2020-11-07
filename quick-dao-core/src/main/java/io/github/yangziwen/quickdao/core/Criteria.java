@@ -20,12 +20,12 @@ public class Criteria {
     private static final Criteria EMPTY_CRITERIA = new Criteria() {
 
         @Override
-        public Criterion and(String name) {
+        public <V> Criterion<V> and(String name) {
             throw new UnsupportedOperationException("and operation is not supported by empty criteria");
         }
 
         @Override
-        public Criterion or(String name) {
+        public <V> Criterion<V> or(String name) {
             throw new UnsupportedOperationException("or operation is not supported by empty criteria");
         }
 
@@ -41,7 +41,7 @@ public class Criteria {
     private String key = "";
 
     @Getter
-    private List<Criterion> criterionList = new LinkedList<>();
+    private List<Criterion<?>> criterionList = new LinkedList<>();
 
     @Getter
     private Criteria parentCriteria = null;
@@ -65,12 +65,12 @@ public class Criteria {
         return new InnerCriteria(valid);
     }
 
-    public Criterion and(String name) {
-        return new Criterion(name, this);
+    public <V> Criterion<V> and(String name) {
+        return new Criterion<V>(name, this);
     }
 
-    public Criterion or(String name) {
-        return new Criterion(name, or()).autoEnd(true);
+    public <V> Criterion<V> or(String name) {
+        return new Criterion<V>(name, or()).autoEnd(true);
     }
 
     public Criteria and() {
@@ -106,7 +106,7 @@ public class Criteria {
     }
 
     protected void fillParamMap(Map<String, Object> paramMap) {
-        for (Criterion criterion : criterionList) {
+        for (Criterion<?> criterion : criterionList) {
             paramMap.put(criterion.generatePlaceholderKey(), criterion.getValue());
         }
         if (MapUtils.isNotEmpty(nestedCriteriaMap)) {
@@ -169,7 +169,7 @@ public class Criteria {
                 name = nameArr[0];
                 jsonField = nameArr[1];
             }
-            new Criterion(name, currentCriteria).jsonField(jsonField).op(operator, value);
+            new Criterion<>(name, currentCriteria).jsonField(jsonField).op(operator, value);
         }
         return criteria;
     }
@@ -182,8 +182,8 @@ public class Criteria {
             this.valid = valid;
         }
 
-        public Criterion then(String name) {
-            return new Criterion(name, Criteria.this, valid);
+        public Criterion<?> then(String name) {
+            return new Criterion<>(name, Criteria.this, valid);
         }
 
     }

@@ -1,6 +1,6 @@
 package io.github.yangziwen.quickdao.core;
 
-public class TypedCriterion<E> extends Criterion {
+public class TypedCriterion<E, V> extends Criterion<V> {
 
     private TypedCriteria<E> typedCriteria;
 
@@ -15,7 +15,7 @@ public class TypedCriterion<E> extends Criterion {
     }
 
     @Override
-    protected TypedCriterion<E> autoEnd(boolean autoEnd) {
+    protected TypedCriterion<E, V> autoEnd(boolean autoEnd) {
         super.autoEnd(autoEnd);
         return this;
     }
@@ -27,68 +27,68 @@ public class TypedCriterion<E> extends Criterion {
     }
 
     @Override
-    public TypedCriterion<E> jsonField(String jsonField) {
+    public TypedCriterion<E, V> jsonField(String jsonField) {
         super.jsonField(jsonField);
         return this;
     }
 
     @Override
-    public TypedCriteria<E> eq(Object value) {
+    public TypedCriteria<E> eq(V value) {
         return op(Operator.eq, value);
     }
 
     @Override
-    public TypedCriteria<E> ne(Object value) {
+    public TypedCriteria<E> ne(V value) {
         return op(Operator.ne, value);
     }
 
     @Override
-    public TypedCriteria<E> gt(Object value) {
+    public TypedCriteria<E> gt(V value) {
         return op(Operator.gt, value);
     }
 
     @Override
-    public TypedCriteria<E> ge(Object value) {
+    public TypedCriteria<E> ge(V value) {
         return op(Operator.ge, value);
     }
 
     @Override
-    public TypedCriteria<E> lt(Object value) {
+    public TypedCriteria<E> lt(V value) {
         return op(Operator.lt, value);
     }
 
     @Override
-    public TypedCriteria<E> le(Object value) {
+    public TypedCriteria<E> le(V value) {
         return op(Operator.le, value);
     }
 
     @Override
-    public TypedCriteria<E> contain(Object value) {
+    public TypedCriteria<E> contain(V value) {
         return op(Operator.contain, value);
     }
 
     @Override
-    public TypedCriteria<E> notContain(Object value) {
+    public TypedCriteria<E> notContain(V value) {
         return op(Operator.not_contain, value);
     }
 
     @Override
-    public TypedCriteria<E> startWith(Object value) {
+    public TypedCriteria<E> startWith(V value) {
         return op(Operator.start_with, value);
     }
 
     @Override
-    public TypedCriteria<E> notStartWith(Object value) {
+    public TypedCriteria<E> notStartWith(V value) {
         return op(Operator.not_start_with, value);
     }
 
     @Override
-    public TypedCriteria<E> endWith(Object value) {
+    public TypedCriteria<E> endWith(V value) {
         return op(Operator.end_with, value);
     }
 
     @Override
-    public TypedCriteria<E> notEndWith(Object value) {
+    public TypedCriteria<E> notEndWith(V value) {
         return op(Operator.not_end_with, value);
     }
 

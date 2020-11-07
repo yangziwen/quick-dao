@@ -2,6 +2,7 @@ package io.github.yangziwen.quickdao.core;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -103,6 +104,13 @@ public class EntityMeta<E> {
             return null;
         }
         return getIdField().getName();
+    }
+
+    public Type getIdFieldType() {
+        if (getIdField() == null) {
+            return null;
+        }
+        return getIdField().getType();
     }
 
     public String getIdColumnName() {

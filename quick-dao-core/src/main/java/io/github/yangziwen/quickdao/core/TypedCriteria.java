@@ -35,11 +35,11 @@ public class TypedCriteria<E> extends Criteria {
     }
 
     @Override
-    public TypedCriterion<E> and(String name) {
+    public TypedCriterion<E, Object> and(String name) {
         return new TypedCriterion<>(name, this);
     }
 
-    public TypedCriterion<E> and(Function<E, ?> getter) {
+    public <V> TypedCriterion<E, V> and(Function<E, V> getter) {
         String name = extractor.extractFieldNameFromGetter(getter);
         return new TypedCriterion<>(name, this);
     }
@@ -51,13 +51,13 @@ public class TypedCriteria<E> extends Criteria {
     }
 
     @Override
-    public TypedCriterion<E> or(String name) {
+    public TypedCriterion<E, Object> or(String name) {
         return new TypedCriterion<>(name, or()).autoEnd(true);
     }
 
-    public TypedCriterion<E> or(Function<E, ?> getter) {
+    public <V> TypedCriterion<E, V> or(Function<E, V> getter) {
         String name = extractor.extractFieldNameFromGetter(getter);
-        return new TypedCriterion<>(name, or()).autoEnd(true);
+        return new TypedCriterion<E, V>(name, or()).autoEnd(true);
     }
 
     public FunctionCriterion<E> orExpr(Consumer<SqlFunctionExpression<E>> consumer) {
@@ -129,7 +129,7 @@ public class TypedCriteria<E> extends Criteria {
             String[] arr = key.split(RepoKeys.__);
             String name = arr[0];
             Operator operator = arr.length >= 2 ? Operator.valueOf(arr[1]) : Operator.eq;
-            new TypedCriterion<T>(name, currentCriteria).op(operator, value);
+            new TypedCriterion<T, Object>(name, currentCriteria).op(operator, value);
         }
         return criteria;
     }
@@ -142,7 +142,7 @@ public class TypedCriteria<E> extends Criteria {
             this.valid = valid;
         }
 
-        public TypedCriterion<E> then(Function<E, ?> getter) {
+        public <V> TypedCriterion<E, V> then(Function<E, V> getter) {
             String name = extractor.extractFieldNameFromGetter(getter);
             return new TypedCriterion<>(name, TypedCriteria.this, valid);
         }
