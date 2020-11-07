@@ -75,7 +75,7 @@ public abstract class BaseUserRepositoryTest extends BaseRepositoryTest {
     @Test
     public void testListWithQueryFromQueryMap() {
         Criteria criteria = new Criteria()
-                .and("id").in(Arrays.asList(2L, 3L))
+                .and("id").in(new Long[] {2L, 3L})
                 .and("username").endWith("2")
                 .and("email").isNotNull()
                 .and("gender").eq(Gender.FEMALE)

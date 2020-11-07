@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Objects;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import io.github.yangziwen.quickdao.core.util.StringWrapper;
@@ -127,6 +128,13 @@ public class Criterion<V> {
         return op(Operator.in, value);
     }
 
+    public Criteria in(V[] values) {
+        if (ArrayUtils.isEmpty(values)) {
+            return op(Operator.impossible, null);
+        }
+        return op(Operator.in, values);
+    }
+
     public Criteria in(Collection<V> values) {
         if (CollectionUtils.isEmpty(values)) {
             return op(Operator.impossible, null);
@@ -136,6 +144,13 @@ public class Criterion<V> {
 
     public Criteria notIn(Object value) {
         return op(Operator.not_in, value);
+    }
+
+    public Criteria notIn(V[] values) {
+        if (ArrayUtils.isEmpty(values)) {
+            return criteria;
+        }
+        return op(Operator.not_in, values);
     }
 
     public Criteria notIn(Collection<V> values) {

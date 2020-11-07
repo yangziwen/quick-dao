@@ -423,7 +423,7 @@ public class SqlGenerator {
             if (!(value instanceof Collection)) {
                 continue;
             }
-            Collection<?> coll = (Collection<?>) entry.getValue();
+            Collection<?> coll = (Collection<?>) value;
             StringBuilder placeholders = new StringBuilder();
             int idx = 0;
             for (Object obj : coll) {

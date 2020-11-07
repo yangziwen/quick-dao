@@ -3,6 +3,7 @@ package io.github.yangziwen.quickdao.core;
 import java.util.Collection;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
 
 public class TypedCriterion<E, V> extends Criterion<V> {
 
@@ -101,6 +102,15 @@ public class TypedCriterion<E, V> extends Criterion<V> {
         return op(Operator.in, value);
     }
 
+    @Override
+    public TypedCriteria<E> in(V[] values) {
+        if (ArrayUtils.isEmpty(values)) {
+            return op(Operator.impossible, null);
+        }
+        return op(Operator.in, values);
+    }
+
+    @Override
     public TypedCriteria<E> in(Collection<V> values) {
         if (CollectionUtils.isEmpty(values)) {
             return op(Operator.impossible, null);
@@ -111,6 +121,14 @@ public class TypedCriterion<E, V> extends Criterion<V> {
     @Override
     public TypedCriteria<E> notIn(Object value) {
         return op(Operator.not_in, value);
+    }
+
+    @Override
+    public TypedCriteria<E> notIn(V[] values) {
+        if (ArrayUtils.isEmpty(values)) {
+            return typedCriteria;
+        }
+        return op(Operator.not_in, values);
     }
 
     @Override

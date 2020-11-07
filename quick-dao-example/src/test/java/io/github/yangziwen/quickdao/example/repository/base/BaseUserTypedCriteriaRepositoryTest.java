@@ -47,7 +47,7 @@ public abstract class BaseUserTypedCriteriaRepositoryTest extends BaseRepository
     @Test
     public void testListWithQueryFromQueryMap() {
         TypedCriteria<User> criteria = new TypedCriteria<User>(User.class)
-                .and(User::getId).in(Arrays.asList(2L, 3L))
+                .and(User::getId).in(new Long[] {2L, 3L})
                 .and(User::getUsername).endWith("2")
                 .and(User::getEmail).isNotNull()
                 .and(User::getGender).eq(Gender.FEMALE)
@@ -133,10 +133,24 @@ public abstract class BaseUserTypedCriteriaRepositoryTest extends BaseRepository
     }
 
     @Test
+    public void testListInEmptyArray() {
+        List<User> userList = createRepository().listQuery(query -> query
+                .where(criteria -> criteria.and(User::getUsername).in(new String[] {})));
+        Assert.assertEquals(0,  userList.size());
+    }
+
+    @Test
     public void testListNotInEmptyCollection() throws Exception {
         ITable table = loadTable(tableName, DataSourceUtils.getConnection(dataSource));
         List<User> userList = createRepository().listQuery(query -> query
                 .where(criteria -> criteria.and(User::getUsername).notIn(Collections.emptyList())));
+        Assert.assertEquals(table.getRowCount(), userList.size());
+    }
+
+    public void testListNotInEmptyArray() throws Exception {
+        ITable table = loadTable(tableName, DataSourceUtils.getConnection(dataSource));
+        List<User> userList = createRepository().listQuery(query -> query
+                .where(criteria -> criteria.and(User::getUsername).notIn(new String[] {})));
         Assert.assertEquals(table.getRowCount(), userList.size());
     }
 
