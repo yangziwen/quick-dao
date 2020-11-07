@@ -10,7 +10,7 @@
 <dependency>
     <groupId>io.github.yangziwen</groupId>
     <artifactId>quick-dao-spring-jdbc</artifactId>
-    <version>0.0.18</version>
+    <version>0.0.19</version>
 </dependency>
 ```
 
