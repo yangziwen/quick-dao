@@ -2,6 +2,7 @@ package io.github.yangziwen.quickdao.example.repository.base;
 
 import java.sql.Connection;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -121,6 +122,21 @@ public abstract class BaseUserTypedCriteriaRepositoryTest extends BaseRepository
         ITable table = loadTable(tableName, DataSourceUtils.getConnection(dataSource));
         List<User> userList = createRepository().listQuery(query -> query
                 .where(criteria -> criteria.and(User::getUsername).isNotNull()));
+        Assert.assertEquals(table.getRowCount(), userList.size());
+    }
+
+    @Test
+    public void testListInEmptyCollection() {
+        List<User> userList = createRepository().listQuery(query -> query
+                .where(criteria -> criteria.and(User::getUsername).in(Collections.emptyList())));
+        Assert.assertEquals(0,  userList.size());
+    }
+
+    @Test
+    public void testListNotInEmptyCollection() throws Exception {
+        ITable table = loadTable(tableName, DataSourceUtils.getConnection(dataSource));
+        List<User> userList = createRepository().listQuery(query -> query
+                .where(criteria -> criteria.and(User::getUsername).notIn(Collections.emptyList())));
         Assert.assertEquals(table.getRowCount(), userList.size());
     }
 

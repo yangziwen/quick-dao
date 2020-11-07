@@ -319,7 +319,7 @@ public class SqlGenerator {
         int i = 0;
         if (CollectionUtils.isNotEmpty(criteria.getCriterionList())) {
             buff.append(" ( ");
-            for (Criterion criterion : criteria.getCriterionList()) {
+            for (Criterion<?> criterion : criteria.getCriterionList()) {
                 if (i++ > 0) {
                     buff.append(" AND ");
                 }

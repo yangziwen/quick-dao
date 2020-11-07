@@ -117,6 +117,13 @@ public enum Operator {
         public String buildCondition(String stmt, String placeholder) {
             return stmt + " IS NOT NULL";
         }
+    },
+
+    impossible {
+        @Override
+        public String buildCondition(String stmt, String placeholder) {
+            return "1 != 1";
+        }
     };
 
     public abstract String buildCondition(String stmt, String placeholder);

@@ -1,5 +1,9 @@
 package io.github.yangziwen.quickdao.core;
 
+import java.util.Collection;
+
+import org.apache.commons.collections4.CollectionUtils;
+
 public class TypedCriterion<E, V> extends Criterion<V> {
 
     private TypedCriteria<E> typedCriteria;
@@ -97,9 +101,24 @@ public class TypedCriterion<E, V> extends Criterion<V> {
         return op(Operator.in, value);
     }
 
+    public TypedCriteria<E> in(Collection<V> values) {
+        if (CollectionUtils.isEmpty(values)) {
+            return op(Operator.impossible, null);
+        }
+        return op(Operator.in, values);
+    }
+
     @Override
     public TypedCriteria<E> notIn(Object value) {
         return op(Operator.not_in, value);
+    }
+
+    @Override
+    public TypedCriteria<E> notIn(Collection<V> values) {
+        if (CollectionUtils.isEmpty(values)) {
+            return typedCriteria;
+        }
+        return op(Operator.not_in, values);
     }
 
     @Override
