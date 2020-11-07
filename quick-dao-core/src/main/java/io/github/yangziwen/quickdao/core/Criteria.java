@@ -182,7 +182,7 @@ public class Criteria {
             this.valid = valid;
         }
 
-        public Criterion<?> then(String name) {
+        public Criterion<Object> then(String name) {
             return new Criterion<>(name, Criteria.this, valid);
         }
 
