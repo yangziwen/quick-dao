@@ -214,7 +214,7 @@ public class SqlGenerator {
             }
             buff.append(stmt);
         }
-        appendFrom(buff, entityMeta);
+        appendFrom(buff, entityMeta, null);
         buff.append(" WHERE ")
             .append(columnWrapper.wrap(entityMeta.getIdColumnName()))
             .append(" = ")
@@ -225,7 +225,7 @@ public class SqlGenerator {
     public <T> String generateListByQuerySql(EntityMeta<T> entityMeta, Query query) {
         StringBuilder buff = new StringBuilder();
         appendSelect(buff, entityMeta, query);
-        appendFrom(buff, entityMeta);
+        appendFrom(buff, entityMeta, query);
         appendWhere(buff, entityMeta, query.getCriteria());
         appendGroupBy(buff, entityMeta, query);
         appendHaving(buff, entityMeta, query.getHavingCriteria());
@@ -234,18 +234,18 @@ public class SqlGenerator {
         return buff.toString();
     }
 
-    public <T> String generateCountByQuerySql(EntityMeta<T> entityMeta,Query query) {
+    public <T> String generateCountByQuerySql(EntityMeta<T> entityMeta, Query query) {
         StringBuilder buff = new StringBuilder();
         buff.append(" SELECT COUNT(*) ");
         if (CollectionUtils.isNotEmpty(query.getGroupByList())) {
             buff.append(" FROM ( SELECT 1 ");
-            appendFrom(buff, entityMeta);
+            appendFrom(buff, entityMeta, query);
             appendWhere(buff, entityMeta, query.getCriteria());
             appendGroupBy(buff, entityMeta, query);
             appendHaving(buff, entityMeta, query.getHavingCriteria());
             buff.append(" ) result ");
         } else {
-            appendFrom(buff, entityMeta);
+            appendFrom(buff, entityMeta, query);
             appendWhere(buff, entityMeta, query.getCriteria());
         }
         return buff.toString();
@@ -300,8 +300,11 @@ public class SqlGenerator {
         return expr + suffix;
     }
 
-    private <T> void appendFrom(StringBuilder buff, EntityMeta<T> entityMeta) {
+    private <T> void appendFrom(StringBuilder buff, EntityMeta<T> entityMeta, Query query) {
         buff.append(" FROM ").append(tableWrapper.wrap(entityMeta.getTable()));
+        if (query != null && StringUtils.isNotBlank(query.getIndexName())) {
+            buff.append(" FORCE INDEX(").append(columnWrapper.wrap(query.getIndexName())).append(")");
+        }
     }
 
     private <T> void appendWhere(StringBuilder buff, EntityMeta<T> entityMeta, Criteria criteria) {
