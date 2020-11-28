@@ -43,20 +43,27 @@ public abstract class BaseSpringJdbcRepository<E> extends BaseSpringJdbcReadOnly
         List<String> columns = entityMeta.getIdGeneratedValue() != null
                 ? entityMeta.getColumnNamesWithoutIdColumn()
                 : entityMeta.getColumnNames();
-        return new SimpleJdbcInsert(jdbcTemplate)
+        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(entityMeta.getTable())
                 .usingColumns(columns.stream()
                         .map(sqlGenerator.getColumnWrapper()::wrap)
                         .collect(Collectors.toList())
-                        .toArray(ArrayUtils.EMPTY_STRING_ARRAY))
-                .usingGeneratedKeyColumns(entityMeta.getIdColumnName());
+                        .toArray(ArrayUtils.EMPTY_STRING_ARRAY));
+        if (entityMeta.getIdGeneratedValue() != null) {
+            jdbcInsert.usingGeneratedKeyColumns(entityMeta.getIdColumnName());
+        }
+        return jdbcInsert;
     }
 
     @Override
     public int insert(E entity) {
-        Number key = jdbcInsert.executeAndReturnKey(createSqlParameterSource(entity));
-        entityMeta.fillIdValue(entity, key);
-        return key != null ? 1 : 0;
+        if (entityMeta.getIdGeneratedValue() != null) {
+            Number key = jdbcInsert.executeAndReturnKey(createSqlParameterSource(entity));
+            entityMeta.fillIdValue(entity, key);
+            return key != null ? 1 : 0;
+        } else {
+            return jdbcInsert.execute(createSqlParameterSource(entity));
+        }
     }
 
     @Override

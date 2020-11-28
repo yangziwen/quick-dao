@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+    <user_role id="1" username="user1" role_name="admin" create_time="2020-11-28" update_time="2020-11-28"/>
+    <user_role id="2" username="user2" role_name="visitor" create_time="2020-11-28" update_time="2020-11-28"/>
+</dataset>

@@ -8,3 +8,11 @@ create table `user` (
     `update_time` datetime,
     `valid` boolean
 );
+
+create table `user_role` (
+    `id` bigint primary key auto_increment,
+    `username` varchar(32) not null,
+    `role_name` varchar(64) not null,
+    `create_time` datetime,
+    `update_time` datetime,
+);
