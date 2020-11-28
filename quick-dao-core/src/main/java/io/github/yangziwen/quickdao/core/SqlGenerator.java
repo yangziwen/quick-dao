@@ -132,7 +132,9 @@ public class SqlGenerator {
         StringBuilder buff = new StringBuilder(" INSERT INTO ")
                 .append(tableWrapper.wrap(entityMeta.getTable()));
 
-        List<Field> fields = entityMeta.getFieldsWithoutIdField();
+        List<Field> fields = entityMeta.getIdGeneratedValue() != null
+                ? entityMeta.getFieldsWithoutIdField()
+                : entityMeta.getFields();
 
         List<String> columnNames = entityMeta.getColumnNamesByFields(fields);
 
@@ -156,7 +158,9 @@ public class SqlGenerator {
 
     public <T> String generateBatchInsertSql(EntityMeta<T> entityMeta, int batchSize) {
 
-        List<Field> fields = entityMeta.getFieldsWithoutIdField();
+        List<Field> fields = entityMeta.getIdGeneratedValue() != null
+                ? entityMeta.getFieldsWithoutIdField()
+                : entityMeta.getFields();
 
         List<String> columnNames = entityMeta.getColumnNamesByFields(fields);
 

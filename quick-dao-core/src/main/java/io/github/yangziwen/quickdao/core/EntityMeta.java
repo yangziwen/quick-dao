@@ -10,9 +10,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -36,6 +38,9 @@ public class EntityMeta<E> {
     @Getter
     protected final Field idField;
 
+    @Getter
+    protected final GeneratedValue idGeneratedValue;
+
     protected final Map<String, String> fieldColumnMapping;
 
     private final Set<String> columnNameSet;
@@ -52,6 +57,9 @@ public class EntityMeta<E> {
         this.idField = this.fields.stream()
                 .filter(field -> field.isAnnotationPresent(Id.class))
                 .findFirst()
+                .orElse(null);
+        this.idGeneratedValue = Optional.ofNullable(idField)
+                .map(idField -> idField.getAnnotation(GeneratedValue.class))
                 .orElse(null);
         this.emptyArray = (E[]) Array.newInstance(classType, 0);
     }

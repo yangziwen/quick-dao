@@ -40,9 +40,12 @@ public abstract class BaseSpringJdbcRepository<E> extends BaseSpringJdbcReadOnly
     }
 
     private SimpleJdbcInsert createJdbcInsert(JdbcTemplate jdbcTemplate) {
+        List<String> columns = entityMeta.getIdGeneratedValue() != null
+                ? entityMeta.getColumnNamesWithoutIdColumn()
+                : entityMeta.getColumnNames();
         return new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(entityMeta.getTable())
-                .usingColumns(entityMeta.getColumnNamesWithoutIdColumn().stream()
+                .usingColumns(columns.stream()
                         .map(sqlGenerator.getColumnWrapper()::wrap)
                         .collect(Collectors.toList())
                         .toArray(ArrayUtils.EMPTY_STRING_ARRAY))
