@@ -12,7 +12,7 @@ QuickDAO通过对Spring JDBC、MyBatis、sql2o等ORM框架进行简单封装，�
 <dependency>
     <groupId>io.github.yangziwen</groupId>
     <artifactId>quick-dao-spring-jdbc</artifactId>
-    <version>0.0.19</version>
+    <version>0.0.20</version>
 </dependency>
 ```
 ```xml
@@ -20,7 +20,7 @@ QuickDAO通过对Spring JDBC、MyBatis、sql2o等ORM框架进行简单封装，�
 <dependency>
     <groupId>io.github.yangziwen</groupId>
     <artifactId>quick-dao-sql2o</artifactId>
-    <version>0.0.19</version>
+    <version>0.0.20</version>
 </dependency>
 ```
 ```xml
@@ -29,7 +29,7 @@ QuickDAO通过对Spring JDBC、MyBatis、sql2o等ORM框架进行简单封装，�
 <dependency>
     <groupId>io.github.yangziwen</groupId>
     <artifactId>quick-dao-mybatis</artifactId>
-    <version>0.0.19</version>
+    <version>0.0.20</version>
 </dependency>
 ```
 
@@ -42,6 +42,7 @@ public class User {
 
     @Id
     @Column
+    @GeneratedValue
     private Long id;
 
     @Column

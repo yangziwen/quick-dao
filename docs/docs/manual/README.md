@@ -10,13 +10,14 @@
 <dependency>
     <groupId>io.github.yangziwen</groupId>
     <artifactId>quick-dao-spring-jdbc</artifactId>
-    <version>0.0.19</version>
+    <version>0.0.20</version>
 </dependency>
 ```
 
 ### 声明实体类
 注意，使用`@Table`修饰的实体和使用`@Column`修饰的字段，才会被QuickDAO使用。<br/>
-数据库的表名、字段名默认由实体类的类名、字段名按驼峰法转下划线法获得，也可以在`@Table`和`@Column`注解中显式指定。
+数据库的表名、字段名默认由实体类的类名、字段名按驼峰法转下划线法获得，也可以在`@Table`和`@Column`注解中显式指定。<br/>
+可通过添加`@GeneratedValue`注解实现基于数据库主键自增的id，否则需要在插入数据前手动填充id（例如使用snowflake生成全局唯一id的场景）。
 ```java
 @Data
 @Table(name = "user")
@@ -24,6 +25,7 @@ public class User {
 
     @Id
     @Column
+    @GeneratedValue
     private Long id;
 
     @Column
