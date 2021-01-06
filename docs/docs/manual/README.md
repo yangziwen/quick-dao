@@ -664,6 +664,7 @@ public class User {
 
     @Id
     @Column
+    @GeneratedValue
     private Long id;
 
     @Column
