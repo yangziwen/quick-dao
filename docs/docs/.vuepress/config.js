@@ -11,10 +11,12 @@ module.exports = {
         ],
         sidebar: [{
             title: '快速开始',
-            path: '/start/'
+            path: '/start/',
+            collapsable: false
         }, {
             title: '使用手册',
-            path: '/manual/'
+            path: '/manual/',
+            collapsable: false
         }],
         sidebarDepth: 2,
         smoothScroll: true
