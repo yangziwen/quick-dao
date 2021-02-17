@@ -34,6 +34,9 @@ public class Criterion<V> {
     @Getter
     private boolean autoEnd = false;
 
+    @Getter
+    private boolean useKeyword = false;
+
     Criterion(String name, Criteria criteria) {
         this(name, criteria, true);
     }
@@ -69,6 +72,15 @@ public class Criterion<V> {
             }
         }
         return false;
+    }
+
+    public Criterion<V> keyword() {
+        this.useKeyword = true;
+        return this;
+    }
+
+    public String getQueryName() {
+        return useKeyword ? getName() + ".keyword" : getName();
     }
 
     public Criterion<?> jsonField(String jsonField) {

@@ -26,6 +26,12 @@ public class TypedCriterion<E, V> extends Criterion<V> {
     }
 
     @Override
+    public TypedCriterion<E, V> keyword() {
+        super.keyword();
+        return this;
+    }
+
+    @Override
     TypedCriteria<E> op(Operator operator, Object value) {
         super.op(operator, value);
         return isAutoEnd() ? typedCriteria.end() : typedCriteria;
