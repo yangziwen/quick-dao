@@ -81,6 +81,11 @@ public class TypedQuery<E> extends Query {
         return this.groupBy(name);
     }
 
+    public TypedQuery<E> groupByKeyword(Function<E, ?> getter) {
+        String name = extractor.extractFieldNameFromGetter(getter);
+        return this.groupBy(name + ".keyword");
+    }
+
     public TypedQuery<E> having(TypedCriteria<E> criteria) {
         criteria.setKey(RepoKeys.HAVING);
         super.having(this.havingCriteria = criteria);
