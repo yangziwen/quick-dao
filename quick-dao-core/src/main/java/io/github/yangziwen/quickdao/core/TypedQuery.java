@@ -76,6 +76,11 @@ public class TypedQuery<E> extends Query {
         return this;
     }
 
+    @Override
+    public TypedQuery<E> groupByKeyword(String stmt) {
+        return this.groupBy(stmt + RepoKeys.KEYWORD_SUFFIX);
+    }
+
     public TypedQuery<E> groupBy(Function<E, ?> getter) {
         String name = extractor.extractFieldNameFromGetter(getter);
         return this.groupBy(name);
@@ -83,7 +88,7 @@ public class TypedQuery<E> extends Query {
 
     public TypedQuery<E> groupByKeyword(Function<E, ?> getter) {
         String name = extractor.extractFieldNameFromGetter(getter);
-        return this.groupBy(name + ".keyword");
+        return this.groupBy(name + RepoKeys.KEYWORD_SUFFIX);
     }
 
     public TypedQuery<E> having(TypedCriteria<E> criteria) {
@@ -106,9 +111,19 @@ public class TypedQuery<E> extends Query {
         return this;
     }
 
+    @Override
+    public TypedQuery<E> orderByKeyword(String name, Direction direction) {
+        return this.orderBy(name + RepoKeys.KEYWORD_SUFFIX, direction);
+    }
+
     public TypedQuery<E> orderBy(Function<E, ?> getter, Direction direction) {
         String name = extractor.extractFieldNameFromGetter(getter);
         return this.orderBy(name, direction);
+    }
+
+    public TypedQuery<E> orderByKeyword(Function<E, ?> getter, Direction direction) {
+        String name = extractor.extractFieldNameFromGetter(getter);
+        return this.orderBy(name + RepoKeys.KEYWORD_SUFFIX, direction);
     }
 
     @Override
@@ -116,8 +131,17 @@ public class TypedQuery<E> extends Query {
         return this.orderBy(name, Direction.ASC);
     }
 
+    @Override
+    public TypedQuery<E> orderByKeyword(String name) {
+        return this.orderBy(name + RepoKeys.KEYWORD_SUFFIX);
+    }
+
     public TypedQuery<E> orderBy(Function<E, ?> getter) {
         return this.orderBy(getter, Direction.ASC);
+    }
+
+    public TypedQuery<E> orderByKeyword(Function<E, ?> getter) {
+        return this.orderByKeyword(getter, Direction.ASC);
     }
 
     @Override

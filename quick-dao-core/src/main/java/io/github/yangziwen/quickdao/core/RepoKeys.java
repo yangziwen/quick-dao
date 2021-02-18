@@ -30,4 +30,6 @@ public final class RepoKeys {
 
     public static final String __ = "__";
 
+    public static final String KEYWORD_SUFFIX = ".keyword";
+
 }
