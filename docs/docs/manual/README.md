@@ -342,7 +342,7 @@ QuickDAO基于Java DSL构造查询语句，其中`Criteria`对象（包括`Typed
 <br/>
 在编写Java DSL的过程中，用户可以选择使用字符串来声明字段，也可以基于getter方法的lambda表达是来声明字段。<br/>
 * 使用字符串声明字段时，既可以使用数据库表中的原始字段名，也可以使用Java实体类中的字段名，同时还可以在`Query`对象的`select`方法中使用各种数据库函数。当使用Java实体类中的字段名编写DSL时，QuickDAO会自动完成向数据库表中原始字段名的转换。<br/>
-* 使用基于getter方法的lambda表达式声明字段时，QuickDAO将会根据`TypedCriteria`或者`TypedQuery`对象声明的泛型，对lambda表达式进行编译期检查，可有效避免DSL中的字段声明错误。`TypedQuery`对象暴露了`selectExpr`方法，也可以支持少数常用数据库函数结合这种lambda表达式的形式进行调用。
+* 使用基于getter方法的lambda表达式声明字段时，QuickDAO会根据`TypedCriteria`或者`TypedQuery`对象声明的泛型，对lambda表达式进行编译期检查，可有效避免DSL中的字段声明错误。`TypedQuery`对象暴露了`selectExpr`方法，也可以支持少数常用数据库函数结合这种lambda表达式的形式进行调用。
 
 ### 简单查询条件
 当SQL中仅需要指定`WHERE`后的查询条件时，可直接使用`Criteria`对象编写DSL
@@ -361,7 +361,7 @@ new TypedCriteria<>(User.class)
     .and(User::getAge).ge(20)
     .and(User::getAge).le(30);
 ```
-以上DSL将会生成如下SQL
+以上DSL会生成如下SQL
 ```sql
 SELECT
   `id` AS 'id',
@@ -398,7 +398,7 @@ new TypedQuery<>(User.class)
     .limit(10);
 ```
 
-以上DSL将会生成如下SQL
+以上DSL会生成如下SQL
 ```sql
 SELECT
   `username` AS 'username'
@@ -432,7 +432,7 @@ new TypedQuery<>(User.class)
     .orderBy(User::getGender);
 ```
 
-以上DSL将会生成如下SQL
+以上DSL会生成如下SQL
 ```sql
 SELECT
   `gender` AS 'gender',
@@ -472,7 +472,7 @@ new TypedCriteria<>(User.class)
     .end();
 ```
 
-以上DSL将会生成如下查询条件
+以上DSL会生成如下查询条件
 ```sql
 WHERE (`username` LIKE '张%' AND gender = 1) OR (`username` LIKE '李%' AND gender = 2)
 ```
@@ -489,7 +489,7 @@ new Criteria()
         .or("age").ge(30)
     .end();
 ```
-上述DSL将会生成如下查询条件
+上述DSL会生成如下查询条件
 ```sql
 WHERE (`username` LIKE '张%' OR `username` LIKE '李%') AND (`age` <= 20 OR `age` >= 30)
 ```
