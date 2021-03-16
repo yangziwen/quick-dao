@@ -9,6 +9,7 @@ module.exports = {
             { text: '使用手册', link: '/manual/index.html' },
             { text: 'GitHub', link: 'https://github.com/yangziwen/quick-dao', target: '_blank' }
         ],
+        displayAllHeaders: true,
         sidebar: [{
             title: '快速开始',
             path: '/start/',
