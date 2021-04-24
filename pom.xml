@@ -13,7 +13,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <javax.persistence.version>1.0.2</javax.persistence.version>
-        <mybatis.version>3.4.6</mybatis.version>
+        <mybatis.version>3.5.6</mybatis.version>
         <sql2o.version>1.5.4</sql2o.version>
         <spring.jdbc.version>4.3.19.RELEASE</spring.jdbc.version>
         <commons.lang3.version>3.3.2</commons.lang3.version>
