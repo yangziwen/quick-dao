@@ -230,6 +230,16 @@ public abstract class BaseUserTypedCriteriaRepositoryTest extends BaseRepository
         Assert.assertEquals(2L, user.getId().longValue());
     }
 
+    @Test
+    public void testSelectOfStringExpression() {
+        int count1 = createRepository().countCriteria(criteria -> criteria
+                .and("right(`username`, 1)").eq("2"));
+        int count2 = createRepository().countCriteria(criteria -> criteria
+                .and("left(`username`, 1)").eq("u"));
+        Assert.assertEquals(1, count1);
+        Assert.assertEquals(2, count2);
+    }
+
     protected abstract BaseRepository<User> createRepository();
 
 }
