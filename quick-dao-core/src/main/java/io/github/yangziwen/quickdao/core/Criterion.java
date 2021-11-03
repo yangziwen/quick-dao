@@ -171,7 +171,7 @@ public class Criterion<V> {
     public String generatePlaceholderKey() {
         String prefix = StringUtils.isNotBlank(criteria.getKey()) ? criteria.getKey() + RepoKeys.__ : "";
         String jsonFieldSuffix = StringUtils.isNotEmpty(jsonField) ? (RepoKeys.JSON_FIELD + jsonField) : "";
-        return prefix + name + jsonFieldSuffix + RepoKeys.__ + operator.name();
+        return prefix + name.replaceAll("\\W", "") + jsonFieldSuffix + RepoKeys.__ + operator.name();
     }
 
     public <T> String buildCondition(EntityMeta<T> entityMeta, StringWrapper columnWrapper, StringWrapper placeholderWrapper) {
