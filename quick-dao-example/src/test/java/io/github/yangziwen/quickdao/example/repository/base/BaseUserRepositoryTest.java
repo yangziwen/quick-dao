@@ -86,6 +86,19 @@ public abstract class BaseUserRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
+    public void testListWithQueryContainingUnderscoreFromQueryMap() {
+        Criteria criteria = new Criteria()
+                .and("id").in(new Long[] {2L, 3L})
+                .and("username").endWith("2")
+                .and("email").isNotNull()
+                .and("gender").eq(Gender.FEMALE)
+                .and("create_time").lt(new Date());
+        criteria = Criteria.fromParamMap(criteria.toParamMap());
+        List<User> userList = createRepository().list(criteria);
+        Assert.assertEquals(1, userList.size());
+    }
+
+    @Test
     public void testListWithOrQuery() {
         Criteria criteria = new Criteria()
                 .and("id").in(Arrays.asList(2L, 3L))
@@ -305,6 +318,16 @@ public abstract class BaseUserRepositoryTest extends BaseRepositoryTest {
         int rows = repository.deleteByIds(Arrays.asList(1L, 2L));
         Assert.assertEquals(table.getRowCount() - 2, repository.list().size());
         Assert.assertEquals(2, rows);
+    }
+
+    @Test
+    public void testSelectOfStringExpression() {
+        int count1 = createRepository().count(new Criteria()
+                .and("right(`username`, 1)").eq("2"));
+        int count2 = createRepository().count(new Criteria()
+                .and("left(`username`, 1)").eq("u"));
+        Assert.assertEquals(1, count1);
+        Assert.assertEquals(2, count2);
     }
 
     protected abstract BaseRepository<User> createRepository();

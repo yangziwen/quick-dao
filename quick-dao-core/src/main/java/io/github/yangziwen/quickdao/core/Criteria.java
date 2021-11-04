@@ -129,6 +129,11 @@ public class Criteria {
         return buff.toString();
     }
 
+    /**
+     * 注意如果criteria中存在函数调用，则fromParamMap不再适用
+     * @param paramMap
+     * @return
+     */
     public static Criteria fromParamMap(Map<String, Object> paramMap) {
         Criteria criteria = new Criteria();
         if (MapUtils.isEmpty(paramMap)) {
