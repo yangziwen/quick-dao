@@ -340,7 +340,7 @@ Page<E> paginateQuery(Consumer<TypedQuery<E>> consumer, int pageNo, int pageSize
 QuickDAO基于Java DSL构造查询语句，其中`Criteria`对象（包括`TypedCriteria`）代表`WHERE`和`HAVING`后的一系列过滤条件，而`Query`对象（包括`TypedQuery`）代表整个SQL语句，可指定`SELECT`的字段、`GROUP BY`的字段、`ORDER BY`的方式、`LIMIT`的限制，以及为`WHERE`和`HAVING`设置相应的`Criteria`对象。
 <br/>
 <br/>
-在编写Java DSL的过程中，用户可以选择使用字符串来声明字段，也可以基于getter方法的lambda表达是来声明字段。<br/>
+在编写Java DSL的过程中，用户可以选择使用字符串来声明字段，也可以基于getter方法的lambda表达式来声明字段。<br/>
 * 使用字符串声明字段时，既可以使用数据库表中的原始字段名，也可以使用Java实体类中的字段名，同时还可以在`Query`对象的`select`方法中使用各种数据库函数。当使用Java实体类中的字段名编写DSL时，QuickDAO会自动完成向数据库表中原始字段名的转换。<br/>
 * 使用基于getter方法的lambda表达式声明字段时，QuickDAO会根据`TypedCriteria`或者`TypedQuery`对象声明的泛型，对lambda表达式进行编译期检查，可有效避免DSL中的字段声明错误。`TypedQuery`对象暴露了`selectExpr`方法，也可以支持少数常用数据库函数结合这种lambda表达式的形式进行调用。
 
@@ -633,7 +633,7 @@ public enum Gender implements IEnum<Gender, Integer> {
 ```
 
 ## 逻辑删除的实现
-一些团队在开发项目过程中习惯使用逻辑删除（Soft Delete）来替代物理删除（Hard Delete）操作，即使用类似`is_deleted`的字段来标记数据是否被删除。
+一些团队在开发项目过程中习惯使用逻辑删除（Soft Delete）来替代物理删除（Hard Delete）操作，也就是使用类似`is_deleted`的字段来标记数据是否被删除。
 
 这种做法可以带来一些好处，比如在发生误删除时可以比较容易的找回数据，同时已删除的数据在商业分析和审计等层面可能也存在一定价值。
 
