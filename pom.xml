@@ -249,9 +249,9 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.3</version>
+                <groupId>io.github.yangziwen</groupId>
+                <artifactId>diff-jacoco-maven-plugin</artifactId>
+                <version>0.0.8</version>
                 <configuration>
                     <excludes>
                         <exclude>io/github/yangziwen/quickdao/example/entity/*</exclude>
@@ -271,7 +271,7 @@
                             <goal>report</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
+                            <outputDirectory>${project.reporting.outputDirectory}/jacoco</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>

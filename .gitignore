@@ -9,3 +9,4 @@ target/
 RemoteSystemsTempFiles/
 node_modules/
 dist/
+**/.vuepress/
