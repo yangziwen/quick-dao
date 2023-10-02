@@ -11,4 +11,9 @@ public class RoleSpringJdbcRepository extends BaseSpringJdbcRepository<Role> {
         super(dataSource);
     }
 
+    public Role getRoleByUsername(String username) {
+        return firstCriteria(criteria -> criteria
+                .and(Role::getUsername).eq(username));
+    }
+
 }
