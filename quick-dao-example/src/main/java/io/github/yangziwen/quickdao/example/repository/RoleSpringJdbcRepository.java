@@ -11,6 +11,11 @@ public class RoleSpringJdbcRepository extends BaseSpringJdbcRepository<Role> {
         super(dataSource);
     }
 
+    /**
+     * 按用户名查询角色
+     * @param username
+     * @return
+     */
     public Role getRoleByUsername(String username) {
         return firstCriteria(criteria -> criteria
                 .and(Role::getUsername).eq(username));
