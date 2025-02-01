@@ -16,9 +16,11 @@
         <mybatis.version>3.5.6</mybatis.version>
         <sql2o.version>1.5.4</sql2o.version>
         <spring.jdbc.version>4.3.19.RELEASE</spring.jdbc.version>
+        <elasticsearch.client.version>7.2.1</elasticsearch.client.version>
         <commons.lang3.version>3.3.2</commons.lang3.version>
         <commons.collections4.version>4.1</commons.collections4.version>
         <cglib.version>3.1</cglib.version>
+        <fastjson.version>1.2.73</fastjson.version>
         <lombok.version>1.18.2</lombok.version>
         <junit.version>4.13.1</junit.version>
         <h2.version>1.4.197</h2.version>
@@ -175,6 +177,11 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
+                <groupId>io.github.yangziwen</groupId>
+                <artifactId>quick-dao-elasticsearch</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>javax.persistence</groupId>
                 <artifactId>persistence-api</artifactId>
                 <version>${javax.persistence.version}</version>
@@ -195,6 +202,11 @@
                 <version>${spring.jdbc.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.elasticsearch.client</groupId>
+                <artifactId>elasticsearch-rest-high-level-client</artifactId>
+                <version>${elasticsearch.client.version}</version>
+		    </dependency>
+            <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>${commons.lang3.version}</version>
@@ -203,6 +215,11 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-collections4</artifactId>
                 <version>${commons.collections4.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>${fastjson.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.projectlombok</groupId>
