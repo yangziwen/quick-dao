@@ -312,5 +312,6 @@
         <module>quick-dao-example</module>
         <module>quick-dao-mybatis</module>
         <module>quick-dao-spring-jdbc</module>
+        <module>quick-dao-elasticsearch</module>
     </modules>
 </project>
