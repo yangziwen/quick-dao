@@ -67,15 +67,18 @@ public abstract class BaseSpringJdbcRepository<E> extends BaseSpringJdbcReadOnly
     }
 
     @Override
-    public void batchInsert(List<E> entities, int batchSize) {
+    public int batchInsert(List<E> entities, int batchSize) {
         if (CollectionUtils.isEmpty(entities)) {
-            return;
+            return 0;
         }
+        int affectedRows = 0;
         for (int i = 0, l = entities.size(); i < l; i += batchSize) {
             List<SqlParameterSource> paramSourceList = createBatchSqlParameterSource(
                     entities.subList(i, Math.min(i + batchSize, l)));
             jdbcInsert.executeBatch(paramSourceList.toArray(new SqlParameterSource[] {}));
+            affectedRows += paramSourceList.size();
         }
+        return affectedRows;
     }
 
     @Override

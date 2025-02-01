@@ -55,22 +55,24 @@ public abstract class BaseSql2oRepository<E> extends BaseSql2oReadOnlyRepository
     }
 
     @Override
-    public void batchInsert(List<E> entities, int batchSize) {
+    public int batchInsert(List<E> entities, int batchSize) {
         if (CollectionUtils.isEmpty(entities)) {
-            return;
+            return 0;
         }
         int size = 0;
         String sql = "";
+        int affectedRows = 0;
         for (int i = 0; i < entities.size(); i += batchSize) {
             List<E> subList = entities.subList(i, Math.min(i + batchSize, entities.size()));
             if (size != subList.size() || StringUtils.isBlank(sql)) {
                 sql = sqlGenerator.generateBatchInsertSql(entityMeta, subList.size());
             }
-            doBatchInsert(subList, sql);
+            affectedRows += doBatchInsert(subList, sql);
         }
+        return affectedRows;
     }
 
-    private void doBatchInsert(List<E> entities, String sql) {
+    private int doBatchInsert(List<E> entities, String sql) {
         try (Connection conn = sql2o.open();
                 org.sql2o.Query sql2oQuery = conn.createQuery(sql)) {
             List<Field> fields = entityMeta.getFieldsWithoutIdField();
@@ -81,7 +83,7 @@ public abstract class BaseSql2oRepository<E> extends BaseSql2oReadOnlyRepository
                     sql2oQuery.addParameter(field.getName() + RepoKeys.__ + i, value);
                 }
             }
-            sql2oQuery.executeUpdate();
+            return sql2oQuery.executeUpdate().getResult();
         }
     }
 

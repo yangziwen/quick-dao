@@ -8,11 +8,11 @@ public interface BaseRepository<E> extends BaseReadOnlyRepository<E> {
 
     int insert(E entity);
 
-    default void batchInsert(List<E> entities) {
-        batchInsert(entities, entities.size());
+    default int batchInsert(List<E> entities) {
+        return batchInsert(entities, entities.size());
     }
 
-    void batchInsert(List<E> entities, int batchSize);
+    int batchInsert(List<E> entities, int batchSize);
 
     int update(E entity);
 

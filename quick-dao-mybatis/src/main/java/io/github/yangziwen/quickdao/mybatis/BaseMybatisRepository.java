@@ -36,23 +36,25 @@ public abstract class BaseMybatisRepository<E> extends BaseMybatisReadOnlyReposi
     }
 
     @Override
-    public void batchInsert(List<E> entities, int batchSize) {
+    public int batchInsert(List<E> entities, int batchSize) {
         if (CollectionUtils.isEmpty(entities)) {
-            return;
+            return 0;
         }
         int size = 0;
         String sql = "";
+        int affectedRows = 0;
         for (int i = 0; i < entities.size(); i+= batchSize) {
             List<E> subList = entities.subList(i, Math.min(i + batchSize, entities.size()));
             if (size != subList.size() || StringUtils.isBlank(sql)) {
                 sql = sqlGenerator.generateBatchInsertSql(entityMeta, subList.size());
             }
             String stmt = assistant.getDynamicInsertStmt(sql, entities.getClass(), null);
-            doBatchInsert(subList, stmt);
+            affectedRows += doBatchInsert(subList, stmt);
         }
+        return affectedRows;
     }
 
-    private void doBatchInsert(List<E> entities, String stmt) {
+    private int doBatchInsert(List<E> entities, String stmt) {
         Map<String, Object> paramMap = new LinkedHashMap<>();
         List<Field> fields = entityMeta.getFieldsWithoutIdField();
         for (int i = 0; i < entities.size(); i++) {
@@ -62,7 +64,7 @@ public abstract class BaseMybatisRepository<E> extends BaseMybatisReadOnlyReposi
                 paramMap.put(field.getName() + RepoKeys.__ + i, value);
             }
         }
-        sqlSession.insert(stmt, paramMap);
+        return sqlSession.insert(stmt, paramMap);
     }
 
     @Override
