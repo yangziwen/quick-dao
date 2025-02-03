@@ -27,6 +27,13 @@ public enum ElasticSearchFunctionEnum {
         }
     },
 
+    COUNT_FUNC {
+        @Override
+        public AggregationBuilder doGenerateAggsBuilder(FunctionStmt<?> stmt) {
+            return AggregationBuilders.count(stmt.getStmtAlias()).field(getField(stmt));
+        }
+    },
+
     MAX_FUNC {
         @Override
         public AggregationBuilder doGenerateAggsBuilder(FunctionStmt<?> stmt) {
@@ -60,6 +67,7 @@ public enum ElasticSearchFunctionEnum {
         {
             put(SqlFunctions.DISTINCT_FUNC, DISTINCT_FUNC);
             put(SqlFunctions.COUNT_DISTINCT_FUNC, COUNT_DISTINCT_FUNC);
+            put(SqlFunctions.COUNT_FUNC, COUNT_FUNC);
             put(SqlFunctions.MAX_FUNC, MAX_FUNC);
             put(SqlFunctions.MIN_FUNC, MIN_FUNC);
             put(SqlFunctions.AVG_FUNC, AVG_FUNC);
