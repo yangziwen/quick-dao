@@ -195,6 +195,9 @@ public class BaseReadOnlyElasticSearchRepository<E> implements BaseReadOnlyRepos
         AggregationBuilder innerAggsBuilder = null;
         Map<String, TermsAggregationBuilder> termsAggsBuilderMap = new HashMap<>();
         for (String groupBy : query.getGroupByList()) {
+            if (entityMeta.isNestedKeywordField(groupBy) && !groupBy.endsWith(RepoKeys.KEYWORD_SUFFIX)) {
+                groupBy += RepoKeys.KEYWORD_SUFFIX;
+            }
             TermsAggregationBuilder aggsBuilder = AggregationBuilders.terms(groupBy.replaceFirst("\\.keyword$", "")).field(groupBy);
             // 注意桶聚合时，无法精确控制结果的总数量，只能控制每级聚合结果的数量
             aggsBuilder.size(validateLimit(query.getLimit()));
@@ -322,10 +325,8 @@ public class BaseReadOnlyElasticSearchRepository<E> implements BaseReadOnlyRepos
 
     @Override
     public Integer count(Query query) {
-        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder()
-                .query(generateQueryBuilder(query.getCriteria()));
         CountRequest request = new CountRequest(entityMeta.getTable());
-        request.source(sourceBuilder);
+        request.query(generateQueryBuilder(query.getCriteria()));
         try {
             CountResponse response = client.count(request, options);
             return Long.valueOf(response.getCount()).intValue();
@@ -339,7 +340,11 @@ public class BaseReadOnlyElasticSearchRepository<E> implements BaseReadOnlyRepos
         if (order.getDirection() == Direction.DESC) {
             sortOrder = SortOrder.DESC;
         }
-        return SortBuilders.fieldSort(order.getName()).order(sortOrder);
+        String orderName = order.getName();
+        if (entityMeta.isNestedKeywordField(orderName) && !orderName.endsWith(RepoKeys.KEYWORD_SUFFIX)) {
+            orderName += RepoKeys.KEYWORD_SUFFIX;
+        }
+        return SortBuilders.fieldSort(orderName).order(sortOrder);
     }
 
     protected QueryBuilder generateQueryBuilder(Criteria criteria) {
@@ -351,6 +356,9 @@ public class BaseReadOnlyElasticSearchRepository<E> implements BaseReadOnlyRepos
             ElasticSearchOperator operator = ElasticSearchOperator.from(criterion.getOperator());
             if (operator == null) {
                 continue;
+            }
+            if (entityMeta.isNestedKeywordField(criterion.getName())) {
+                criterion.keyword();
             }
             boolQueryBuilder.must(operator.generateQueryBuilder(criterion));
         }

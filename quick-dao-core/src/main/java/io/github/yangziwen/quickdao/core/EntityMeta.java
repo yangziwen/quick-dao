@@ -20,6 +20,7 @@ import javax.persistence.Table;
 
 import org.apache.commons.lang3.StringUtils;
 
+import io.github.yangziwen.quickdao.core.annotation.NestedKeyword;
 import io.github.yangziwen.quickdao.core.util.ReflectionUtil;
 import io.github.yangziwen.quickdao.core.util.StringWrapper;
 import lombok.Getter;
@@ -47,6 +48,8 @@ public class EntityMeta<E> {
 
     protected final E[] emptyArray;
 
+    protected Map<String, Field> fieldMap;
+
     @SuppressWarnings("unchecked")
     public EntityMeta(Class<E> classType) {
         this.classType = classType;
@@ -62,6 +65,25 @@ public class EntityMeta<E> {
                 .map(idField -> idField.getAnnotation(GeneratedValue.class))
                 .orElse(null);
         this.emptyArray = (E[]) Array.newInstance(classType, 0);
+    }
+
+    public boolean isNestedKeywordField(String name) {
+        Field field = ensureFieldMap().get(name);
+        if (field == null) {
+            return false;
+        }
+        return field.getAnnotation(NestedKeyword.class) != null;
+    }
+
+    public Map<String, Field> ensureFieldMap() {
+        if (this.fieldMap != null) {
+            return this.fieldMap;
+        }
+        Map<String, Field> fieldMap = new LinkedHashMap<>();
+        for (Field field : fields) {
+            fieldMap.put(field.getName(), field);
+        }
+        return this.fieldMap = fieldMap;
     }
 
     public List<Field> getFieldsWithoutIdField() {

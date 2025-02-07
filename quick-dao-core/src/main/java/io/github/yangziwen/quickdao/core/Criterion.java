@@ -5,6 +5,7 @@ import java.util.Objects;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import io.github.yangziwen.quickdao.core.util.StringWrapper;
@@ -42,7 +43,7 @@ public class Criterion<V> {
     }
 
     Criterion(String name, Criteria criteria, boolean valid) {
-        this.name = StringUtils.replacePattern(name, "\\s+", "");
+        this.name = RegExUtils.replacePattern(name, "\\s+", "");
         this.criteria = criteria;
         this.valid = valid;
     }
@@ -84,7 +85,7 @@ public class Criterion<V> {
     }
 
     public Criterion<?> jsonField(String jsonField) {
-        this.jsonField = StringUtils.replacePattern(jsonField, "\\s+", "");
+        this.jsonField = RegExUtils.replacePattern(jsonField, "\\s+", "");
         return this;
     }
 
