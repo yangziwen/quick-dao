@@ -48,7 +48,7 @@ public class EntityMeta<E> {
 
     protected final E[] emptyArray;
 
-    protected Map<String, Field> fieldMap;
+    private Map<String, Field> fieldMap;
 
     @SuppressWarnings("unchecked")
     public EntityMeta(Class<E> classType) {
