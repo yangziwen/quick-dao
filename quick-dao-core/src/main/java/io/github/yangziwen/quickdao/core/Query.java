@@ -70,10 +70,6 @@ public class Query extends LinkedHashMap<String, Object> {
         return this;
     }
 
-    public Query groupByKeyword(String stmt) {
-        return this.groupBy(stmt + RepoKeys.KEYWORD_SUFFIX);
-    }
-
     public Query having(Criteria criteria) {
         criteria.setKey(RepoKeys.HAVING);
         this.havingCriteria = criteria;
@@ -85,16 +81,8 @@ public class Query extends LinkedHashMap<String, Object> {
         return this;
     }
 
-    public Query orderByKeyword(String name, Direction direction) {
-        return this.orderBy(name + RepoKeys.KEYWORD_SUFFIX, direction);
-    }
-
     public Query orderBy(String name) {
         return this.orderBy(name, Direction.ASC);
-    }
-
-    public Query orderByKeyword(String name) {
-        return this.orderBy(name + RepoKeys.KEYWORD_SUFFIX);
     }
 
     public Query offset(int offset) {
