@@ -12,7 +12,7 @@ import org.apache.ibatis.transaction.managed.ManagedTransactionFactory;
 import io.github.yangziwen.quickdao.example.repository.base.BaseRoleTypedCriteriaRepositoryTest;
 import io.github.yangziwen.quickdao.mybatis.CustomEnumTypeHandler;
 
-public class RoleTypedCriteriaMybatisRepository extends BaseRoleTypedCriteriaRepositoryTest {
+public class RoleTypedCriteriaMybatisRepositoryTest extends BaseRoleTypedCriteriaRepositoryTest {
 
     private static SqlSessionFactory sqlSessionFactory = createSqlSessionFactory(dataSource);
 
