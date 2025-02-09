@@ -26,7 +26,7 @@ public class User {
     @Id
     @Column
     @GeneratedValue
-    private Long id;
+    private Object id;
 
     @Column
     @NestedKeyword

@@ -214,6 +214,9 @@ public class EntityMeta<E> {
         else if (idField.getType() == Long.class) {
             ReflectionUtil.setFieldValue(entity, idField, Long.valueOf(id.toString()));
         }
+        else if (idField.getType() == Object.class) {
+            ReflectionUtil.setFieldValue(entity, idField, id);
+        }
     }
 
 }

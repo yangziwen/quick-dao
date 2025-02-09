@@ -227,7 +227,7 @@ public abstract class BaseUserTypedCriteriaRepositoryTest extends BaseRepository
                 .selectExpr(expr -> expr.max(User::getId)).as(User::getId)
                 .selectExpr(expr -> expr.min("update_time")).as(User::getUpdateTime)
                 .select("max(create_time)").as("createTime"));
-        Assert.assertEquals(2L, user.getId().longValue());
+        Assert.assertEquals(2L, user.getId());
     }
 
     @Test
