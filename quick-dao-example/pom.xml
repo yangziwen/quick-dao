@@ -31,6 +31,10 @@
             <artifactId>quick-dao-spring-jdbc</artifactId>
         </dependency>
         <dependency>
+            <groupId>io.github.yangziwen</groupId>
+            <artifactId>quick-dao-elasticsearch</artifactId>
+        </dependency>
+        <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>${mysql.version}</version>
