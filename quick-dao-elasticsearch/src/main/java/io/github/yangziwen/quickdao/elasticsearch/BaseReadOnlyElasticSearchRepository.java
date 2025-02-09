@@ -259,11 +259,18 @@ public class BaseReadOnlyElasticSearchRepository<E> implements BaseReadOnlyRepos
                 for (Terms.Bucket bucket : bucketList) {
                     Object value = bucket.getKey();
                     List<Map<String, Object>> mapList = walkAggregations(bucket.getAggregations());
-                    for (Map<String, Object> map : mapList) {
+                    if (CollectionUtils.isNotEmpty(mapList)) {
+                        for (Map<String, Object> map : mapList) {
+                            map.put(key, value);
+                            map.putIfAbsent("count", bucket.getDocCount());
+                        }
+                        resultList.addAll(mapList);
+                    } else {
+                        Map<String, Object> map = new HashMap<>();
                         map.put(key, value);
                         map.putIfAbsent("count", bucket.getDocCount());
+                        resultList.add(map);
                     }
-                    resultList.addAll(mapList);
                 }
             } else {
                 break;
