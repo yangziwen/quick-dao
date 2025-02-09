@@ -43,13 +43,18 @@ public abstract class BaseSql2oRepository<E> extends BaseSql2oReadOnlyRepository
         String sql = sqlGenerator.generateInsertSql(entityMeta);
         try (Connection conn = sql2o.open();
                 org.sql2o.Query sql2oQuery = conn.createQuery(sql)) {
-            for (Field field : entityMeta.getFieldsWithoutIdField()) {
+            List<Field> fields = entityMeta.getIdGeneratedValue() != null
+                    ? entityMeta.getFieldsWithoutIdField()
+                    : entityMeta.getFields();
+            for (Field field : fields) {
                 Object value = ReflectionUtil.getFieldValue(entity, field);
                 sql2oQuery.addParameter(field.getName(), value);
             }
             Connection connection = sql2oQuery.executeUpdate();
             Object id = connection.getKey();
-            entityMeta.fillIdValue(entity, id);
+            if (entityMeta.getIdGeneratedValue() != null) {
+                entityMeta.fillIdValue(entity, id);
+            }
             return connection.getResult();
         }
     }
@@ -75,7 +80,9 @@ public abstract class BaseSql2oRepository<E> extends BaseSql2oReadOnlyRepository
     private int doBatchInsert(List<E> entities, String sql) {
         try (Connection conn = sql2o.open();
                 org.sql2o.Query sql2oQuery = conn.createQuery(sql)) {
-            List<Field> fields = entityMeta.getFieldsWithoutIdField();
+            List<Field> fields = entityMeta.getIdGeneratedValue() != null
+                    ? entityMeta.getFieldsWithoutIdField()
+                    : entityMeta.getFields();
             for (int i = 0; i < entities.size(); i++) {
                 E entity = entities.get(i);
                 for (Field field : fields) {
