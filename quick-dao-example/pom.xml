@@ -14,6 +14,7 @@
     <url>http://maven.apache.org</url>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <slf4j.version>1.7.25</slf4j.version>
         <mysql.version>8.0.28</mysql.version>
         <tomcat.jdbc.version>9.0.12</tomcat.jdbc.version>
     </properties>
@@ -33,6 +34,16 @@
         <dependency>
             <groupId>io.github.yangziwen</groupId>
             <artifactId>quick-dao-elasticsearch</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>${slf4j.version}</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>

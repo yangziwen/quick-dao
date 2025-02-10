@@ -16,8 +16,10 @@ import io.github.yangziwen.quickdao.core.Page;
 import io.github.yangziwen.quickdao.core.TypedCriteria;
 import io.github.yangziwen.quickdao.example.entity.User;
 import io.github.yangziwen.quickdao.example.enums.Gender;
+import lombok.extern.slf4j.Slf4j;
 
-public class UserTypedCriteriaElasticSearchRepository {
+@Slf4j
+public class UserTypedCriteriaElasticSearchRepositoryTest {
 
     private static RestHighLevelClient client;
 
@@ -27,12 +29,14 @@ public class UserTypedCriteriaElasticSearchRepository {
     public static void beforeClass() throws Exception {
         client = new RestHighLevelClient(RestClient.builder(new HttpHost("localhost", 9200, "http")));
         repository = new UserElasticSearchRepository(client);
+        log.info("client is ready");
     }
 
     @AfterClass
     public static void afterClass() throws Exception {
         if (client != null) {
             client.close();
+            log.info("client is closed");
         }
     }
 
