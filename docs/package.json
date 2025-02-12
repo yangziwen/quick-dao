@@ -8,6 +8,6 @@
     "docs:build": "vuepress build docs"
   },
   "dependencies": {
-    "serialize-javascript": "^3.1.0"
+    "serialize-javascript": "^6.0.2"
   }
 }
