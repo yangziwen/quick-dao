@@ -20,7 +20,7 @@
         <commons.lang3.version>3.17.0</commons.lang3.version>
         <commons.collections4.version>4.4</commons.collections4.version>
         <cglib.version>3.3.0</cglib.version>
-        <fastjson.version>2.0.54</fastjson.version>
+        <jackson.version>2.10.5.1</jackson.version>
         <lombok.version>1.18.36</lombok.version>
         <h2.version>1.4.197</h2.version>
         <junit.version>4.13.1</junit.version>
@@ -217,9 +217,9 @@
                 <version>${commons.collections4.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.alibaba</groupId>
-                <artifactId>fastjson</artifactId>
-                <version>${fastjson.version}</version>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.projectlombok</groupId>

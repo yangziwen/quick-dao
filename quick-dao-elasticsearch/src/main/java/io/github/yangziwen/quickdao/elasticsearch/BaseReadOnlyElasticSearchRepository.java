@@ -46,8 +46,6 @@ import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 
-import com.alibaba.fastjson.JSON;
-
 import io.github.yangziwen.quickdao.core.BaseReadOnlyRepository;
 import io.github.yangziwen.quickdao.core.Criteria;
 import io.github.yangziwen.quickdao.core.Criterion;
@@ -60,6 +58,7 @@ import io.github.yangziwen.quickdao.core.RepoKeys;
 import io.github.yangziwen.quickdao.core.Stmt;
 import io.github.yangziwen.quickdao.core.TypedCriteria;
 import io.github.yangziwen.quickdao.core.TypedQuery;
+import io.github.yangziwen.quickdao.core.util.JsonUtil;
 import io.github.yangziwen.quickdao.core.util.ReflectionUtil;
 import net.sf.cglib.beans.BeanMap;
 
@@ -120,7 +119,7 @@ public class BaseReadOnlyElasticSearchRepository<E> implements BaseReadOnlyRepos
         if (!response.isExists()) {
             return null;
         }
-        E entity = JSON.parseObject(response.getSourceAsString(), entityMeta.getClassType());
+        E entity = JsonUtil.deserialize(response.getSourceAsString(), entityMeta.getClassType());
         Field idField = entityMeta.getIdField();
         if (idField != null) {
             BeanMap.create(entity).put(idField.getName(), response.getId());
@@ -171,7 +170,7 @@ public class BaseReadOnlyElasticSearchRepository<E> implements BaseReadOnlyRepos
                     .collect(Collectors.toMap(
                             Aggregation::getName,
                             agg -> NumericMetricsAggregation.SingleValue.class.cast(agg).value()));
-            E entity = JSON.parseObject(JSON.toJSONString(resultMap), entityMeta.getClassType());
+            E entity = JsonUtil.deserialize(JsonUtil.serialize(resultMap), entityMeta.getClassType());
             return Collections.singletonList(entity);
         } catch (IOException e) {
             throw new RuntimeException("failed to list aggregation of type " + entityMeta.getClassType().getName() + " by " + query, e);
@@ -238,7 +237,7 @@ public class BaseReadOnlyElasticSearchRepository<E> implements BaseReadOnlyRepos
             List<Map<String, Object>> resultList = walkAggregations(response.getAggregations());
             List<E> entities = new ArrayList<>(resultList.size());
             for (Map<String, Object> result : resultList) {
-                entities.add(JSON.parseObject(JSON.toJSONString(result), entityMeta.getClassType()));
+                entities.add(JsonUtil.deserialize(JsonUtil.serialize(result), entityMeta.getClassType()));
             }
             return entities;
         } catch (IOException e) {
@@ -317,7 +316,7 @@ public class BaseReadOnlyElasticSearchRepository<E> implements BaseReadOnlyRepos
             List<E> entities = new ArrayList<>();
             SearchResponse response = client.search(request, options);
             for (SearchHit hit : response.getHits().getHits()) {
-                E entity = JSON.parseObject(hit.getSourceAsString(), entityMeta.getClassType());
+                E entity = JsonUtil.deserialize(hit.getSourceAsString(), entityMeta.getClassType());
                 Field idField = entityMeta.getIdField();
                 if (idField != null) {
                     BeanMap.create(entity).put(idField.getName(), hit.getId());
