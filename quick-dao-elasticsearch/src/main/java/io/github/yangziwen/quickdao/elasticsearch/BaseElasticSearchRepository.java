@@ -62,7 +62,7 @@ public abstract class BaseElasticSearchRepository<E> extends BaseReadOnlyElastic
             }
             return response.getResult() == Result.CREATED ? 1 : 0;
         } catch (IOException e) {
-           throw new PersistenceException("faield to persist entity of type " + entityMeta.getClassType().getName(), e);
+           throw new PersistenceException("failed to persist entity of type " + entityMeta.getClassType().getName(), e);
         }
     }
 
@@ -151,7 +151,7 @@ public abstract class BaseElasticSearchRepository<E> extends BaseReadOnlyElastic
             UpdateResponse response = client.update(request, options);
             return response.getResult() == Result.UPDATED ? 1 : 0;
         } catch (IOException e) {
-            throw new PersistenceException("faield to update entity of type " + entityMeta.getClassType().getName(), e);
+            throw new PersistenceException("failed to update entity of type " + entityMeta.getClassType().getName(), e);
         }
     }
 
@@ -180,7 +180,7 @@ public abstract class BaseElasticSearchRepository<E> extends BaseReadOnlyElastic
             UpdateResponse response = client.update(request, options);
             return response.getResult() == Result.UPDATED ? 1 : 0;
         } catch (IOException e) {
-            throw new PersistenceException("faield to update entity of type " + entityMeta.getClassType().getName(), e);
+            throw new PersistenceException("failed to update entity of type " + entityMeta.getClassType().getName(), e);
         }
 
     }
@@ -211,7 +211,7 @@ public abstract class BaseElasticSearchRepository<E> extends BaseReadOnlyElastic
             BulkByScrollResponse response = client.updateByQuery(request, options);
             return Long.valueOf(response.getUpdated()).intValue();
         } catch (IOException e) {
-            throw new PersistenceException("faield to update entity of type " + entityMeta.getClassType().getName(), e);
+            throw new PersistenceException("failed to update entity of type " + entityMeta.getClassType().getName(), e);
         }
     }
 
@@ -229,7 +229,7 @@ public abstract class BaseElasticSearchRepository<E> extends BaseReadOnlyElastic
             response = client.delete(request, options);
             return response.getResult() == Result.DELETED ? 1 : 0;
         } catch (IOException e) {
-            throw new PersistenceException("faield to delete entity of type " + entityMeta.getClassType().getName(), e);
+            throw new PersistenceException("failed to delete entity of type " + entityMeta.getClassType().getName(), e);
         }
     }
 
@@ -252,7 +252,7 @@ public abstract class BaseElasticSearchRepository<E> extends BaseReadOnlyElastic
             }
             return result;
         } catch (IOException e) {
-            throw new PersistenceException("faield to delete entities of type " + entityMeta.getClassType().getName(), e);
+            throw new PersistenceException("failed to delete entities of type " + entityMeta.getClassType().getName(), e);
         }
     }
 
@@ -267,7 +267,7 @@ public abstract class BaseElasticSearchRepository<E> extends BaseReadOnlyElastic
             BulkByScrollResponse response = client.deleteByQuery(request, options);
             return Long.valueOf(response.getDeleted()).intValue();
         } catch (IOException e) {
-            throw new PersistenceException("faield to delete entities of type " + entityMeta.getClassType().getName(), e);
+            throw new PersistenceException("failed to delete entities of type " + entityMeta.getClassType().getName(), e);
         }
     }
 
