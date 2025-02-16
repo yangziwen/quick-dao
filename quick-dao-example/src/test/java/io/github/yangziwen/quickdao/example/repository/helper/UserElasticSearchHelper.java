@@ -7,12 +7,19 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.time.DateUtils;
+import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
 import io.github.yangziwen.quickdao.example.entity.User;
 import io.github.yangziwen.quickdao.example.enums.Gender;
 import io.github.yangziwen.quickdao.example.repository.UserElasticSearchRepository;
 
 public class UserElasticSearchHelper {
+
+    public static ElasticsearchContainer startNewContainer() {
+        ElasticsearchContainer container = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch:7.10.0");
+        container.start();
+        return container;
+    }
 
     public static int prepareData(UserElasticSearchRepository repository) {
         List<User> list = new ArrayList<>();

@@ -11,6 +11,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
 import io.github.yangziwen.quickdao.core.Criteria;
 import io.github.yangziwen.quickdao.core.Order.Direction;
@@ -18,8 +19,13 @@ import io.github.yangziwen.quickdao.core.Page;
 import io.github.yangziwen.quickdao.core.Query;
 import io.github.yangziwen.quickdao.example.entity.User;
 import io.github.yangziwen.quickdao.example.enums.Gender;
+import io.github.yangziwen.quickdao.example.repository.helper.UserElasticSearchHelper;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class UserElasticSearchRepositoryTest {
+
+    private static ElasticsearchContainer container;
 
     private static RestHighLevelClient client;
 
@@ -27,14 +33,30 @@ public class UserElasticSearchRepositoryTest {
 
     @BeforeClass
     public static void beforeClass() throws Exception {
-        client = new RestHighLevelClient(RestClient.builder(new HttpHost("localhost", 9200, "http")));
+        container = UserElasticSearchHelper.startNewContainer();
+        log.info("container is ready");
+
+        client = new RestHighLevelClient(RestClient.builder(new HttpHost(
+                container.getHost(),
+                container.getMappedPort(9200),
+                "http")));
+        log.info("client is ready");
+
         repository = new UserElasticSearchRepository(client);
+        UserElasticSearchHelper.prepareData(repository);
+        Thread.sleep(1000L);
+        log.info("repository is ready");
     }
 
     @AfterClass
     public static void afterClass() throws Exception {
         if (client != null) {
             client.close();
+            log.info("client is closed");
+        }
+        if (container != null) {
+            container.stop();
+            log.info("container is closed");
         }
     }
 
