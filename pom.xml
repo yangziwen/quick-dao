@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.yangziwen</groupId>
     <artifactId>quick-dao</artifactId>
-    <version>0.0.23-SNAPSHOT</version>
+    <version>0.0.23</version>
     <packaging>pom</packaging>
     <name>quick-dao</name>
     <url>http://maven.apache.org</url>
@@ -17,7 +17,7 @@
         <sql2o.version>1.6.0</sql2o.version>
         <spring.jdbc.version>5.3.39</spring.jdbc.version>
         <elasticsearch.client.version>7.15.2</elasticsearch.client.version>
-        <commons.lang3.version>3.17.0</commons.lang3.version>
+        <commons.lang3.version>3.18.0</commons.lang3.version>
         <commons.collections4.version>4.4</commons.collections4.version>
         <cglib.version>3.3.0</cglib.version>
         <jackson.version>2.12.7.1</jackson.version>
