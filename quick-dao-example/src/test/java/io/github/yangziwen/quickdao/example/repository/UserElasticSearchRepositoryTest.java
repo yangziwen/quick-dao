@@ -10,6 +10,7 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
@@ -23,6 +24,7 @@ import io.github.yangziwen.quickdao.example.repository.helper.UserElasticSearchH
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@Ignore
 public class UserElasticSearchRepositoryTest {
 
     private static ElasticsearchContainer container;

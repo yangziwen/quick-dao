@@ -307,7 +307,7 @@
                 <configuration>
                     <repoToken>uCEZUxxOfee9MNwzhkhVeLU6gQVq8dBMK</repoToken>
                     <jacocoReports>
-                        <jacocoReport>quick-dao-example/target/site/jacoco-diff/jacoco.xml</jacocoReport>
+                        <jacocoReport>quick-dao-example/target/site/jacoco/jacoco.xml</jacocoReport>
                     </jacocoReports>
                 </configuration>
             </plugin>
