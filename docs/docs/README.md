@@ -1,5 +1,6 @@
 ---
 home: true
+heroImage: quick-dao-logo.png
 heroText: QuickDAO
 tagline: 用简洁、灵活、类型安全的方式构建数据访问层
 actionText: 快速开始
