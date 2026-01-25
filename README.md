@@ -1,3 +1,8 @@
+
+<div align="center">
+    <img src="https://github.com/user-attachments/assets/32a3c584-e814-4513-8270-91a6f1ece65f" alt="描述" width="200" height="200" style="margin: 0 auto">
+</div>
+
 # QuickDAO
 
 [![Java CI with Maven](https://github.com/yangziwen/quick-dao/actions/workflows/maven.yml/badge.svg)](https://github.com/yangziwen/quick-dao/actions/workflows/maven.yml)
