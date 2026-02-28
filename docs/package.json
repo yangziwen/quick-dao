@@ -8,6 +8,6 @@
     "docs:build": "export NODE_OPTIONS=--openssl-legacy-provider && vuepress build docs"
   },
   "dependencies": {
-    "serialize-javascript": "^6.0.2"
+    "serialize-javascript": "^7.0.3"
   }
 }
