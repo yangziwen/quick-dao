@@ -97,7 +97,12 @@ public abstract class BaseSoftDeletedMybatisRepository<E> extends BaseMybatisRep
         sql = sql.replaceFirst("\\sSET\\s", replacement);
 
         if (query.getLimit() > 0) {
-            sql += " LIMIT " + query.getLimit();
+            String limitClause = " LIMIT ";
+            if (query.getOffset() > 0) {
+                limitClause += query.getOffset() + ", ";
+            }
+            limitClause += query.getLimit();
+            sql += limitClause;
         }
 
         Map<String, Object> paramMap = query.getCriteria().toParamMap();

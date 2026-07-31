@@ -106,7 +106,12 @@ public abstract class BaseSoftDeletedSpringJdbcRepository<E> extends BaseSpringJ
         sql = sql.replaceFirst("\\sSET\\s", replacement);
 
         if (query.getLimit() > 0) {
-            sql += " LIMIT " + query.getLimit();
+            String limitClause = " LIMIT ";
+            if (query.getOffset() > 0) {
+                limitClause += query.getOffset() + ", ";
+            }
+            limitClause += query.getLimit();
+            sql += limitClause;
         }
 
         return jdbcTemplate.update(sql, createSqlParameterSource(query.toParamMap()));
