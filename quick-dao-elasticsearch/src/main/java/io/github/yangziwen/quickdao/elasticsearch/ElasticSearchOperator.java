@@ -103,7 +103,7 @@ public enum ElasticSearchOperator {
     in {
         @Override
         public QueryBuilder generateQueryBuilder(Criterion<?> criterion) {
-            Collection<?> values = Collections.singletonList(criterion);
+            Collection<?> values = Collections.singletonList(criterion.getValue());
             if (criterion.getValue() instanceof Collection) {
                 values = Collection.class.cast(criterion.getValue());
             }
