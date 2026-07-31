@@ -135,7 +135,7 @@ public enum ElasticSearchOperator {
     impossible {
         @Override
         public QueryBuilder generateQueryBuilder(Criterion<?> criterion) {
-            return null;
+            return QueryBuilders.boolQuery().mustNot(QueryBuilders.matchAllQuery());
         }
     };
 
