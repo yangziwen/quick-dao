@@ -56,7 +56,9 @@ public abstract class BaseMybatisRepository<E> extends BaseMybatisReadOnlyReposi
 
     private int doBatchInsert(List<E> entities, String stmt) {
         Map<String, Object> paramMap = new LinkedHashMap<>();
-        List<Field> fields = entityMeta.getFieldsWithoutIdField();
+        List<Field> fields = entityMeta.getIdGeneratedValue() != null
+                ? entityMeta.getFieldsWithoutIdField()
+                : entityMeta.getFields();
         for (int i = 0; i < entities.size(); i++) {
             E entity = entities.get(i);
             for (Field field : fields) {
