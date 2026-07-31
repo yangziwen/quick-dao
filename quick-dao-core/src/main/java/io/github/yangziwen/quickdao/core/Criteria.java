@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -97,6 +98,10 @@ public class Criteria {
 
     public static Criteria emptyCriteria() {
         return EMPTY_CRITERIA;
+    }
+
+    public boolean hasCriterionOfName(String name) {
+        return criterionList.stream().anyMatch(c -> Objects.equals(c.getName(), name));
     }
 
     public Map<String, Object> toParamMap() {

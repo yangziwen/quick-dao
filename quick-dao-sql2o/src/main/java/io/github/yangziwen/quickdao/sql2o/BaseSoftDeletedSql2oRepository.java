@@ -63,13 +63,17 @@ public abstract class BaseSoftDeletedSql2oRepository<E> extends BaseSql2oReposit
 
     @Override
     public List<E> list(Query query) {
-        query.getCriteria().and(getDeletedFlagColumn()).eq(getNotDeletedFlagValue());
+        if (!query.getCriteria().hasCriterionOfName(getDeletedFlagColumn())) {
+            query.getCriteria().and(getDeletedFlagColumn()).eq(getNotDeletedFlagValue());
+        }
         return super.list(query);
     }
 
     @Override
     public Integer count(Query query) {
-        query.getCriteria().and(getDeletedFlagColumn()).eq(getNotDeletedFlagValue());
+        if (!query.getCriteria().hasCriterionOfName(getDeletedFlagColumn())) {
+            query.getCriteria().and(getDeletedFlagColumn()).eq(getNotDeletedFlagValue());
+        }
         return super.count(query);
     }
 
