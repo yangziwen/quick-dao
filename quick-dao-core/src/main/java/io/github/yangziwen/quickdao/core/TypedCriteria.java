@@ -110,7 +110,7 @@ public class TypedCriteria<E> extends Criteria {
                 int fromIndex = 0;
                 int andPos = -1;
                 int orPos = -1;
-                while ((andPos = key.indexOf(andPos, fromIndex)) >= 0
+                while ((andPos = key.indexOf(andSep, fromIndex)) >= 0
                         || (orPos = key.indexOf(orSep, fromIndex)) >= 0) {
                     String keyword = RepoKeys.OR;
                     int pos = orPos;
