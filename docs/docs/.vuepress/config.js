@@ -20,7 +20,7 @@ module.exports = {
             collapsable: false
         }],
         sidebarDepth: 2,
-        smoothScroll: true
+        smoothScroll: false
     },
     plugins: [
         [
