@@ -1,6 +1,6 @@
 
 <div align="center">
-    <img src="https://github.com/user-attachments/assets/d1e6907e-9bb2-4289-b9e1-ec10f362dd64" alt="描述" width="250" style="margin: 0 auto">
+    <img src="https://yangziwen.github.io/quick-dao/quick-dao-logo.png" alt="描述" width="250" style="margin: 0 auto">
 </div>
 
 # QuickDAO
