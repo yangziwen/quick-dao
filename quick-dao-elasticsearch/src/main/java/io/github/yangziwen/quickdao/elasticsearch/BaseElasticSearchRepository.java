@@ -13,6 +13,7 @@ import javax.persistence.PersistenceException;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.action.DocWriteRequest.OpType;
 import org.elasticsearch.action.DocWriteResponse.Result;
 import org.elasticsearch.action.bulk.BulkItemResponse;
@@ -78,6 +79,8 @@ public abstract class BaseElasticSearchRepository<E> extends BaseReadOnlyElastic
 
         int affectedRows = 0;
 
+        List<String> failureMessageList = new ArrayList<>();
+
         boolean needToBackfillId = entityMeta.getIdField() != null && entityMeta.getIdGeneratedValue() != null;
 
         for (int i = 0; i < entities.size(); i += batchSize) {
@@ -94,6 +97,8 @@ public abstract class BaseElasticSearchRepository<E> extends BaseReadOnlyElastic
                 for (int j = 0; j < response.getItems().length; j++) {
                     BulkItemResponse item = response.getItems()[j];
                     if (item.isFailed()) {
+                        failureMessageList.add(String.format("insert of index[%s] with id[%s] failed: %s",
+                                item.getIndex(), item.getId(), item.getFailureMessage()));
                         continue;
                     }
                     affectedRows++;
@@ -104,6 +109,12 @@ public abstract class BaseElasticSearchRepository<E> extends BaseReadOnlyElastic
             } catch (IOException e) {
                 throw new PersistenceException("failed to persist entities of type " + entityMeta.getClassType().getName(), e);
             }
+        }
+
+        // 部分失败时显式抛出异常，避免静默丢数据
+        if (CollectionUtils.isNotEmpty(failureMessageList)) {
+            throw new PersistenceException("failed to persist entities of type " + entityMeta.getClassType().getName()
+                    + ", " + String.join("; ", failureMessageList));
         }
 
         return affectedRows;
@@ -274,12 +285,29 @@ public abstract class BaseElasticSearchRepository<E> extends BaseReadOnlyElastic
         }
         try {
             int result = ids.size();
+
+            List<String> failureMessageList = new ArrayList<>();
+
             BulkResponse response = client.bulk(request, options);
             for (BulkItemResponse item : response.getItems()) {
-                if (item.isFailed()) {
-                    result --;
+                if (!item.isFailed()) {
+                    continue;
                 }
+                // 文档不存在视为未删除，与 SQL 语义一致，不算失败
+                if (item.getFailure().getStatus() == RestStatus.NOT_FOUND) {
+                    result--;
+                    continue;
+                }
+                failureMessageList.add(String.format("delete of index[%s] with id[%s] failed: %s",
+                        item.getIndex(), item.getId(), item.getFailureMessage()));
             }
+
+            // 非文档缺失的失败需要显式抛出，避免静默丢数据
+            if (CollectionUtils.isNotEmpty(failureMessageList)) {
+                throw new PersistenceException("failed to delete entities of type " + entityMeta.getClassType().getName()
+                        + ", " + String.join("; ", failureMessageList));
+            }
+
             return result;
         } catch (IOException e) {
             throw new PersistenceException("failed to delete entities of type " + entityMeta.getClassType().getName(), e);

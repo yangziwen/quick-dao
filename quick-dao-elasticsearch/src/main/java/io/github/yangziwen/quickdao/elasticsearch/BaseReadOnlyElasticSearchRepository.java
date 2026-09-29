@@ -297,10 +297,24 @@ public class BaseReadOnlyElasticSearchRepository<E> implements BaseReadOnlyRepos
     }
 
     private List<E> doListQuery(Query query) {
+
+        int from = query.getOffset();
+
+        int size = validateLimit(query.getLimit());
+
+        // ES 的 max_result_window 默认为 10000（from + size 的上限），
+        // 超出时 ES 会直接报错，这里提前校验并给出更明确的提示
+        if (from + size > DEFAULT_MAX_SIZE) {
+            throw new RuntimeException(String.format(
+                    "offset[%d] + limit[%d] cannot exceed %d, deep pagination is not supported by elasticsearch, "
+                            + "please reduce offset or limit, query is %s",
+                    from, size, DEFAULT_MAX_SIZE, query));
+        }
+
         SearchSourceBuilder sourceBuilder = new SearchSourceBuilder()
                 .query(generateQueryBuilder(query.getCriteria()))
-                .from(query.getOffset())
-                .size(validateLimit(query.getLimit()));
+                .from(from)
+                .size(size);
         List<Stmt> stmtList = query.getSelectStmtList()
                 .stream()
                 .filter(stmt -> !FunctionStmt.class.isInstance(stmt))
