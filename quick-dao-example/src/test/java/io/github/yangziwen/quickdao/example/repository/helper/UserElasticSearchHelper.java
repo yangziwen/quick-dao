@@ -16,7 +16,7 @@ import io.github.yangziwen.quickdao.example.repository.UserElasticSearchReposito
 public class UserElasticSearchHelper {
 
     public static ElasticsearchContainer startNewContainer() {
-        ElasticsearchContainer container = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch:7.10.0");
+        ElasticsearchContainer container = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch:7.17.28");
         container.start();
         return container;
     }
