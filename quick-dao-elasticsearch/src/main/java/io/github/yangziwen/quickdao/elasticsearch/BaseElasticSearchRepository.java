@@ -69,6 +69,10 @@ public abstract class BaseElasticSearchRepository<E> extends BaseReadOnlyElastic
     @Override
     public int batchInsert(List<E> entities, int batchSize) {
 
+        if (batchSize <= 0) {
+            throw new IllegalArgumentException("batchSize must be positive");
+        }
+
         if (CollectionUtils.isEmpty(entities)) {
             return 0;
         }

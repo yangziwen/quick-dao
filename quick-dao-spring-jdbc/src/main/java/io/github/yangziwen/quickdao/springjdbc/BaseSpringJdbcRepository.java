@@ -68,6 +68,9 @@ public abstract class BaseSpringJdbcRepository<E> extends BaseSpringJdbcReadOnly
 
     @Override
     public int batchInsert(List<E> entities, int batchSize) {
+        if (batchSize <= 0) {
+            throw new IllegalArgumentException("batchSize must be positive");
+        }
         if (CollectionUtils.isEmpty(entities)) {
             return 0;
         }

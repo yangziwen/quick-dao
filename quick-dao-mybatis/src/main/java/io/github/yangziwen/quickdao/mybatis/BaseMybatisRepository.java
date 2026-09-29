@@ -37,15 +37,17 @@ public abstract class BaseMybatisRepository<E> extends BaseMybatisReadOnlyReposi
 
     @Override
     public int batchInsert(List<E> entities, int batchSize) {
+        if (batchSize <= 0) {
+            throw new IllegalArgumentException("batchSize must be positive");
+        }
         if (CollectionUtils.isEmpty(entities)) {
             return 0;
         }
-        int size = 0;
         String sql = "";
         int affectedRows = 0;
         for (int i = 0; i < entities.size(); i+= batchSize) {
             List<E> subList = entities.subList(i, Math.min(i + batchSize, entities.size()));
-            if (size != subList.size() || StringUtils.isBlank(sql)) {
+            if (batchSize != subList.size() || StringUtils.isBlank(sql)) {
                 sql = sqlGenerator.generateBatchInsertSql(entityMeta, subList.size());
             }
             String stmt = assistant.getDynamicInsertStmt(sql, entities.getClass(), null);
