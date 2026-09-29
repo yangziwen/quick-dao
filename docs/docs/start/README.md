@@ -2,6 +2,7 @@
 
 ## 简介
 QuickDAO通过对Spring JDBC、MyBatis、sql2o等ORM框架进行简单封装，实现增删改查方法的抽象和复用，有效消除DAO层的样板代码。
+此外，QuickDAO还基于Elasticsearch提供了相同API的数据访问实现，可以将同一套Java DSL翻译为ES的query和aggregation。
 
 ## 引入依赖
 基于Spring JDBC、MyBatis、sql2o的三种依赖引入其一即可。
@@ -12,7 +13,7 @@ QuickDAO通过对Spring JDBC、MyBatis、sql2o等ORM框架进行简单封装，�
 <dependency>
     <groupId>io.github.yangziwen</groupId>
     <artifactId>quick-dao-spring-jdbc</artifactId>
-    <version>0.0.21</version>
+    <version>0.0.23</version>
 </dependency>
 ```
 ```xml
@@ -20,7 +21,7 @@ QuickDAO通过对Spring JDBC、MyBatis、sql2o等ORM框架进行简单封装，�
 <dependency>
     <groupId>io.github.yangziwen</groupId>
     <artifactId>quick-dao-sql2o</artifactId>
-    <version>0.0.21</version>
+    <version>0.0.23</version>
 </dependency>
 ```
 ```xml
@@ -29,7 +30,15 @@ QuickDAO通过对Spring JDBC、MyBatis、sql2o等ORM框架进行简单封装，�
 <dependency>
     <groupId>io.github.yangziwen</groupId>
     <artifactId>quick-dao-mybatis</artifactId>
-    <version>0.0.21</version>
+    <version>0.0.23</version>
+</dependency>
+```
+```xml
+<!-- 使用Elasticsearch的情形(需要ES服务端为7.x版本) -->
+<dependency>
+    <groupId>io.github.yangziwen</groupId>
+    <artifactId>quick-dao-elasticsearch</artifactId>
+    <version>0.0.23</version>
 </dependency>
 ```
 
@@ -143,3 +152,23 @@ public List<String> listUsernameOfEldestMaleUser(int limit) {
 另外，`Criteria`和`Query`均有基于lambda表达式的类型安全的版本，分别是[TypedCriteria](https://github.com/yangziwen/quick-dao/blob/master/quick-dao-core/src/main/java/io/github/yangziwen/quickdao/core/TypedQuery.java)和[TypedQuery](https://github.com/yangziwen/quick-dao/blob/master/quick-dao-core/src/main/java/io/github/yangziwen/quickdao/core/TypedQuery.java)。
 
 更多`Query`对象和`Criteria`对象的使用方法，可以参考[quick-dao-example](https://github.com/yangziwen/quick-dao/tree/master/quick-dao-example)中的[单元测试](https://github.com/yangziwen/quick-dao/tree/master/quick-dao-example/src/test/java/io/github/yangziwen/quickdao/example/repository/base)。
+
+## 使用Elasticsearch
+数据访问类也可以基于Elasticsearch声明，查询条件的构造方式与SQL版完全一致。
+```java
+public class UserRepository extends BaseElasticSearchRepository<User> {
+
+    public UserRepository(RestHighLevelClient client) {
+        super(client);
+    }
+
+}
+```
+对于ES的实体类，有两点需要特别注意：
+* 使用`@Id`注解修饰的字段会被映射为ES文档的`_id`；
+* 需要精确匹配（如`eq`、`in`）或用于`group by`、`order by`的字符串字段，需要额外使用`@NestedKeyword`注解声明，QuickDAO会自动追加`.keyword`后缀，指向mapping中该字段的keyword子字段。
+```java
+@Column
+@NestedKeyword
+private String username;
+```

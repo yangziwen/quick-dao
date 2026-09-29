@@ -738,3 +738,91 @@ public class UserRepository extends BaseSoftDeletedSpringJdbcRepository<User> {
 
 通常情况下，一个项目中所有数据表的逻辑删除标识字段名称以及取值应是统一的，因此在项目范围内可实现一个继承了`BaseSoftDeletedSpringJdbcRepository`的抽象类，对逻辑删除标识字段和更新时间字段作统一声明。
 
+## 使用Elasticsearch
+QuickDAO同样提供了基于Elasticsearch（以下简称ES）的数据访问实现，它复用与SQL版完全一致的Java DSL，将`Criteria`和`Query`构造的查询条件翻译为ES的query和aggregation，并基于ES文档的`_id`实现了统一的增删改查API。
+
+### 引入依赖
+```xml
+<dependency>
+    <groupId>io.github.yangziwen</groupId>
+    <artifactId>quick-dao-elasticsearch</artifactId>
+    <version>0.0.23</version>
+</dependency>
+```
+
+### 声明实体类
+与SQL版的用法一致，使用`@Table`修饰的实体和使用`@Column`修饰的字段才会被QuickDAO使用。其中使用`@Id`注解修饰的字段会被映射为ES文档的`_id`：添加`@GeneratedValue`注解时，ES会自动生成文档id并在插入后回填到实体中；否则需要在插入前手动填充id，且id与已有文档冲突时插入操作会抛出异常。
+
+此外，对于需要精确匹配（如`eq`、`in`）或用于`group by`、`order by`的字符串字段，需要使用`@NestedKeyword`注解进行声明。
+```java
+@Data
+@Table(name = "user")
+public class User {
+
+    @Id
+    @Column
+    @GeneratedValue
+    private Long id;
+
+    @Column
+    @NestedKeyword
+    private String username;
+
+    @Column
+    @NestedKeyword
+    private Gender gender;
+
+    @Column
+    @NestedKeyword
+    private String city;
+
+    @Column
+    private Integer age;
+
+}
+```
+
+`@NestedKeyword`的语义与ES动态映射中text字段的keyword子字段（`field.keyword`）一致，具体规则如下：
+* 使用该注解修饰的字段，QuickDAO在构造`eq`、`in`、`startWith`等条件以及`group by`、`order by`时，会自动在字段名后追加`.keyword`后缀，指向mapping中的keyword子字段；
+* 未使用该注解的字段，将直接按原始字段名构造查询条件，此时在text类型的字段上执行`eq`等精确匹配操作，将无法命中文档（这是ES对text字段分词后的预期行为）；
+* 该注解只是对mapping结构的声明，要求建立索引时字段mapping与该声明保持一致（ES动态映射生成的text字段默认自带`.keyword`子字段）；
+* 除注解外，DSL中也可以通过`keyword()`方法手动指定某个条件使用`.keyword`后缀，例如`criteria.and("username").keyword().eq("张三")`。
+
+### 实现数据访问类
+```java
+public class UserElasticSearchRepository extends BaseElasticSearchRepository<User> {
+
+    public UserElasticSearchRepository(RestHighLevelClient client) {
+        super(client);
+    }
+
+}
+```
+其中[BaseReadOnlyElasticSearchRepository](https://github.com/yangziwen/quick-dao/blob/master/quick-dao-elasticsearch/src/main/java/io/github/yangziwen/quickdao/elasticsearch/BaseReadOnlyElasticSearchRepository.java)包含`getById`、`first`、`list`、`listByIds`、`count`、`paginate`等查询方法，[BaseElasticSearchRepository](https://github.com/yangziwen/quick-dao/blob/master/quick-dao-elasticsearch/src/main/java/io/github/yangziwen/quickdao/elasticsearch/BaseElasticSearchRepository.java)在此基础上还包含`insert`、`batchInsert`、`update`、`updateSelective`、`delete`、`deleteById`、`deleteByIds`等增删改方法。
+
+查询条件的构造方式与SQL版完全一致，`Criteria`、`TypedCriteria`、`Query`、`TypedQuery`以及数据库函数等DSL均可在ES版的数据访问类中使用，其中数据库函数会被翻译为相应的ES聚合，对应关系如下表所示。
+| 数据库函数 | ES聚合 | 说明 |
+| :-: | :-: | :-: |
+| distinct | cardinality | 近似值，基于HyperLogLog++算法 |
+| countDistinct | cardinality | 近似值，基于HyperLogLog++算法 |
+| count | value_count | 精确值 |
+| max | max | 精确值 |
+| min | min | 精确值 |
+| avg | avg | 精确值 |
+| sum | sum | 精确值 |
+
+注意，上述指标的精确性是相对于查询命中的文档而言的：当函数与`group by`组合使用时，每个桶内的指标值是精确的，但桶的归属和文档数量在多分片场景下是近似值（详见下方的“与SQL版本的差异”）。
+
+### 与SQL版本的差异
+尽管DSL的用法一致，但ES与关系型数据库在能力和行为上存在天然的差异，使用时需要注意以下几点。
+
+| 事项 | 说明 |
+| :-: | :-- |
+| 近实时 | 写操作执行成功后，数据默认经过1秒左右的refresh后才可被查询到，写后立即查询可能查不到最新数据 |
+| 分页上限 | ES限制`from + size`不能超过10000（即max_result_window），超出时QuickDAO会直接抛出异常，不支持深分页 |
+| 聚合的近似性 | `group by`基于桶聚合实现，文档数量为近似值，且无法精确控制结果的总数量，只能控制每级聚合的桶数量 |
+| count的自动填充 | `group by`查询返回的每一行结果中，`count`字段会自动填充为对应桶的文档数量 |
+| 批量操作的部分失败 | `batchInsert`中只要存在失败的操作（如id冲突），就会抛出异常并列出失败明细；`deleteByIds`对不存在的文档视为未删除，不视为失败 |
+| 全量更新的保护 | `updateSelective(entity, criteria)`在criteria为空时，会追加id不存在的过滤条件，避免更新索引中的全部文档 |
+| 不支持的操作 | ES不支持JOIN；`delete(Query)`会忽略`order by`、`offset`和`limit`，按条件删除时将作用于所有命中的文档 |
+
