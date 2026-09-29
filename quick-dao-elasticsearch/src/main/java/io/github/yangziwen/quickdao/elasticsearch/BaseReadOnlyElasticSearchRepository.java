@@ -106,7 +106,14 @@ public class BaseReadOnlyElasticSearchRepository<E> implements BaseReadOnlyRepos
             List<E> entities = new ArrayList<>(ids.size());
             MultiGetResponse response = client.mget(request, options);
             for (MultiGetItemResponse item : response.getResponses()) {
-                entities.add(extractEntityFromGetResponse(item.getResponse()));
+                // 过滤掉不存在或获取失败的文档，避免向调用方返回 null 元素
+                if (item == null || item.isFailed() || item.getResponse() == null) {
+                    continue;
+                }
+                E entity = extractEntityFromGetResponse(item.getResponse());
+                if (entity != null) {
+                    entities.add(entity);
+                }
             }
             return entities;
         } catch (IOException e) {
@@ -219,7 +226,12 @@ public class BaseReadOnlyElasticSearchRepository<E> implements BaseReadOnlyRepos
 
         if (CollectionUtils.isNotEmpty(query.getOrderList())) {
             for (Order order : query.getOrderList()) {
-                TermsAggregationBuilder termsAggsBuilder = termsAggsBuilderMap.get(order.getName());
+                // 与 groupBy 构建时的后缀处理保持一致，否则 NestedKeyword 字段的桶排序会查不到对应的聚合
+                String orderName = order.getName();
+                if (entityMeta.isNestedKeywordField(orderName) && !orderName.endsWith(RepoKeys.KEYWORD_SUFFIX)) {
+                    orderName += RepoKeys.KEYWORD_SUFFIX;
+                }
+                TermsAggregationBuilder termsAggsBuilder = termsAggsBuilderMap.get(orderName);
                 if (termsAggsBuilder != null) {
                     termsAggsBuilder.order(BucketOrder.key(order.getDirection() == Direction.ASC));
                 }
@@ -251,6 +263,8 @@ public class BaseReadOnlyElasticSearchRepository<E> implements BaseReadOnlyRepos
         }
         List<Aggregation> aggregationList = aggregations.asList();
         List<Map<String, Object>> resultList = new ArrayList<>();
+        Map<String, Object> metricsMap = new HashMap<>();
+        // 按类型分别收集，不依赖聚合的出现顺序
         for (Aggregation aggregation : aggregationList) {
             if (aggregation instanceof ParsedTerms) {
                 String key = aggregation.getName();
@@ -271,21 +285,13 @@ public class BaseReadOnlyElasticSearchRepository<E> implements BaseReadOnlyRepos
                         resultList.add(map);
                     }
                 }
-            } else {
-                break;
-            }
-        }
-        Map<String, Object> result = new HashMap<>();
-        for (Aggregation aggregation : aggregationList) {
-            if (aggregation instanceof NumericMetricsAggregation.SingleValue) {
+            } else if (aggregation instanceof NumericMetricsAggregation.SingleValue) {
                 SingleValue valueObj = NumericMetricsAggregation.SingleValue.class.cast(aggregation);
-                result.put(valueObj.getName(), valueObj.value());
-            } else {
-                break;
+                metricsMap.put(valueObj.getName(), valueObj.value());
             }
         }
-        if (MapUtils.isNotEmpty(result)) {
-            resultList.add(result);
+        if (resultList.isEmpty() && MapUtils.isNotEmpty(metricsMap)) {
+            resultList.add(metricsMap);
         }
         return resultList;
     }
@@ -357,7 +363,7 @@ public class BaseReadOnlyElasticSearchRepository<E> implements BaseReadOnlyRepos
         if (criteria.isEmpty()) {
             return QueryBuilders.matchAllQuery();
         }
-        BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+        BoolQueryBuilder mustQueryBuilder = QueryBuilders.boolQuery();
         for (Criterion<?> criterion : criteria.getCriterionList()) {
             ElasticSearchOperator operator = ElasticSearchOperator.from(criterion.getOperator());
             if (operator == null) {
@@ -366,17 +372,32 @@ public class BaseReadOnlyElasticSearchRepository<E> implements BaseReadOnlyRepos
             if (entityMeta.isNestedKeywordField(criterion.getName())) {
                 criterion.keyword();
             }
-            boolQueryBuilder.must(operator.generateQueryBuilder(criterion));
+            mustQueryBuilder.must(operator.generateQueryBuilder(criterion));
         }
+        BoolQueryBuilder orQueryBuilder = null;
         for (Entry<String, Criteria> entry : criteria.getNestedCriteriaMap().entrySet()) {
             if (entry.getKey().endsWith(RepoKeys.AND)) {
-                boolQueryBuilder.must(generateQueryBuilder(entry.getValue()));
+                mustQueryBuilder.must(generateQueryBuilder(entry.getValue()));
             }
             if (entry.getKey().endsWith(RepoKeys.OR)) {
-                boolQueryBuilder.should(generateQueryBuilder(entry.getValue()));
+                if (orQueryBuilder == null) {
+                    orQueryBuilder = QueryBuilders.boolQuery();
+                }
+                // 与 SQL 语义保持一致：顶层条件与嵌套 OR 条件是并列的“或”关系
+                orQueryBuilder.should(generateQueryBuilder(entry.getValue()));
             }
         }
-        return boolQueryBuilder;
+        if (orQueryBuilder == null) {
+            return mustQueryBuilder;
+        }
+        // 空 bool query 会匹配所有文档，不能作为 should 分支，否则查询条件会被忽略
+        if (mustQueryBuilder.hasClauses()) {
+            // 与 SQL 语义保持一致：顶层条件与嵌套 OR 条件是并列的“或”关系
+            orQueryBuilder.should(mustQueryBuilder);
+        }
+        // bool 查询中存在 must 子句时，should 子句默认是可选的，因此需要强制至少命中一个分支
+        orQueryBuilder.minimumShouldMatch(1);
+        return orQueryBuilder;
     }
 
     @Override

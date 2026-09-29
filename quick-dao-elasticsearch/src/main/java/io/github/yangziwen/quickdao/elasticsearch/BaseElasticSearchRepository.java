@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import javax.persistence.PersistenceException;
@@ -147,6 +146,10 @@ public abstract class BaseElasticSearchRepository<E> extends BaseReadOnlyElastic
 
         Object idVal = beanMap.get(entityMeta.getIdFieldName());
 
+        if (idVal == null) {
+            throw new IllegalStateException("failed to get id of entity[" + beanMap + "]");
+        }
+
         UpdateRequest request = new UpdateRequest(entityMeta.getTable(), String.valueOf(idVal));
 
         request.doc(entityMap);
@@ -174,7 +177,15 @@ public abstract class BaseElasticSearchRepository<E> extends BaseReadOnlyElastic
             entityMap.put(field.getName(), value);
         }
 
+        if (entityMap.isEmpty()) {
+            return 0;
+        }
+
         Object idVal = beanMap.get(entityMeta.getIdFieldName());
+
+        if (idVal == null) {
+            throw new IllegalStateException("failed to get id of entity[" + beanMap + "]");
+        }
 
         UpdateRequest request = new UpdateRequest(entityMeta.getTable(), String.valueOf(idVal));
 
@@ -196,14 +207,29 @@ public abstract class BaseElasticSearchRepository<E> extends BaseReadOnlyElastic
 
         List<String> assignLineList = new ArrayList<>();
 
-        for (Entry<String, Object> entry : beanMap.entrySet()) {
-            if (entry.getValue() == null) {
+        Map<String, Object> params = new HashMap<>();
+
+        // 只更新非空字段，且不修改 id 字段
+        for (Field field : entityMeta.getFieldsWithoutIdField()) {
+            Object value = beanMap.get(field.getName());
+            if (value == null) {
                 continue;
             }
-            assignLineList.add(String.format("ctx._source.%s = params.%s", entry.getKey(), entry.getKey()));
+            assignLineList.add(String.format("ctx._source.%s = params.%s", field.getName(), field.getName()));
+            params.put(field.getName(), value);
         }
 
-        Script script = new Script(ScriptType.INLINE, "painless", StringUtils.join(assignLineList, ";"), beanMap);
+        if (assignLineList.isEmpty()) {
+            return 0;
+        }
+
+        Script script = new Script(ScriptType.INLINE, "painless", StringUtils.join(assignLineList, ";"), params);
+
+        // 与 SQL 版 generateUpdateSelectiveByCriteriaSql 保持一致：
+        // 空 criteria 时追加 id is null 条件，避免 match_all 导致全量更新
+        if (crieria.isEmpty()) {
+            crieria.and(entityMeta.getIdFieldName()).isNull();
+        }
 
         UpdateByQueryRequest request = new UpdateByQueryRequest(entityMeta.getTable());
 
