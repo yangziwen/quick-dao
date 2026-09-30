@@ -271,7 +271,7 @@
             <plugin>
                 <groupId>io.github.yangziwen</groupId>
                 <artifactId>diff-jacoco-maven-plugin</artifactId>
-                <version>0.0.8</version>
+                <version>0.0.9</version>
                 <configuration>
                     <excludes>
                         <exclude>io/github/yangziwen/quickdao/example/entity/*</exclude>
