@@ -10,7 +10,7 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/83ba3cc79e6046f69c06dbc42db00b7f)](https://www.codacy.com/gh/yangziwen/quick-dao/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=yangziwen/quick-dao&amp;utm_campaign=Badge_Grade)
 
 ### 项目介绍
-QuickDAO通过对Spring JDBC, MyBatis, sql2o等orm框架进行简单封装，实现增删改查方法的抽象和复用，有效消除DAO层的样板代码。
+QuickDAO通过对Spring JDBC, MyBatis, sql2o等orm框架进行简单封装，实现增删改查方法的抽象和复用，有效消除DAO层的样板代码。此外，QuickDAO还基于Elasticsearch提供了相同API的数据访问实现，可以将同一套Java DSL翻译为ES的query和aggregation。
 
 ### 项目文档
 [https://yangziwen.github.io/quick-dao](https://yangziwen.github.io/quick-dao/)
@@ -23,7 +23,7 @@ QuickDAO通过对Spring JDBC, MyBatis, sql2o等orm框架进行简单封装，实
 <dependency>
     <groupId>io.github.yangziwen</groupId>
     <artifactId>quick-dao-spring-jdbc</artifactId>
-    <version>0.0.21</version>
+    <version>0.0.23</version>
 </dependency>
 
 <!-- 使用MyBatis的情形(需注意SqlSession的线程安全) -->
@@ -31,14 +31,21 @@ QuickDAO通过对Spring JDBC, MyBatis, sql2o等orm框架进行简单封装，实
 <dependency>
     <groupId>io.github.yangziwen</groupId>
     <artifactId>quick-dao-mybatis</artifactId>
-    <version>0.0.21</version>
+    <version>0.0.23</version>
 </dependency>
 
 <!-- 使用sql2o的情形(适合快速开发demo) -->
 <dependency>
     <groupId>io.github.yangziwen</groupId>
     <artifactId>quick-dao-sql2o</artifactId>
-    <version>0.0.21</version>
+    <version>0.0.23</version>
+</dependency>
+
+<!-- 使用Elasticsearch的情形(需要ES服务端为7.x版本) -->
+<dependency>
+    <groupId>io.github.yangziwen</groupId>
+    <artifactId>quick-dao-elasticsearch</artifactId>
+    <version>0.0.23</version>
 </dependency>
 ```
 
@@ -103,5 +110,9 @@ public List<User> listByAgeRange(int minAge, int maxAge) {
     return list(criteria);
 }
 ```
+
+* 对于ES的实体类，有两点需要特别注意：
+  1. 使用`@Id`注解修饰的字段会被映射为ES文档的`_id`；
+  2. 需要精确匹配（如`eq`、`in`）或用于`group by`、`order by`的text字段，需要额外使用`@NestedKeyword`注解声明，QuickDAO会自动追加`.keyword`后缀，指向mapping中该字段的keyword子字段。
 
 * 更多例子，可参考[使用手册](https://yangziwen.github.io/quick-dao/manual/)以及 [quick-dao-example](https://github.com/yangziwen/quick-dao/tree/master/quick-dao-example) 中的[单元测试](https://github.com/yangziwen/quick-dao/tree/master/quick-dao-example/src/test/java/io/github/yangziwen/quickdao/example/repository/base)
