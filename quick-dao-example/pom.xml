@@ -13,6 +13,8 @@
     <name>quick-dao-example</name>
     <url>http://maven.apache.org</url>
     <properties>
+        <!-- 跳过 deploy，该模块只是示例工程，不发布到 Maven 中央仓库 -->
+        <maven.deploy.skip>true</maven.deploy.skip>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <slf4j.version>1.7.25</slf4j.version>
         <log4j.version>2.24.0</log4j.version>
