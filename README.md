@@ -113,6 +113,6 @@ public List<User> listByAgeRange(int minAge, int maxAge) {
 
 * 对于ES的实体类，有两点需要特别注意：
   1. 使用`@Id`注解修饰的字段会被映射为ES文档的`_id`；
-  2. 需要精确匹配（如`eq`、`in`）或用于`group by`、`order by`的text字段，需要额外使用`@NestedKeyword`注解声明，QuickDAO会自动追加`.keyword`后缀，指向mapping中该字段的keyword子字段。
+  2. 需要精确匹配（如`eq`、`in`）或用于`group by`、`order by`的text字段，需要额外使用`@NestedKeyword`注解声明，QuickDAO会自动追加`.keyword`后缀，指向mapping中该字段的keyword子字段（本身是keyword类型的字段无需此注解）。
 
 * 更多例子，可参考[使用手册](https://yangziwen.github.io/quick-dao/manual/)以及 [quick-dao-example](https://github.com/yangziwen/quick-dao/tree/master/quick-dao-example) 中的[单元测试](https://github.com/yangziwen/quick-dao/tree/master/quick-dao-example/src/test/java/io/github/yangziwen/quickdao/example/repository/base)

@@ -166,7 +166,7 @@ public class UserRepository extends BaseElasticSearchRepository<User> {
 ```
 对于ES的实体类，有两点需要特别注意：
 * 使用`@Id`注解修饰的字段会被映射为ES文档的`_id`；
-* 需要精确匹配（如`eq`、`in`）或用于`group by`、`order by`的text字段，需要额外使用`@NestedKeyword`注解声明，QuickDAO会自动追加`.keyword`后缀，指向mapping中该字段的keyword子字段（keyword类型的字段无需此注解）。
+* 需要精确匹配（如`eq`、`in`）或用于`group by`、`order by`的text字段，需要额外使用`@NestedKeyword`注解声明，QuickDAO会自动追加`.keyword`后缀，指向mapping中该字段的keyword子字段（本身是keyword类型的字段无需此注解）。
 ```java
 @Column
 @NestedKeyword
