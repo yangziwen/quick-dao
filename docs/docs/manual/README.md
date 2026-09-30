@@ -753,7 +753,7 @@ QuickDAO同样提供了基于Elasticsearch（以下简称ES）的数据访问实
 ### 声明实体类
 与SQL版的用法一致，使用`@Table`修饰的实体和使用`@Column`修饰的字段才会被QuickDAO使用。其中使用`@Id`注解修饰的字段会被映射为ES文档的`_id`：添加`@GeneratedValue`注解时，ES会自动生成文档id并在插入后回填到实体中；否则需要在插入前手动填充id，且id与已有文档冲突时插入操作会抛出异常。
 
-此外，对于需要精确匹配（如`eq`、`in`）或用于`group by`、`order by`的字符串字段，需要使用`@NestedKeyword`注解进行声明。
+此外，对于需要精确匹配（如`eq`、`in`）或用于`group by`、`order by`的text字段，需要使用`@NestedKeyword`注解进行声明。
 ```java
 @Data
 @Table(name = "user")
@@ -787,6 +787,7 @@ public class User {
 * 未使用该注解的字段，将直接按原始字段名构造查询条件，此时在text类型的字段上执行`eq`等精确匹配操作，将无法命中文档（这是ES对text字段分词后的预期行为）；
 * 该注解只是对mapping结构的声明，要求建立索引时字段mapping与该声明保持一致（ES动态映射生成的text字段默认自带`.keyword`子字段）；
 * 除注解外，DSL中也可以通过`keyword()`方法手动指定某个条件使用`.keyword`后缀，例如`criteria.and("username").keyword().eq("张三")`。
+* 如果字段本身在mapping中就是keyword类型的，则不要添加`@NestedKeyword`注解，直接使用原始字段构造查询和聚合分组条件即可（错误添加会导致查询指向不存在的`.keyword`子字段而报错）。
 
 ### 实现数据访问类
 ```java
