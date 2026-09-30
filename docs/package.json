@@ -9,5 +9,8 @@
   },
   "dependencies": {
     "serialize-javascript": "^7.0.5"
+  },
+  "resolutions": {
+    "lodash.template": "4.4.0"
   }
 }
