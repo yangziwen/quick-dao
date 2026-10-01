@@ -14,6 +14,7 @@ import javax.persistence.PersistenceException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.rest.RestStatus;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.action.DocWriteRequest.OpType;
 import org.elasticsearch.action.DocWriteResponse.Result;
 import org.elasticsearch.action.bulk.BulkItemResponse;
@@ -236,15 +237,19 @@ public abstract class BaseElasticSearchRepository<E> extends BaseReadOnlyElastic
 
         Script script = new Script(ScriptType.INLINE, "painless", StringUtils.join(assignLineList, ";"), params);
 
-        // 与 SQL 版 generateUpdateSelectiveByCriteriaSql 保持一致：
-        // 空 criteria 时追加 id is null 条件，避免 match_all 导致全量更新
-        if (crieria.isEmpty()) {
-            crieria.and(entityMeta.getIdFieldName()).isNull();
-        }
-
+        // 与 SQL 版 generateUpdateSelectiveByCriteriaSql 保持一致：空 criteria 时一条都不应更新。
+        // be aware: id 字段不会写入 _source（见 generateIndexRequest），
+        // SQL 的 "id is null" 技巧在 ES 中无效（mustNot(exists(id)) 会匹配全部文档，
+        // 反而导致 match_all 全量更新），必须显式使用 match_none。
+        // 本版本 client 的 QueryBuilders 未提供 matchNoneQuery()，
+        // 用 bool.mustNot(match_all) 达到同样效果（与 Operator.impossible 的实现一致）。
         UpdateByQueryRequest request = new UpdateByQueryRequest(entityMeta.getTable());
 
-        request.setQuery(generateQueryBuilder(crieria));
+        if (crieria.isEmpty()) {
+            request.setQuery(QueryBuilders.boolQuery().mustNot(QueryBuilders.matchAllQuery()));
+        } else {
+            request.setQuery(generateQueryBuilder(crieria));
+        }
 
         request.setScript(script);
 
