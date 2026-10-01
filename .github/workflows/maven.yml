@@ -29,3 +29,15 @@ jobs:
         cache: maven
     - name: Build with Maven
       run: mvn -B package --file pom.xml
+    - name: Report coverage to Coveralls
+      # 仅 push 到 master 时上报：fork 的 PR 无法读取 secrets，避免上报步骤失败
+      if: github.event_name == 'push'
+      run: mvn -B coveralls:report --file pom.xml
+    - name: Upload surefire reports
+      # 构建失败时也要上传，便于排查（如 ES 单测为何失败）
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: surefire-reports
+        path: '**/target/surefire-reports/*.xml'
+        if-no-files-found: ignore
