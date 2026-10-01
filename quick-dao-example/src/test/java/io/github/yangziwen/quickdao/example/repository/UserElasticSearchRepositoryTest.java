@@ -226,4 +226,74 @@ public class UserElasticSearchRepositoryTest {
         Assert.assertEquals(5, userPage.getTotalCount().intValue());
     }
 
+    @Test
+    public void testCountByGender() {
+        // 数据集中 MALE 14 人（张二/三/五、李一/二/四/五、王一/二/五、赵二/三/四/五），FEMALE 6 人
+        Assert.assertEquals(Integer.valueOf(14), repository.countByGender(Gender.MALE));
+        Assert.assertEquals(Integer.valueOf(6), repository.countByGender(Gender.FEMALE));
+    }
+
+    @Test
+    public void testCountByCity() {
+        // 北京 7 人（张一/五、李一/二、王一/二、赵三），上海 7 人，南京 3 人，天津 1 人，沈阳 1 人
+        Assert.assertEquals(Integer.valueOf(7), repository.countByCity("北京"));
+        Assert.assertEquals(Integer.valueOf(7), repository.countByCity("上海"));
+        Assert.assertEquals(Integer.valueOf(3), repository.countByCity("南京"));
+    }
+
+    @Test
+    public void testListByNamePrefix() {
+        // 姓张的共 5 人
+        List<User> userList = repository.listByNamePrefix("张");
+        Assert.assertEquals(5, userList.size());
+        for (User user : userList) {
+            Assert.assertTrue(user.getUsername().startsWith("张"));
+        }
+    }
+
+    @Test
+    public void testListByNameSuffixAndAgeRange() {
+        // 名字以"一"结尾：张一(25)、李一(29)、王一(27)、赵一(27)，均在 25~30 范围内，按 age 降序
+        List<User> userList = repository.listByNameSuffixAndAgeRange("一", 25, 30);
+        Assert.assertEquals(4, userList.size());
+        Assert.assertEquals(Integer.valueOf(29), userList.get(0).getAge());  // 李一
+        Assert.assertEquals(Integer.valueOf(25), userList.get(3).getAge());  // 张一
+        for (User user : userList) {
+            Assert.assertTrue(user.getUsername().endsWith("一"));
+            Assert.assertTrue(user.getAge() >= 25 && user.getAge() <= 30);
+        }
+    }
+
+    @Test
+    public void testListAgeStatsByCreateTimeRangeAndGroupByCityAndGender() throws Exception {
+        // 2021-01-01 ~ 2021-01-31 共 10 条，按 city + gender 分为 6 组
+        Date min = new java.text.SimpleDateFormat("yyyy-MM-dd").parse("2021-01-01");
+        Date max = new java.text.SimpleDateFormat("yyyy-MM-dd").parse("2021-01-31");
+        List<User> statsList = repository.listAgeStatsByCreateTimeRangeAndGroupByCityAndGender(min, max);
+        Assert.assertEquals(6, statsList.size());
+
+        int totalCount = 0;
+        for (User row : statsList) {
+            Assert.assertNotNull(row.getCity());
+            Assert.assertNotNull(row.getGender());
+            Assert.assertNotNull(row.getMaxAge());
+            Assert.assertNotNull(row.getMinAge());
+            Assert.assertNotNull(row.getAvgAge());
+            Assert.assertNotNull(row.getCount());
+            Assert.assertNotNull(row.getDistinctCount());
+            totalCount += row.getCount();
+        }
+        // 所有组的 count 之和应等于该时间范围内的总记录数
+        Assert.assertEquals(10, totalCount);
+
+        // 北京 + MALE 共 3 人（李二 23、王一 27、王二 25）
+        User beijingMale = statsList.stream()
+                .filter(u -> "北京".equals(u.getCity()) && Gender.MALE.equals(u.getGender()))
+                .findFirst().get();
+        Assert.assertEquals(Integer.valueOf(27), beijingMale.getMaxAge());
+        Assert.assertEquals(Integer.valueOf(23), beijingMale.getMinAge());
+        Assert.assertEquals(3, beijingMale.getCount().intValue());
+        Assert.assertEquals(3, beijingMale.getDistinctCount().intValue());
+    }
+
 }
