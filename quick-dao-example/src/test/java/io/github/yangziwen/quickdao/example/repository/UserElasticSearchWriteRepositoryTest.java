@@ -163,6 +163,8 @@ public class UserElasticSearchWriteRepositoryTest {
         User template = new User();
         template.setAge(99);
         Criteria criteria = new Criteria().and("city").eq(city);
+        // update_by_query 走 search 通道，需等待新文档 refresh 后才可见
+        awaitCount(criteria, 2);
         Assert.assertEquals(2, repository.updateSelective(template, criteria));
         Assert.assertEquals(Integer.valueOf(99), repository.getById(u1.getId()).getAge());
         Assert.assertEquals(Integer.valueOf(99), repository.getById(u2.getId()).getAge());

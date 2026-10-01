@@ -290,16 +290,21 @@ public abstract class BaseElasticSearchRepository<E> extends BaseReadOnlyElastic
 
             BulkResponse response = client.bulk(request, options);
             for (BulkItemResponse item : response.getItems()) {
-                if (!item.isFailed()) {
+                if (item.isFailed()) {
+                    // 文档不存在视为未删除，与 SQL 语义一致，不算失败
+                    if (item.getFailure().getStatus() == RestStatus.NOT_FOUND) {
+                        result--;
+                        continue;
+                    }
+                    failureMessageList.add(String.format("delete of index[%s] with id[%s] failed: %s",
+                            item.getIndex(), item.getId(), item.getFailureMessage()));
                     continue;
                 }
-                // 文档不存在视为未删除，与 SQL 语义一致，不算失败
-                if (item.getFailure().getStatus() == RestStatus.NOT_FOUND) {
+                // be aware: bulk 中删除不存在的文档不算 failure，
+                // 而是返回 result=NOT_FOUND 的正常响应，需在此处扣减计数
+                if (item.getResponse() != null && item.getResponse().getResult() == Result.NOT_FOUND) {
                     result--;
-                    continue;
                 }
-                failureMessageList.add(String.format("delete of index[%s] with id[%s] failed: %s",
-                        item.getIndex(), item.getId(), item.getFailureMessage()));
             }
 
             // 非文档缺失的失败需要显式抛出，避免静默丢数据
