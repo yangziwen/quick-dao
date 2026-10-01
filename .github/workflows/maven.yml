@@ -49,3 +49,12 @@ jobs:
         name: surefire-reports
         path: '**/target/surefire-reports/*.xml'
         if-no-files-found: ignore
+    - name: Upload jacoco coverage report (HTML)
+      # 覆盖率详情 HTML：下载解压后打开 index.html，
+      # 可按包/类逐行查看覆盖情况（绿色已覆盖、黄色分支部分覆盖、红色未覆盖）
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: jacoco-report
+        path: quick-dao-coverage/target/site/jacoco-aggregate/
+        if-no-files-found: ignore
