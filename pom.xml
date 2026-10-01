@@ -303,7 +303,7 @@
                 <configuration>
                     <repoToken>uCEZUxxOfee9MNwzhkhVeLU6gQVq8dBMK</repoToken>
                     <jacocoReports>
-                        <jacocoReport>quick-dao-example/target/site/jacoco/jacoco.xml</jacocoReport>
+                        <jacocoReport>quick-dao-coverage/target/site/jacoco-aggregate/jacoco.xml</jacocoReport>
                     </jacocoReports>
                 </configuration>
             </plugin>
@@ -316,5 +316,6 @@
         <module>quick-dao-mybatis</module>
         <module>quick-dao-spring-jdbc</module>
         <module>quick-dao-elasticsearch</module>
+        <module>quick-dao-coverage</module>
     </modules>
 </project>
