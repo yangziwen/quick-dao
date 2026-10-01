@@ -6,7 +6,7 @@
 # QuickDAO
 
 [![Java CI with Maven](https://github.com/yangziwen/quick-dao/actions/workflows/maven.yml/badge.svg)](https://github.com/yangziwen/quick-dao/actions/workflows/maven.yml)
-[![Coverage Status](https://coveralls.io/repos/github/yangziwen/quick-dao/badge.svg?branch=master)](https://coveralls.io/github/yangziwen/quick-dao?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/yangziwen/quick-dao/badge.svg?branch=master&v=1)](https://coveralls.io/github/yangziwen/quick-dao?branch=master)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/83ba3cc79e6046f69c06dbc42db00b7f)](https://www.codacy.com/gh/yangziwen/quick-dao/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=yangziwen/quick-dao&amp;utm_campaign=Badge_Grade)
 
 ### 项目介绍
