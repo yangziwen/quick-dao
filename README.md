@@ -6,10 +6,9 @@
 # QuickDAO
 
 [![Java CI with Maven](https://github.com/yangziwen/quick-dao/actions/workflows/maven.yml/badge.svg)](https://github.com/yangziwen/quick-dao/actions/workflows/maven.yml)
-[![Coverage Status](https://coveralls.io/repos/github/yangziwen/quick-dao/badge.svg?branch=master&v=1)](https://coveralls.io/github/yangziwen/quick-dao?branch=master)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/83ba3cc79e6046f69c06dbc42db00b7f)](https://app.codacy.com/gh/yangziwen/quick-dao/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 [![Codacy Coverage](https://app.codacy.com/project/badge/Coverage/83ba3cc79e6046f69c06dbc42db00b7f)](https://app.codacy.com/gh/yangziwen/quick-dao/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_Coverage)
-
+<!--[![Coverage Status](https://coveralls.io/repos/github/yangziwen/quick-dao/badge.svg?branch=master&v=1)](https://coveralls.io/github/yangziwen/quick-dao?branch=master)-->
 ### 项目介绍
 QuickDAO通过对Spring JDBC, MyBatis, sql2o等orm框架进行简单封装，实现增删改查方法的抽象和复用，有效消除DAO层的样板代码。此外，QuickDAO还基于Elasticsearch提供了相同API的数据访问实现，可以将同一套Java DSL翻译为ES的query和aggregation。
 
