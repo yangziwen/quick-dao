@@ -33,6 +33,14 @@ jobs:
       # 仅 push 到 master 时上报：fork 的 PR 无法读取 secrets，避免上报步骤失败
       if: github.event_name == 'push'
       run: mvn -B coveralls:report --file pom.xml
+    - name: Report coverage to Codacy
+      # 复用 quick-dao-coverage 聚合出的 jacoco 报告（与 coveralls 上报同一份）
+      # token 存放于仓库 secret：Settings -> Secrets and variables -> Actions -> CODACY_PROJECT_TOKEN
+      if: github.event_name == 'push'
+      uses: codacy/codacy-coverage-reporter-action@v1
+      with:
+        project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+        coverage-reports: quick-dao-coverage/target/site/jacoco-aggregate/jacoco.xml
     - name: Upload surefire reports
       # 构建失败时也要上传，便于排查（如 ES 单测为何失败）
       if: always()
