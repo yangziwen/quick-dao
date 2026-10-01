@@ -110,16 +110,14 @@ public class TypedCriteria<E> extends Criteria {
                 int fromIndex = 0;
                 int andPos = -1;
                 int orPos = -1;
+                // 注意用非短路 | ：保证 andPos 和 orPos 都被探测赋值，
+                // 否则当 key 只含 and 分隔符时 orPos 保持 -1，会误入 or 分支导致 key 被错切
                 while ((andPos = key.indexOf(andSep, fromIndex)) >= 0
-                        || (orPos = key.indexOf(orSep, fromIndex)) >= 0) {
-                    String keyword = RepoKeys.OR;
-                    int pos = orPos;
-                    String sep = orSep;
-                    if (andPos > -1 && andPos < orPos) {
-                        keyword = RepoKeys.AND;
-                        pos = andPos;
-                        sep = andSep;
-                    }
+                        | (orPos = key.indexOf(orSep, fromIndex)) >= 0) {
+                    boolean andFirst = andPos > -1 && (orPos < 0 || andPos < orPos);
+                    String keyword = andFirst ? RepoKeys.AND : RepoKeys.OR;
+                    int pos = andFirst ? andPos : orPos;
+                    String sep = andFirst ? andSep : orSep;
                     String criteriaKey = key.substring(0, pos + keyword.length());
                     currentCriteria = currentCriteria.ensureNestedCriteria(criteriaKey);
                     fromIndex = pos + sep.length();
