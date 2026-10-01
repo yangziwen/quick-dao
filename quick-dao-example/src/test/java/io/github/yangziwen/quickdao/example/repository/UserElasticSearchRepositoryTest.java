@@ -235,9 +235,9 @@ public class UserElasticSearchRepositoryTest {
 
     @Test
     public void testCountByCity() {
-        // 北京 7 人（张一/五、李一/二、王一/二、赵三），上海 7 人，南京 3 人，天津 1 人，沈阳 1 人
+        // 北京 7 人（张一/五、李一/二、王一/二、赵三），上海 8 人（张二/四、李三/五、王三/五、赵二/五），南京 3 人，天津 1 人，沈阳 1 人
         Assert.assertEquals(Integer.valueOf(7), repository.countByCity("北京"));
-        Assert.assertEquals(Integer.valueOf(7), repository.countByCity("上海"));
+        Assert.assertEquals(Integer.valueOf(8), repository.countByCity("上海"));
         Assert.assertEquals(Integer.valueOf(3), repository.countByCity("南京"));
     }
 
@@ -286,12 +286,12 @@ public class UserElasticSearchRepositoryTest {
         // 所有组的 count 之和应等于该时间范围内的总记录数
         Assert.assertEquals(10, totalCount);
 
-        // 北京 + MALE 共 3 人（李二 23、王一 27、王二 25）
+        // 北京 + MALE 共 3 人（李二 23、王一 27、王二 25）；maxAge/minAge 是 BigDecimal（ES 聚合返回 27.0 形式），用 intValue 比较
         User beijingMale = statsList.stream()
                 .filter(u -> "北京".equals(u.getCity()) && Gender.MALE.equals(u.getGender()))
                 .findFirst().get();
-        Assert.assertEquals(Integer.valueOf(27), beijingMale.getMaxAge());
-        Assert.assertEquals(Integer.valueOf(23), beijingMale.getMinAge());
+        Assert.assertEquals(27, beijingMale.getMaxAge().intValue());
+        Assert.assertEquals(23, beijingMale.getMinAge().intValue());
         Assert.assertEquals(3, beijingMale.getCount().intValue());
         Assert.assertEquals(3, beijingMale.getDistinctCount().intValue());
     }
