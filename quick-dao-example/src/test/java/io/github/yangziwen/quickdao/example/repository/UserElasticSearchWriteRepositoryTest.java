@@ -153,7 +153,7 @@ public class UserElasticSearchWriteRepositoryTest {
     }
 
     @Test
-    public void testUpdateSelectiveByCriteria() {
+    public void testUpdateSelectiveByCriteria() throws Exception {
         String city = "写测市E";
         User u1 = newUser(city, "写测五", 10);
         User u2 = newUser(city, "写测六", 20);
