@@ -38,4 +38,11 @@ public class UserSpringJdbcRepositoryTest extends BaseUserRepositoryTest {
         Assert.assertEquals(username, repository.getById(id).getUsername());
     }
 
+    @Test
+    public void testListUsernameOfEldestMaleUser() {
+        // 数据集里 user1 为 MALE(1)、user2 为 FEMALE(2)
+        Assert.assertEquals(Arrays.asList("user1"), createRepository().listUsernameOfEldestMaleUser(10));
+        Assert.assertEquals(Arrays.asList("user1"), createRepository().listUsernameOfEldestMaleUser(1));
+    }
+
 }
